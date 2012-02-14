@@ -1,0 +1,55 @@
+#!/usr/bin/perl -w
+
+# A simple text generator.
+#
+# This file was written by Damien Dart <damiendart@pobox.com>. This is free
+# and unencumbered software released into the public domain. For more
+# information, please refer to <http://unlicense.org>.
+
+use strict;
+
+use File::Basename;
+use Getopt::Long;
+
+sub printUsageInstructions
+{
+  my $usage_instructions = join("", <DATA>);
+  $usage_instructions =~ s/\\([nt])/"qq|\\$1|"/gee;
+  $usage_instructions =~ s/BASENAME/basename($0)/ge;
+  print {$_[0] < 1 ? *STDOUT : *STDERR} $usage_instructions;
+  exit($_[0]);
+}
+
+my ($output, @words);
+my @punctuation = (".", ",", ";", "!", "?");
+my $next_punctuation = int(rand(15));
+our ($opt_header, $opt_help, $opt_html_tag, $opt_words);
+GetOptions("header|h", "help|?", "html-tag|t=s", "words|w=i")
+    or printUsageInstructions(2);
+defined($opt_help) && printUsageInstructions(0);
+chomp(@words = split(/\s+/s, join("", <>)));
+if (@words > 0 && !((defined($opt_words) && $opt_words < 0))) {
+  for (1..(defined($opt_words) ? $opt_words : rand(25) + 5)) {
+    $output .= $words[rand(@words)];
+    if ($next_punctuation-- == 0) {
+      $output .= $punctuation[rand(@punctuation)];
+      $next_punctuation = int(rand(15));
+    }
+    $output .= " ";
+  }
+  print(defined($opt_html_tag) ? "<$opt_html_tag>" : "");
+  $output =~ s/\s+$//g;
+  $output =~ s/([\.\!\?])(\s)([a-z])/$1$2\u$3/g;
+  defined($opt_header) && $output =~ s/(\b)([a-z])/$1\u$2/g;
+  (grep($_ eq substr($output, -1, 1), @punctuation) > 0) && chop($output);
+  print(ucfirst($output) . (($opt_header) ? "" : "."));
+  print((defined($opt_html_tag) ? "</$opt_html_tag>" : "") . "\n");
+}
+
+__DATA__
+"BASENAME" generates text using a whitespace-delimited word list.
+Usage: BASENAME [options] [- | word-list ...]
+Options:
+  -h, --header        Capitalise all words and suppress last full-stop.
+  -t, --html-tag TAG  Surround generated text with HTML tags.
+  -w, --words WORDS   Set the number of words to output.

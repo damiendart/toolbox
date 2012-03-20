@@ -2,11 +2,12 @@
 
 # Functions that customise the Bash shell environment.
 #
-# This file was written by Damien Dart <damiendart@pobox.com>. This is free
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is free
 # and unencumbered software released into the public domain. For more
-# information, please refer to <http://unlicense.org>.
+# information, please refer to the accompanying "UNLICENCE" file.
 
-function setupVimAsDefaultEditor() {
+function setupVimAsDefaultEditor()
+{
   export EDITOR="$(type -P vim || type -P vi || echo "$EDITOR")"
   VISUAL="$(type -P mvim || type -P gvim || echo "$EDITOR")"
   [ -z "$DISPLAY" ] && VISUAL="$EDITOR"
@@ -19,7 +20,8 @@ function setupVimAsDefaultEditor() {
 # The following function uses functions defined in "bash-completion.bash",
 # which is included with the Git source code distribution.
 # TODO: Add support for other SCMs and shells.
-function setupGitAwarePrompt() {
+function setupGitAwarePrompt()
+{
   [ -z "$PROMPT_COLOUR" ] && export PROMPT_COLOUR='\[\e[36;1m\]'
   local PROMPT='\w \$\[\e[0m\] '
   if [ "$(type -t __git_ps1)" ]; then
@@ -37,9 +39,10 @@ function setupGitAwarePrompt() {
 
 # See <http://blog.sanctum.geek.nz/better-bash-history/>.
 # TODO: Add support for other shells.
-function betterBashHistory() {
+function betterBashHistory()
+{
   export HISTCONTROL=ignoreboth
-  export HISTIGNORE="exit:history:ls"
+  export HISTIGNORE="clear:exit:history:ls"
   export HISTSIZE=1000000
   export HISTTIMEFORMAT="%F %T "
   export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"

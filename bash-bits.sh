@@ -34,3 +34,15 @@ function setupGitAwarePrompt() {
   # information in the prompt might not be available to the assumed user.
   export SUDO_PS1='\[\e[37;1;41m\]\w \$\[\e[0m\] '
 }
+
+# See <http://blog.sanctum.geek.nz/better-bash-history/>.
+# TODO: Add support for other shells.
+function betterBashHistory() {
+  export HISTCONTROL=ignoreboth
+  export HISTIGNORE="exit:history:ls"
+  export HISTSIZE=1000000
+  export HISTTIMEFORMAT="%F %T "
+  export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
+  shopt -s cmdhist histappend
+  unset HISTFILESIZE
+}

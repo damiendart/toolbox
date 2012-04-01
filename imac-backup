@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# A home directory backup script. Based on
+# <https://github.com/mackstann/bin/blob/master/Backup>.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is free
+# and unencumbered software released into the public domain. For more
+# information, please refer to the accompanying "UNLICENCE" file.
+
+# TODO: Make this script more generic.
+
+mount | grep -q "on /Volumes/Bagel" || exit 1
+sudo mkdir -p /Volumes/Bagel/damiendart-imac || exit 1
+date > /Users/damiendart/.damiendart-imac-backup
+sudo rsync -zva --delete --delete-excluded \
+    --exclude ".Trash" \
+    --exclude "Library/Caches" \
+    --exclude "Library/Logs" \
+    --exclude "Library/Application Support/Steam/SteamApps" \
+    --exclude "Downloads" \
+    /Users/damiendart/ /Volumes/Bagel/damiendart-imac/
+echo
+echo "########   #######  ##    ## ########"
+echo "##     ## ##     ## ###   ## ##      "
+echo "##     ## ##     ## ####  ## ##      "
+echo "##     ## ##     ## ## ## ## ########"
+echo "##     ## ##     ## ##  #### ##      "
+echo "##     ## ##     ## ##   ### ##      "
+echo "########   #######  ##    ## ########"
+echo

@@ -23,13 +23,6 @@ function fancyPrompt()
   export SUDO_PS1='\[\e[37;1;41m\]\w \$\[\e[0m\] '
 }
 
-[ -d "/usr/local/bin" ] && PATH="$PATH:/usr/local/bin"
-[ -d "$HOME/bin" ] && export PATH="$PATH:$HOME/bin"
-[ -d "$HOME/flex_sdk_4.1/bin" ] && export PATH="$PATH:$HOME/flex_sdk_4.1/bin"
-[ -d "$HOME/Shed/toolbox" ] && export PATH="$PATH:$HOME/Shed/toolbox"
-[ -f "/etc/bashrc" ] && . "/etc/bashrc"
-[ -f "$HOME/bin/git-completion.bash" ] && . "$HOME/bin/git-completion.bash"
-
 export EDITOR="$(type -P vim || type -P vi || echo "$EDITOR")"
 VISUAL="$(type -P mvim || type -P gvim || echo "$EDITOR")"
 [ -z "$DISPLAY" ] && VISUAL="$EDITOR"
@@ -45,7 +38,9 @@ if [ ! -z "$PS1" ]; then
   export HISTSIZE=1000000
   export HISTTIMEFORMAT="%F %T "
   export PROMPT_COMMAND="fancyPrompt; history -a; history -n"
-  set -o vi
   shopt -s cmdhist histappend
   unset HISTFILESIZE
 fi
+
+[ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
+[ -e "$HOME/.local.bashrc" ] && . "$HOME/.local.bashrc"

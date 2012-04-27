@@ -1,3 +1,4 @@
+set ruler
 if has("gui_running")
     colorscheme solarized
     let g:solarized_menu=0

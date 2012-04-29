@@ -23,24 +23,4 @@ function fancyPrompt()
   export SUDO_PS1='\[\e[37;1;41m\]\w \$\[\e[0m\] '
 }
 
-export EDITOR="$(type -P vim || type -P vi || echo "$EDITOR")"
-VISUAL="$(type -P mvim || type -P gvim || echo "$EDITOR")"
-[ -z "$DISPLAY" ] && VISUAL="$EDITOR"
-# See <http://vimdoc.sourceforge.net/htmldoc/gui_x11.html#gui-fork>.
-[ "$VISUAL" = "$(type -P gvim)" ] && VISUAL="$VISUAL -f"
-[ "$VISUAL" = "$(type -P mvim)" ] && VISUAL="$VISUAL -f --nomru"
-export VISUAL
-
-if [ ! -z "$PS1" ]; then
-  # See <http://blog.sanctum.geek.nz/better-bash-history/>.
-  export HISTCONTROL=ignoreboth
-  export HISTIGNORE="clear:exit:history:ls"
-  export HISTSIZE=1000000
-  export HISTTIMEFORMAT="%F %T "
-  export PROMPT_COMMAND="fancyPrompt; history -a; history -n"
-  shopt -s cmdhist histappend
-  unset HISTFILESIZE
-fi
-
-[ -d "$HOME/bin" ] && export PATH="$HOME/bin:$PATH"
 [ -e "$HOME/.local.bashrc" ] && . "$HOME/.local.bashrc"

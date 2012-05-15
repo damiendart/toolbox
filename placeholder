@@ -18,6 +18,8 @@ sub printUsageInstructionsAndQuit
 "$basename" generates text using a whitespace-delimited word list.
 Usage: $basename [options] [- | word-list ...]
 Options:
+  -d, --default       Use the default word list provided by "$basename".
+                      (Using this option disregards any other input.)
   -h, --header        Capitalise all words and suppress last full-stop.
   -t, --html-tag TAG  Surround generated text with HTML tags.
   -w, --words WORDS   Set the number of words to output.
@@ -28,11 +30,24 @@ USAGE
 my ($output, @words);
 my @punctuation = (".", ",", ";", "!", "?");
 my $next_punctuation = int(rand(15));
-our ($opt_header, $opt_help, $opt_html_tag, $opt_words);
-GetOptions("header|h", "help|?", "html-tag|t=s", "words|w=i")
+our ($opt_default, $opt_header, $opt_help, $opt_html_tag, $opt_words);
+GetOptions("default|d", "header|h", "help|?", "html-tag|t=s", "words|w=i")
     or printUsageInstructionsAndQuit(2);
 defined($opt_help) && printUsageInstructionsAndQuit(0);
-chomp(@words = split(/\s+/s, join("", <>)));
+if (defined($opt_default)) {
+  @words = ("apple", "apples", "apricot", "apricots", "avocado", "avocados",
+  "banana", "bananas", "cherry", "cherries", "clementine", "clementines",
+  "coconut", "coconuts", "cranberry", "cranberries", "date", "dates", "fig",
+  "figs", "gooseberry", "gooseberries", "grapefruit", "grape", "grapes",
+  "guava", "guavas", "kiwi", "kiwis", "kumquat", "kumquats", "lemon",
+  "lemons", "lime", "limes", "lychee", "lychees", "mandarin", "mandarins",
+  "melon", "melons", "nectarine", "nectarines", "orange", "oranges", "peach",
+  "peaches", "pear", "pears", "pineapple", "pineapples", "plum", "plums",
+  "raspberry", "raspberries", "satsuma", "satsumas", "strawberry",
+  "strawberries", "tangerine", "tangerines"); 
+} else {
+  chomp(@words = split(/\s+/s, join("", <>)));
+}
 if (@words > 0 && !((defined($opt_words) && $opt_words < 0))) {
   for (1..(defined($opt_words) ? $opt_words : rand(25) + 5)) {
     $output .= $words[rand(@words)];

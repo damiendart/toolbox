@@ -1,9 +1,11 @@
-# Damien's Bash Shell configuration file.
+# Damien's fancy Bash Shell prompt.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is free
 # and unencumbered software released into the public domain. For more
 # information, please refer to the accompanying "UNLICENCE" file.
 
+# TODO: Add support for other SCMs and shells.
+# TODO: Add a bit of documentation.
 function fancyPrompt()
 {
   [ -z "$PROMPT_COLOUR" ] && export PROMPT_COLOUR='\[\e[36;1m\]'
@@ -22,5 +24,3 @@ function fancyPrompt()
   # information in the prompt might not be available to the assumed user.
   export SUDO_PS1='\[\e[37;1;41m\]\w \$\[\e[0m\] '
 }
-
-[ -e "$HOME/.local.bashrc" ] && . "$HOME/.local.bashrc"

@@ -31,14 +31,10 @@ function __getBackgroundJobCount() {
   [[ -n "$(jobs)" ]] && printf '(bg:%d) ' $(jobs | wc -l)
 }
 
-# Setting the "FANCY_PROMPT_COLOUR" and "FANCY_PROMPT_ROOT_COLOUR"
-# environmental variables beforehand will override the default colours
-# provided in this function.
 function setUpFancyPrompt()
 {
-  PROMPT_COLOUR=${FANCY_PROMPT_COLOR:-$(tput setaf 6; tput bold)}
-  [[ $EUID -eq 0 ]] &&
-      PROMPT_COLOUR=${FANCY_PROMPT_ROOT_COLOUR:-$(tput setab 1; tput setaf 7; tput bold)}
+  PROMPT_COLOUR=${FANCY_PROMPT_COLOUR}
+  [[ $EUID -eq 0 ]] && PROMPT_COLOUR=${FANCY_PROMPT_ROOT_COLOUR}
   if type __git_ps1 &>/dev/null; then
     export GIT_PS1_SHOWDIRTYSTATE=1
     export GIT_PS1_SHOWSTASHSTATE=1

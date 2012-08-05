@@ -9,7 +9,7 @@ function __getVCSInfomation()
 {
   # TODO: Add support for other VCSes.
   if git branch &>/dev/null; then
-    if [[ "$(type -t __git_ps1)" ]]; then
+    if type __git_ps1 &>/dev/null; then
       echo ' '$(__git_ps1 "[git:%s]" | sed -e "s/ //")
     else
       GIT_HEAD="$(git symbolic-ref HEAD 2>/dev/null)"
@@ -27,6 +27,10 @@ function __getVCSInfomation()
   fi
 }
 
+function __getBackgroundJobCount() {
+  [[ -n "$(jobs)" ]] && printf '(bg:%d) ' $(jobs | wc -l)
+}
+
 # Setting the "PROMPT_COLOUR" and "PROMPT_ROOT_COLOUR" environmental variables
 # beforehand will override the default colours provided in this function.
 function setUpFancyPrompt()
@@ -40,6 +44,6 @@ function setUpFancyPrompt()
     export GIT_PS1_SHOWSTASHSTATE=1
     export GIT_PS1_SHOWUNTRACKEDFILES=1
   fi
-  export PS1='\['${PROMPT_COLOUR}'\]\w$(__getVCSInfomation) \$\['$(tput sgr0)'\] '
-  export PROMPT='%{'${PROMPT_COLOUR}'%}%~$(__getVCSInfomation) %#%{'$(tput sgr0)'%} '
+  export PS1='\['${PROMPT_COLOUR}'\]\w$(__getVCSInfomation) $(__getBackgroundJobCount)\$\['$(tput sgr0)'\] '
+  export PROMPT='%{'${PROMPT_COLOUR}'%}%~$(__getVCSInfomation) $(__getBackgroundJobCount)%#%{'$(tput sgr0)'%} '
 }

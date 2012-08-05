@@ -1,29 +1,45 @@
-# Damien's fancy Unix Shell prompt.
+# Damien's Unix Shell prompt. Supports Bash and ZSH.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is free
 # and unencumbered software released into the public domain. For more
 # information, please refer to the accompanying "UNLICENCE" file.
 
-# TODO: Add support for other SCMs and shells.
-# TODO: Add a bit of documentation.
-function fancyPrompt()
+# This function is inspired by http://blog.sanctum.geek.nz/bash-prompts/>.
+function __getVCSInfomation()
 {
-  [ -z "$BASH_PROMPT_COLOUR" ] && export BASH_PROMPT_COLOUR='\[\e[36;1m\]'
-  local BASH_PROMPT='\w \$\[\e[0m\] '
-  local ZSH_PROMPT='%~ %# '
-  # The "__git_ps1" function is defined in "bash-completion.bash", which is
-  # included with the Git source code distribution.
+  # TODO: Add support for other VCSes.
+  if git branch &>/dev/null; then
+    if [[ "$(type -t __git_ps1)" ]]; then
+      echo ' '$(__git_ps1 "[git:%s]" | sed -e "s/ //")
+    else
+      GIT_HEAD="$(git symbolic-ref HEAD 2>/dev/null)"
+      CURRENT_BRANCH="${GIT_HEAD##*/}"
+      [[ -n "$(git status 2>/dev/null | \
+          grep -F 'working directory clean')" ]] || REPOSITORY_STATUS="!"
+      printf ' [git:%s]' "${CURRENT_BRANCH:-unknown}${REPOSITORY_STATUS}"
+    fi
+  elif hg branch &>/dev/null; then
+    CURRENT_BRANCH="$(hg branch 2>/dev/null)"
+    [[ -n "$(hg status 2>/dev/null)" ]] && local REPOSITORY_STATUS="!"
+    printf ' [hg:%s]' "${CURRENT_BRANCH:-unknown}${REPOSITORY_STATUS}"
+  else
+    return 1
+  fi
+}
+
+# Setting the "PROMPT_COLOUR" and "PROMPT_ROOT_COLOUR" environmental variables
+# beforehand will override the default colours provided in this function.
+function setUpFancyPrompt()
+{
+  [[ -z "$PROMPT_COLOUR" ]] && PROMPT_COLOUR=$(tput setaf 6; tput bold)
+  [[ -z "$PROMPT_ROOT_COLOUR" ]] && \
+      PROMPT_ROOT_COLOUR=$(tput setab 1; tput setaf 7; tput bold)
+  [[ $EUID -eq 0 ]] && PROMPT_COLOUR=$PROMPT_ROOT_COLOUR
   if [ "$(type -t __git_ps1)" ]; then
     export GIT_PS1_SHOWDIRTYSTATE=1
     export GIT_PS1_SHOWSTASHSTATE=1
     export GIT_PS1_SHOWUNTRACKEDFILES=1
-    BASH_PROMPT='\w$(__git_ps1 " [git:%s]" | sed -e "s/ //2") \$\[\e[0m\] '
   fi
-  export PS1="${BASH_PROMPT_COLOUR}${BASH_PROMPT}"
-  #TODO: Add colours and Git respository information to ZSH prompt.
-  export PROMPT="${ZSH_PROMPT}"
-  # Fall back to a bare-bones prompt when using "sudo" to run commands as
-  # another user, as the bits and pieces required to display repository
-  # information in the prompt might not be available to the assumed user.
-  export SUDO_PS1='\[\e[37;1;41m\]\w \$\[\e[0m\] '
+  export PS1='\['${PROMPT_COLOUR}'\]\w$(__getVCSInfomation) \$\['$(tput sgr0)'\] '
+  export PROMPT='%{'${PROMPT_COLOUR}'%}%~$(__getVCSInfomation) %#%{'$(tput sgr0)'%} '
 }

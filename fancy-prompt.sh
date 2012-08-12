@@ -31,10 +31,13 @@ function __getBackgroundJobCount() {
   [[ -n "$(jobs)" ]] && printf '(bg:%d) ' $(jobs | wc -l)
 }
 
+# This function takes two sets of ANSI colour escape sequences as arguments:
+# the first is used to colour the prompt when logged in as yourself, the
+# second is used to colour the prompt when logged in as the root user.
 function setUpFancyPrompt()
 {
-  PROMPT_COLOUR=${FANCY_PROMPT_COLOUR}
-  [[ $EUID -eq 0 ]] && PROMPT_COLOUR=${FANCY_PROMPT_ROOT_COLOUR}
+  PROMPT_COLOUR=${1}
+  [[ $EUID -eq 0 ]] && PROMPT_COLOUR=${2}
   if type __git_ps1 &>/dev/null; then
     export GIT_PS1_SHOWDIRTYSTATE=1
     export GIT_PS1_SHOWSTASHSTATE=1

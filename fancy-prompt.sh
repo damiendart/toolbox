@@ -45,4 +45,6 @@ function setUpFancyPrompt()
   fi
   export PS1='\['${PROMPT_COLOUR}'\]\w$(__getVCSInfomation) $(__getBackgroundJobCount)\$\['$(tput sgr0)'\] '
   export PROMPT='%{'${PROMPT_COLOUR}'%}%~$(__getVCSInfomation) $(__getBackgroundJobCount)%#%{'$(tput sgr0)'%} '
+  export PS2='\['${PROMPT_COLOUR}'>'$(tput sgr0)'\] '
+  [[ -n "$ZSH_VERSION" ]] || PS2='%{'${PROMPT_COLOUR}'%}%_%{'$(tput sgr0)'%} '
 }

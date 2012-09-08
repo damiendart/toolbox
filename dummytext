@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# A simple text generator.
+# A simple dummy text generator.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is free
 # and unencumbered software released into the public domain. For more
@@ -34,20 +34,7 @@ our ($opt_default, $opt_header, $opt_help, $opt_html_tag, $opt_words);
 GetOptions("default|d", "header|h", "help|?", "html-tag|t=s", "words|w=i")
     or printUsageInstructionsAndQuit(2);
 defined($opt_help) && printUsageInstructionsAndQuit(0);
-if (defined($opt_default)) {
-  @words = ("apple", "apples", "apricot", "apricots", "avocado", "avocados",
-  "banana", "bananas", "cherry", "cherries", "clementine", "clementines",
-  "coconut", "coconuts", "cranberry", "cranberries", "date", "dates", "fig",
-  "figs", "gooseberry", "gooseberries", "grapefruit", "grape", "grapes",
-  "guava", "guavas", "kiwi", "kiwis", "kumquat", "kumquats", "lemon",
-  "lemons", "lime", "limes", "lychee", "lychees", "mandarin", "mandarins",
-  "melon", "melons", "nectarine", "nectarines", "orange", "oranges", "peach",
-  "peaches", "pear", "pears", "pineapple", "pineapples", "plum", "plums",
-  "raspberry", "raspberries", "satsuma", "satsumas", "strawberry",
-  "strawberries", "tangerine", "tangerines"); 
-} else {
-  chomp(@words = split(/\s+/s, join("", <>)));
-}
+chomp(@words = split(/\s+/s, join("", defined($opt_default) ? <DATA>: <>)));
 if (@words > 0 && !((defined($opt_words) && $opt_words < 0))) {
   for (1..(defined($opt_words) ? $opt_words : rand(25) + 5)) {
     $output .= $words[rand(@words)];
@@ -65,3 +52,12 @@ if (@words > 0 && !((defined($opt_words) && $opt_words < 0))) {
   print(ucfirst($output) . (($opt_header) ? "" : "."));
   print((defined($opt_html_tag) ? "</$opt_html_tag>" : "") . "\n");
 }
+
+__DATA__
+apple apples apricot apricots avocado avocados banana bananas cherry cherries
+clementine clementines coconut coconuts cranberry cranberries date dates fig
+figs gooseberry gooseberries grapefruit grape grapes guava guavas kiwi kiwis
+kumquat kumquats lemon lemons lime limes lychee lychees mandarin mandarins
+melon melons nectarine nectarines orange oranges peach peaches pear pears
+pineapple pineapples plum plums raspberry raspberries satsuma satsumas
+strawberry strawberries tangerine tangerines

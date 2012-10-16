@@ -1,2 +1,0 @@
-# Holy shit, I thought Perl was bad.
-caption always "%{=}%?%F%{=bs dd}%?###%?%F%{-}%? %L=%-w%50L>%{=bs dd}%n %t%{-}%+w%-4= %?%F%{=bs dd}%?###%{=}"

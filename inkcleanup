@@ -13,7 +13,7 @@ USAGE=$(cat <<USAGE;
 "$(basename $0)" cleans up images of inked line-art.
 Usage: $(basename $0) [options] [input-filename] [output-filename]
 Options:
-  -b PERCENTAGE    Set the black point (default is $BLACK_POINT). 
+  -b PERCENTAGE    Set the black point (default is $BLACK_POINT).
   -w PERCENTAGE    Set the white point (default is $WHITE_POINT).
 USAGE)
 while getopts ":b:hw:" OPTIONS; do

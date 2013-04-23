@@ -1,0 +1,20 @@
+#!/usr/bin/perl -w
+
+# Highlights tabs and trailing whitespace in source code and text files.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is free
+# and unencumbered software released into the public domain. For more
+# information, please refer to the accompanying "UNLICENCE" file.
+
+use strict;
+
+use File::Basename;
+
+while (<>) {
+  # TODO: Add help documentation.
+  # TODO: Add support for supressing checks.
+  print {*STDERR} "$ARGV:$.\tTab\n" if
+      (/\t/ and (basename($ARGV) ne "Makefile"));
+  print {*STDERR} "$ARGV:$.\tTrailing whitespace\n" if (/[ \t]+$/);
+  close ARGV if eof;
+}

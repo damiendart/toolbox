@@ -9,12 +9,15 @@
 use strict;
 
 use File::Basename;
+use Getopt::Long;
 
+# TODO: Add help documentation.
+our ($opt_suppress_tabs, $opt_suppress_whitespace);
+GetOptions("suppress-tabs|t", "suppress-whitespace|w");
 while (<>) {
-  # TODO: Add help documentation.
-  # TODO: Add support for supressing checks.
-  print {*STDERR} "$ARGV:$.\tTab\n" if
-      (/\t/ and (basename($ARGV) ne "Makefile"));
-  print {*STDERR} "$ARGV:$.\tTrailing whitespace\n" if (/[ \t]+$/);
+  print {*STDERR} "$ARGV:$.\tTab\n"
+      if (/\t/ and not defined($opt_suppress_tabs));
+  print {*STDERR} "$ARGV:$.\tTrailing whitespace\n" if
+      (/[ \t]+$/ and not defined($opt_suppress_whitespace));
   close ARGV if eof;
 }

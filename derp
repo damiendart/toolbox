@@ -15,9 +15,9 @@ use Getopt::Long;
 our ($opt_suppress_tabs, $opt_suppress_whitespace);
 GetOptions("suppress-tabs|t", "suppress-whitespace|w");
 while (<>) {
-  print {*STDERR} "$ARGV:$.\tTab\n"
+  print {*STDERR} "$ARGV:$.:$-[0]: One or more tabs.\n"
       if (/\t/ and not defined($opt_suppress_tabs));
-  print {*STDERR} "$ARGV:$.\tTrailing whitespace\n" if
+  print {*STDERR} "$ARGV:$.:$-[0]: Trailing whitespace.\n" if
       (/[ \t]+$/ and not defined($opt_suppress_whitespace));
   close ARGV if eof;
 }

@@ -12,12 +12,12 @@ use File::Basename;
 use Getopt::Long;
 
 # TODO: Add help documentation.
-our ($opt_suppress_tabs, $opt_suppress_whitespace);
-GetOptions("suppress-tabs|t", "suppress-whitespace|w");
+our ($opt_ignore_tabs, $opt_ignore_trailing_whitespace);
+GetOptions("ignore-tabs|t", "ignore-trailing-whitespace|w");
 while (<>) {
   print {*STDERR} "$ARGV:$.:$-[0]: One or more tabs.\n"
-      if (/\t/ and not defined($opt_suppress_tabs));
+      if (/\t/ and not defined($opt_ignore_tabs));
   print {*STDERR} "$ARGV:$.:$-[0]: Trailing whitespace.\n" if
-      (/[ \t]+$/ and not defined($opt_suppress_whitespace));
+      (/[ \t]+$/ and not defined($opt_ignore_trailing_whitespace));
   close ARGV if eof;
 }

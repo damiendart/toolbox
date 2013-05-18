@@ -10,8 +10,8 @@
 BLACK_POINT="60%"
 WHITE_POINT="45%"
 USAGE=$(cat <<USAGE;
-"$(basename $0)" cleans up images of inked line-art.
-Usage: $(basename $0) [options] [input-filename] [output-filename]
+"$(basename $0)" (kinda) cleans up images of inked line-art.
+Usage: $(basename $0) [OPTIONS] [INPUT-FILENAME] [OUTPUT-FILENAME]
 Options:
   -b PERCENTAGE    Set the black point (default is $BLACK_POINT).
   -w PERCENTAGE    Set the white point (default is $WHITE_POINT).

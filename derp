@@ -11,9 +11,24 @@ use strict;
 use File::Basename;
 use Getopt::Long;
 
-# TODO: Add help documentation.
-our ($opt_ignore_tabs, $opt_ignore_trailing_whitespace);
-GetOptions("ignore-tabs|t", "ignore-trailing-whitespace|w");
+sub printUsageInstructionsAndQuit
+{
+  my $basename = basename($0);
+  print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
+"$basename" highlights tabs and trailing whitespace in text files.
+Usage: $basename [-?] [-tw] [- | FILE...]
+Options:
+  -?, --help                Print this message.
+  -t, --ignore-tabs         Ignore tabs.
+  -w, --ignore-whitespace   Ignore trailing whitespace.
+USAGE
+  exit($_[0]);
+}
+
+our ($opt_help, $opt_ignore_tabs, $opt_ignore_trailing_whitespace);
+GetOptions("help|?", "ignore-tabs|t", "ignore-trailing-whitespace|w")
+    or printUsageInstructionsAndQuit(2);
+defined($opt_help) && printUsageInstructionsAndQuit(0);
 while (<>) {
   print {*STDERR} "$ARGV:$.:$-[0]: One or more tabs.\n"
       if (/\t/ and not defined($opt_ignore_tabs));

@@ -16,8 +16,9 @@ sub printUsageInstructionsAndQuit
   my $basename = basename($0);
   print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
 "$basename" generates text using a whitespace-delimited word list.
-Usage: $basename [options] [- | word-list ...]
+Usage: $basename [-?] [-d] [-h] [-t TAG] [-w WORDS] [- | WORD-LIST...]
 Options:
+  -?, --help          Print this message.
   -d, --default       Use the default word list provided by "$basename".
                       (Using this option disregards any other input.)
   -h, --header        Capitalise all words and suppress last full-stop.

@@ -10,13 +10,24 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, :inline => <<SCRIPT
 set -ex
 apt-get update -y
-apt-get install -y build-essential python ruby screen vim
+apt-get install -y build-essential python screen vim
 # The version of Git available from "apt-get" is too old to work with GitHub.
 apt-get -y build-dep git
 wget --progress=dot https://github.com/git/git/archive/v1.8.3.3.tar.gz
 tar -zxf v1.8.3.3.tar.gz
 cd git-1.8.3.3
-make prefix=/usr/local all install
-rm -rf ../git-1.8.3.3 ../v1.8.3.3.tar.gz
+make prefix=/usr/local all install && cd
+rm -rf git-1.8.3.3 v1.8.3.3.tar.gz
+# Ruby version managers are the way to go.
+apt-get -y build-dep ruby
+sudo -iu vagrant git clone https://github.com/sstephenson/rbenv.git /home/vagrant/.rbenv
+sudo -iu vagrant git clone https://github.com/sstephenson/ruby-build.git /home/vagrant/.rbenv/plugins/ruby-build
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' | sudo -u vagrant tee -a /home/vagrant/.profile
+echo 'eval "$(rbenv init -)"' | sudo -u vagrant tee -a /home/vagrant/.profile
+sudo -iu vagrant rbenv install 2.0.0-p247
+sudo -iu vagrant rbenv rehash
+sudo -iu vagrant rbenv global 2.0.0-p247
+sudo -iu vagrant gem update --system
+sudo -iu vagrant gem install bundler --no-document
 SCRIPT
 end

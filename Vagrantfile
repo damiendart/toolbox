@@ -7,10 +7,13 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.provision :shell, :inline => <<SCRIPT
 set -ex
 echo "Europe/London" > /etc/timezone
 dpkg-reconfigure --frontend noninteractive tzdata
+# Prevent time on virtual machine from becoming severely out of sync.
+sudo VBoxService --timesync-set-threshold 1000
 apt-get update -y
 apt-get install -y build-essential python screen vim
 # The version of Git available from "apt-get" is too old to work with GitHub.

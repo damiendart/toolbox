@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w
+
+# Checks MP3 files for some missing tags and minor nit-picks.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is free
+# and unencumbered software released into the public domain. For more
+# information, please refer to the accompanying "UNLICENCE" file.
+
+use strict;
+
+use MP3::Tag;
+
+foreach (@ARGV) {
+  my $mp3_file = MP3::Tag->new($_) or die;
+  my @missing_tag_checks = (["title", "TIT2"], ["artist", "TPE1"],
+      ["album artist", "TPE2"], ["album title", "TALB"], ["year", "TYER"],
+      ["track number", "TRCK"], ["genre", "TCON"]);
+  for my $i (0 .. $#missing_tag_checks) {
+    print {*STDERR} "$_: Missing $missing_tag_checks[$i][0] tag.\n"
+        if not defined $mp3_file->select_id3v2_frame_by_descr($missing_tag_checks[$i][1]);
+  }
+}

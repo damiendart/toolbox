@@ -13,13 +13,12 @@ use Getopt::Long;
 
 sub printUsageInstructionsAndQuit
 {
-  my $basename = basename($0);
   print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
-"$basename" generates text using a whitespace-delimited word list.
-Usage: $basename [-?] [-d] [-h] [-t TAG] [-w WORDS] [- | WORD-LIST...]
+"${\basename($0)}" generates text using a whitespace-delimited word list.
+Usage: ${\basename($0)} [-?] [-d] [-h] [-t TAG] [-w WORDS] [- | WORD-LIST...]
 Options:
   -?, --help          Print this message.
-  -d, --default       Use the default word list provided by "$basename".
+  -d, --default       Use the default word list provided by "${\basename($0)}".
                       (Using this option disregards any other input.)
   -h, --header        Capitalise all words and suppress last full-stop.
   -t, --html-tag TAG  Surround generated text with HTML tags.

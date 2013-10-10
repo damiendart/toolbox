@@ -13,10 +13,9 @@ use Getopt::Long;
 
 sub printUsageInstructionsAndQuit
 {
-  my $basename = basename($0);
   print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
-"$basename" highlights tabs and trailing whitespace in text files.
-Usage: $basename [-?] [-tw] [- | FILE...]
+"${\basename($0)}" highlights tabs and trailing whitespace in text files.
+Usage: ${\basename($0)} [-?] [-tw] [- | FILE...]
 Options:
   -?, --help                Print this message.
   -t, --ignore-tabs         Ignore tabs.

@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# A sort-of dynamic-DNS thing for domains whose DNS records are managed by
+# NearlyFreeSpeech.NET. Requires access to the NearlyFreeSpeech.NET API and
+# prayers.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is free
+# and unencumbered software released into the public domain. For more
+# information, please refer to the accompanying "UNLICENCE" file.
+
+# TODO: Add documentation and usage instructions.
+
+# Allow functions to abort the script. See
+# <http://stackoverflow.com/a/9894126> for more information.
+trap "exit 1" TERM
+export TOP_SHELL_PID=$$
+
+# This super-duper fragile function requires the following arguments:
+#   1) The username of the user making the API request,
+#   2) the unique API key provided by NearlyFreeSpeech.NET,
+#   3) the path portion of the requested URL, and
+#   4) the request body.
+__makeNFSNAPIRequest()
+{
+  REQUEST_BODY_HASH=`echo -n "$4" | openssl dgst -sha1 | cut -d " " -f 2-`
+  SALT=`tr -cd A-Z-a-z-0-9 < /dev/urandom | head -c16`
+  TIMESTAMP=`date +%s`
+  HASH=`echo -n "$1;$TIMESTAMP;$SALT;$2;$3;$REQUEST_BODY_HASH" | \
+      openssl dgst -sha1 | cut -d " " -f 2-`
+  RESPONSE=`wget --header="X-NFSN-Authentication:$1;$TIMESTAMP;$SALT;$HASH" \
+      --no-check-certificate -O- --post-data="$4" -qS \
+      https://api.nearlyfreespeech.net$3 2>&1`
+  if echo "$RESPONSE" | grep -q "200"; then
+    echo "$RESPONSE" | tail -n -1
+  else
+    echo "ERROR: Could not complete request.\n" 1>&2
+    # Dump headers and any response to standard error for debug purposes.
+    echo "$RESPONSE" | sed "s/^ *//g" 1>&2
+    kill -s TERM $TOP_SHELL_PID
+  fi
+}
+
+# If you thought the above was fragile enough...
+# TODO: Clean up this mess.
+echo -n "Retrieving old IP address... "
+OLD_IP=`__makeNFSNAPIRequest $1 $2 "/dns/$3/listRRs" \
+    "name=$4" | cut -d ":" -f 4- | cut -d "," -f 1 | tr -d \"`
+[ $? -eq 0 ] && [ $OLD_IP != "[]" ] && echo "$OLD_IP" || echo "NONE"
+echo -n "Retrieving new IP address... "
+NEW_IP=`wget -O- -q http://icanhazip.com/`
+[ $? -eq 0 ] && echo "$NEW_IP"
+if [ $OLD_IP = $NEW_IP ]; then
+  echo "IP addresses match, no further action required."
+else
+  if [ $OLD_IP != "[]" ]; then
+    echo -n "Removing old DNS resource record... "
+    __makeNFSNAPIRequest $1 $2 "/dns/$3/removeRR" \
+        "name=$4&type=A&data=$OLD_IP" > /dev/null
+    echo "DONE"
+  fi
+  echo -n "Adding DNS resource record... "
+  __makeNFSNAPIRequest $1 $2 "/dns/$3/addRR" \
+      "name=$4&type=A&data=$NEW_IP&ttl=180" > /dev/null
+  echo "DONE"
+fi

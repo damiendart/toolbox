@@ -1,65 +1,61 @@
-#!/bin/sh
-#
-# A sort-of dynamic-DNS thing for domains whose DNS records are managed by
-# NearlyFreeSpeech.NET. Requires access to the NearlyFreeSpeech.NET API and
-# prayers.
-#
-# This file was written by Damien Dart, <damiendart@pobox.com>. This is free
-# and unencumbered software released into the public domain. For more
-# information, please refer to the accompanying "UNLICENCE" file.
+#!/usr/bin/env python
 
-# TODO: Add documentation and usage instructions.
+import hashlib
+import json
+import random
+import string
+import sys
+import time
+import urllib, urllib2
 
-# Allow functions to abort the script. See
-# <http://stackoverflow.com/a/9894126> for more information.
-trap "exit 1" TERM
-export TOP_SHELL_PID=$$
+class NFSNAPIRequest():
+  def __init__(self, username, API_key, request_path, request_body):
+    self.API_key, self.username = API_key, username
+    self.request_body, self.request_path = request_body, request_path
+  def run(self):
+    salt = "".join(random.choice(string.ascii_letters) for i in range(16))
+    timestamp = str(int(time.time()))
+    try:
+      # The NearlyFreeSpeech.net API documentation is unclear on whether every
+      # successful API call returns a valid JSON-encoded associative array, so
+      # for now the response is returned as a string.
+      return urllib2.urlopen(
+          urllib2.Request("https://api.nearlyfreespeech.net%s"
+          % self.request_path, self.request_body, {"X-NFSN-Authentication" :
+          ";".join([self.username, timestamp, salt, hashlib.sha1(";".join(
+          [self.username, timestamp, salt, self.API_key, self.request_path,
+          hashlib.sha1(self.request_body).hexdigest()])).hexdigest()])})).read()
+    except urllib2.HTTPError as e:
+      try:
+        error_response = json.loads(e.read())
+        raise NFSNAPIRequestException(e.code, error_response["error"],
+            error_response["debug"])
+      except ValueError:
+        raise NFSNAPIRequestException(e.code, e.response, "")
 
-# This super-duper fragile function requires the following arguments:
-#   1) The username of the user making the API request,
-#   2) the unique API key provided by NearlyFreeSpeech.NET,
-#   3) the path portion of the requested URL, and
-#   4) the request body.
-__makeNFSNAPIRequest()
-{
-  REQUEST_BODY_HASH=`echo -n "$4" | openssl dgst -sha1 | cut -d " " -f 2-`
-  SALT=`tr -cd A-Z-a-z-0-9 < /dev/urandom | head -c16`
-  TIMESTAMP=`date +%s`
-  HASH=`echo -n "$1;$TIMESTAMP;$SALT;$2;$3;$REQUEST_BODY_HASH" | \
-      openssl dgst -sha1 | cut -d " " -f 2-`
-  RESPONSE=`wget --header="X-NFSN-Authentication:$1;$TIMESTAMP;$SALT;$HASH" \
-      --no-check-certificate -O- --post-data="$4" -qS \
-      https://api.nearlyfreespeech.net$3 2>&1`
-  if echo "$RESPONSE" | grep -q "200"; then
-    echo "$RESPONSE" | tail -n -1
-  else
-    echo "ERROR: Could not complete request.\n" 1>&2
-    # Dump headers and any response to standard error for debug purposes.
-    echo "$RESPONSE" | sed "s/^ *//g" 1>&2
-    kill -s TERM $TOP_SHELL_PID
-  fi
-}
+class NFSNAPIRequestException():
+  def __init__(self, error_code, error_message, debug_message):
+    self.debug_message = debug_message
+    self.error_code, self.error_message = error_code, error_message
+  def __str__(self):
+    return self.debug_message
 
-# If you thought the above was fragile enough...
-# TODO: Clean up this mess.
-echo -n "Retrieving old IP address... "
-OLD_IP=`__makeNFSNAPIRequest $1 $2 "/dns/$3/listRRs" \
-    "name=$4" | cut -d ":" -f 4- | cut -d "," -f 1 | tr -d \"`
-[ $? -eq 0 ] && [ $OLD_IP != "[]" ] && echo "$OLD_IP" || echo "NONE"
-echo -n "Retrieving new IP address... "
-NEW_IP=`wget -O- -q http://icanhazip.com/`
-[ $? -eq 0 ] && echo "$NEW_IP"
-if [ $OLD_IP = $NEW_IP ]; then
-  echo "IP addresses match, no further action required."
-else
-  if [ $OLD_IP != "[]" ]; then
-    echo -n "Removing old DNS resource record... "
-    __makeNFSNAPIRequest $1 $2 "/dns/$3/removeRR" \
-        "name=$4&type=A&data=$OLD_IP" > /dev/null
-    echo "DONE"
-  fi
-  echo -n "Adding DNS resource record... "
-  __makeNFSNAPIRequest $1 $2 "/dns/$3/addRR" \
-      "name=$4&type=A&data=$NEW_IP&ttl=180" > /dev/null
-  echo "DONE"
-fi
+if __name__ == "__main__":
+  try:
+    # TODO: Check if IP addresses are being returned.
+    old_ip_address = json.loads(NFSNAPIRequest(sys.argv[1], sys.argv[2],
+        "/dns/%s/listRRs" % sys.argv[3], "name=%s" % sys.argv[4]).run())[0]["data"]
+    new_ip_address = urllib.urlopen("http://icanhazip.com").read().rstrip()
+    if (old_ip_address == new_ip_address):
+      print "IP address hasn't changed, no further action is required."
+    else:
+      NFSNAPIRequest(sys.argv[1], sys.argv[2],
+          "/dns/%s/removeRR" % sys.argv[3],
+          "name=%s&type=A&data=%s" % (sys.argv[4], old_ip_address)).run()
+      NFSNAPIRequest(sys.argv[1], sys.argv[2],
+          "/dns/%s/addRR" % sys.argv[3],
+          "name=%s&type=A&data=%s&ttl=180" % (sys.argv[4], new_ip_address)).run()
+      print "Updated DNS resource record from " + old_ip_address + " to " + \
+          new_ip_address + ")."
+  except NFSNAPIRequestException as e:
+    print "ERROR: " + e.error_message

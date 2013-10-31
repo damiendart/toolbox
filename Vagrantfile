@@ -13,7 +13,7 @@ set -ex
 echo "Europe/London" > /etc/timezone
 dpkg-reconfigure --frontend noninteractive tzdata
 # Prevent time on virtual machine from becoming severely out of sync.
-sudo VBoxService --timesync-set-threshold 1000
+VBoxService --timesync-set-threshold 1000
 apt-get update -y
 apt-get install -y build-essential python screen vim
 # The version of Git available from "apt-get" is too old to work with GitHub.

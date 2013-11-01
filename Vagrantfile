@@ -23,6 +23,10 @@ tar -zxf v1.8.3.3.tar.gz
 cd git-1.8.3.3
 make prefix=/usr/local all install
 cd .. && rm -rf git-1.8.3.3 v1.8.3.3.tar.gz
+echo "*.swp" | sudo -u vagrant tee -a /home/vagrant/.gitignore
+sudo -iu vagrant git config --global core.excludesfile "/home/vagrant/.gitignore"
+sudo -iu vagrant git config --global user.email "damiendart@pobox.com"
+sudo -iu vagrant git config --global user.name "Damien Dart"
 # Ruby version managers are the way to go.
 apt-get -y build-dep ruby
 sudo -iu vagrant git clone https://github.com/sstephenson/rbenv.git /home/vagrant/.rbenv

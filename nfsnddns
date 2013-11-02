@@ -13,7 +13,7 @@ import random
 import string
 import sys
 import time
-import urllib, urllib2
+import urllib2
 
 class NFSNAPIRequest():
   """An abstraction of a NearlyFreeSpeech.NET API request.
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # TODO: Check if IP addresses are being returned.
     old_ip_address = json.loads(NFSNAPIRequest(sys.argv[1], sys.argv[2],
         "/dns/%s/listRRs" % sys.argv[3], "name=%s" % sys.argv[4]).run())[0]["data"]
-    new_ip_address = urllib.urlopen("http://icanhazip.com").read().rstrip()
+    new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
     if (old_ip_address == new_ip_address):
       print "IP address hasn't changed, no further action is required."
     else:

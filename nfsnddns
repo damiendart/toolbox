@@ -18,20 +18,17 @@ import urllib, urllib2
 class NFSNAPIRequest():
   """An abstraction of a NearlyFreeSpeech.NET API request.
 
-  "username" should be a string containing the member login name of the
-  user making the request.
-
-  "API_key" should be a string containing a API key assosiated with the
-  member login name; an API key can be obtained by submitting a secure
-  support request to NearlyFreeSpeeech.NET.
-
-  "request_path" should be a string containing the path portion of the
-  requested URL. For instance, if the requested URL is
-  <https://api.nearlyfreespeech.net/site/example/addAlias>,
-  "request_path" would be "/site/example/addAlias".
-
-  "request_body" may be a string containing the HTTP request body, or
-  "None" if no such data is required.
+    - "username" should be a string containing the member login name of
+      the user making the request.
+    - "API_key" should be a string containing the API key assosiated
+      with the member login name; an API key can be obtained by
+      submitting a secure support request to NearlyFreeSpeeech.NET.
+    - "request_path" should be a string containing the path portion of
+      the requested URL. For example, if the requested URL is
+      <https://api.nearlyfreespeech.net/site/example/addAlias>,
+      "request_path" would be "/site/example/addAlias".
+    - "request_body" may be a string containing the HTTP request body,
+      or "None" if no such data is required.
   """
 
   def __init__(self, username, API_key, request_path, request_body = None):

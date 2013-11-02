@@ -61,7 +61,7 @@ if __name__ == "__main__":
       NFSNAPIRequest(sys.argv[1], sys.argv[2],
           "/dns/%s/addRR" % sys.argv[3],
           "name=%s&type=A&data=%s&ttl=180" % (sys.argv[4], new_ip_address)).run()
-      print "<http://%s.%s> now points to %s." % (sys.argv[4], sys.argv[3],
+      print "<http://%s.%s/> now points to %s." % (sys.argv[4], sys.argv[3],
           old_ip_address)
   except NFSNAPIRequestException as e:
     print "ERROR: " + e.error_message

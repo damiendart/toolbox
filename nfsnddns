@@ -64,7 +64,7 @@ class NFSNAPIRequest():
         raise NFSNAPIRequestException(e.code, e.response, "")
 
 
-class NFSNAPIRequestException(Exception):
+class NFSNAPIRequestError(Exception):
   """Raised when an NearlyFreeSpeech.NET API request fails."""
 
   def __init__(self, error_code, error_message, debug_message):
@@ -90,5 +90,5 @@ if __name__ == "__main__":
           "name=%s&type=A&data=%s&ttl=180" % (sys.argv[4], new_ip_address)).run()
       print "<http://%s.%s/> now points to %s." % (sys.argv[4], sys.argv[3],
           old_ip_address)
-  except NFSNAPIRequestException as e:
+  except NFSNAPIRequestError as e:
     print "ERROR: " + str(e)

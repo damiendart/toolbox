@@ -40,7 +40,7 @@ class NFSNAPIRequest():
     The NearlyFreeSpeech.net API documentation is unclear on whether
     every successful API call returns a valid JSON-encoded associative
     array, hence why any response is returned as a string. This method
-    raises "NFSNAPIRequestException" on errors.
+    raises "NFSNAPIRequestError" on errors.
 
     NOTE: As this method uses the "urllib2.urlopen" function to run
     requests, the API server's certificate is not verified.

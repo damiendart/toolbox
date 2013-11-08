@@ -57,10 +57,10 @@ class NFSNAPIRequest():
     except urllib2.HTTPError as e:
       try:
         error_response = json.loads(e.read())
-        raise NFSNAPIRequestException(e.code, error_response["error"],
+        raise NFSNAPIRequestError(e.code, error_response["error"],
             error_response["debug"])
       except ValueError:
-        raise NFSNAPIRequestException(e.code, e.response, "")
+        raise NFSNAPIRequestError(e.code, e.response, "")
 
 
 class NFSNAPIRequestError(Exception):

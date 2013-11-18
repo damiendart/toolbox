@@ -30,6 +30,6 @@ if __name__ == "__main__":
           "/dns/%s/addRR" % sys.argv[3],
           "name=%s&type=A&data=%s&ttl=180" % (sys.argv[4], new_ip_address))
       print "<http://%s.%s/> now points to %s." % (sys.argv[4], sys.argv[3],
-          old_ip_address)
+          new_ip_address)
   except nfsnapi.NFSNAPIRequestError as e:
     print "ERROR: " + str(e)

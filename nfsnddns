@@ -8,28 +8,40 @@ information, please refer to the accompanying "UNLICENCE" file.
 """
 
 
+import ConfigParser
 import json
 import nfsnapi
+import os
 import sys
 import urllib2
 
 
 if __name__ == "__main__":
   try:
+    config = ConfigParser.ConfigParser()
+    config.read(["nfsnddns.cfg", os.path.expanduser("~/.nfsnddns.cfg"),
+        os.path.expanduser("~/nfsnddns.cfg")])
+    API_key = config.get("credentials", "apikey")
+    domain_name = config.get("domain", "domainname")
+    sub_domain = config.get("domain", "subdomain")
+    username = config.get("credentials", "username")
+  except ConfigParser.Error as e:
+    print "ERROR: Unable to parse configuration file.\n" + str(e)
+    # TODO: Add usage instructions.
+    sys.exit(1)
+  try:
     # TODO: Check if IP addresses are being returned.
-    old_ip_address = json.loads(nfsnapi.run_request(sys.argv[1], sys.argv[2],
-        "/dns/%s/listRRs" % sys.argv[3], "name=%s" % sys.argv[4]))[0]["data"]
+    old_ip_address = json.loads(nfsnapi.run_request(username, API_key,
+        "/dns/%s/listRRs" % domain_name, "name=%s" % sub_domain))[0]["data"]
     new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
     if (old_ip_address == new_ip_address):
       print "IP address hasn't changed, no further action is required."
     else:
-      nfsnapi.run_request(sys.argv[1], sys.argv[2],
-          "/dns/%s/removeRR" % sys.argv[3],
-          "name=%s&type=A&data=%s" % (sys.argv[4], old_ip_address))
-      nfsnapi.run_request(sys.argv[1], sys.argv[2],
-          "/dns/%s/addRR" % sys.argv[3],
-          "name=%s&type=A&data=%s&ttl=180" % (sys.argv[4], new_ip_address))
-      print "<http://%s.%s/> now points to %s." % (sys.argv[4], sys.argv[3],
+      nfsnapi.run_request(username, API_key, "/dns/%s/removeRR" % domain_name,
+          "name=%s&type=A&data=%s" % (sub_domain, old_ip_address))
+      nfsnapi.run_request(username, API_key, "/dns/%s/addRR" % domain_name,
+          "name=%s&type=A&data=%s&ttl=180" % (domain_name, new_ip_address))
+      print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
           new_ip_address)
   except nfsnapi.NFSNAPIRequestError as e:
     print "ERROR: " + str(e)

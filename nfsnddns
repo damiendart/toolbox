@@ -25,11 +25,6 @@ if __name__ == "__main__":
     domain_name = config.get("domain", "domainname")
     sub_domain = config.get("domain", "subdomain")
     username = config.get("credentials", "username")
-  except ConfigParser.Error as e:
-    print "ERROR: Unable to parse configuration file.\n" + str(e)
-    # TODO: Add usage instructions.
-    sys.exit(1)
-  try:
     # TODO: Check if IP addresses are being returned.
     old_ip_address = json.loads(nfsnapi.run_request(username, API_key,
         "/dns/%s/listRRs" % domain_name, "name=%s" % sub_domain))[0]["data"]
@@ -41,5 +36,9 @@ if __name__ == "__main__":
           "name=%s&type=A&data=%s&ttl=180" % (domain_name, new_ip_address))
       print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
           new_ip_address)
+  except ConfigParser.Error as e:
+    print "ERROR: Unable to parse configuration file.\n" + str(e)
+    # TODO: Add usage instructions.
+    sys.exit(1)
   except nfsnapi.NFSNAPIRequestError as e:
     print "ERROR: " + str(e)

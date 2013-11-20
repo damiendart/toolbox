@@ -25,20 +25,33 @@ if __name__ == "__main__":
     domain_name = config.get("domain", "domainname")
     sub_domain = config.get("domain", "subdomain")
     username = config.get("credentials", "username")
-    # TODO: Check if IP addresses are being returned.
-    old_ip_address = json.loads(nfsnapi.run_request(username, API_key,
-        "/dns/%s/listRRs" % domain_name, "name=%s" % sub_domain))[0]["data"]
-    new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
-    if (old_ip_address != new_ip_address):
-      nfsnapi.run_request(username, API_key, "/dns/%s/removeRR" % domain_name,
-          "name=%s&type=A&data=%s" % (sub_domain, old_ip_address))
-      nfsnapi.run_request(username, API_key, "/dns/%s/addRR" % domain_name,
-          "name=%s&type=A&data=%s&ttl=180" % (sub_domain, new_ip_address))
-      print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
-          new_ip_address)
   except ConfigParser.Error as e:
     print "ERROR: Unable to parse configuration file.\n" + str(e)
     # TODO: Add usage instructions.
     sys.exit(1)
+
+  try:
+    # TODO: Check if IP addresses are being returned.
+    old_ip_address = json.loads(nfsnapi.run_request(username, API_key,
+        "/dns/%s/listRRs" % domain_name, "name=%s" % sub_domain))[0]["data"]
+  except IndexError:
+    old_ip_address = ""
   except nfsnapi.NFSNAPIRequestError as e:
-    print "ERROR: " + str(e)
+    print "ERROR: Unable to get old IP address.\n" + str(e)
+    sys.exit(1)
+
+  # TODO: Check if IP addresses are being returned.
+  new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
+
+  try:
+    if (old_ip_address != new_ip_address):
+      if old_ip_address:
+        nfsnapi.run_request(username, API_key, "/dns/%s/removeRR" % domain_name,
+            "name=%s&type=A&data=%s" % (sub_domain, old_ip_address))
+      nfsnapi.run_request(username, API_key, "/dns/%s/addRR" % domain_name,
+          "name=%s&type=A&data=%s&ttl=180" % (sub_domain, new_ip_address))
+      print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
+        new_ip_address)
+  except nfsnapi.NFSNAPIRequestError as e:
+    print "ERROR: Unable to update resource record.\n" + str(e)
+    sys.exit(1)

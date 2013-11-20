@@ -40,8 +40,12 @@ if __name__ == "__main__":
     print "ERROR: Unable to get old IP address.\n" + str(e)
     sys.exit(1)
 
-  # TODO: Check if IP addresses are being returned.
-  new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
+  try:
+    # TODO: Check if IP addresses are being returned.
+    new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
+  except:
+    print "ERROR: Unable to get current IP address.\n"
+    sys.exit(1)
 
   try:
     if (old_ip_address != new_ip_address):

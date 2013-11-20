@@ -33,7 +33,7 @@ if __name__ == "__main__":
       nfsnapi.run_request(username, API_key, "/dns/%s/removeRR" % domain_name,
           "name=%s&type=A&data=%s" % (sub_domain, old_ip_address))
       nfsnapi.run_request(username, API_key, "/dns/%s/addRR" % domain_name,
-          "name=%s&type=A&data=%s&ttl=180" % (domain_name, new_ip_address))
+          "name=%s&type=A&data=%s&ttl=180" % (sub_domain, new_ip_address))
       print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
           new_ip_address)
   except ConfigParser.Error as e:

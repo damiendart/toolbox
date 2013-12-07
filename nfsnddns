@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-"""A dynamic-DNS thing for NearlyFreeSpeech.NET-managed domains.
+"""A kinda-Dynamic-DNS client for NearlyFreeSpeech.NET-managed domains.
+
+Requires "nfsnapi", available at <https://pypi.python.org/pypi/nfsnapi>.
 
 This file was written by Damien Dart, <damiendart@pobox.com>. This is
 free and unencumbered software released into the public domain. For more

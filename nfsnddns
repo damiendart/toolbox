@@ -38,7 +38,7 @@ if __name__ == "__main__":
     old_ip_address = json.loads(nfsnapi.run_request(username, API_key,
         "/dns/%s/listRRs" % domain_name, "name=%s" % sub_domain))[0]["data"]
   except IndexError:
-    old_ip_address = ""
+    old_ip_address = None
   except nfsnapi.NFSNAPIRequestError as e:
     sys.stderr.write("ERROR: Unable to get old IP address.\n" + str(e) + "\n")
     sys.exit(1)
@@ -54,11 +54,10 @@ if __name__ == "__main__":
     if (old_ip_address != new_ip_address):
       if old_ip_address:
         nfsnapi.run_request(username, API_key, "/dns/%s/removeRR" % domain_name,
-            "name=%s&type=A&data=%s" % (sub_domain, old_ip_address))
+            "data=%s%name=%s&type=A" % (old_ip_address, sub_domain))
       nfsnapi.run_request(username, API_key, "/dns/%s/addRR" % domain_name,
-          "name=%s&type=A&data=%s&ttl=180" % (sub_domain, new_ip_address))
-      print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
-        new_ip_address)
+          "data=%sname=%s&ttl=180&type=A" % (new_ip_address, sub_domain))
+      print "%s.%s now points to %s." % (sub_domain, domain_name, new_ip_address)
   except nfsnapi.NFSNAPIRequestError as e:
     sys.stderr.write("ERROR: Unable to replace resource record.\n" + str(e) +
         "\nWARNING: Previous resource record may have been deleted.")

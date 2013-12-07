@@ -28,7 +28,8 @@ if __name__ == "__main__":
     sub_domain = config.get("domain", "subdomain")
     username = config.get("credentials", "username")
   except ConfigParser.Error as e:
-    print "ERROR: Unable to parse configuration file.\n" + str(e)
+    sys.stderr.write("ERROR: Unable to parse configuration file.\n")
+    sys.stderr.write(str(e) + "\n")
     # TODO: Add usage instructions.
     sys.exit(1)
 
@@ -39,14 +40,14 @@ if __name__ == "__main__":
   except IndexError:
     old_ip_address = ""
   except nfsnapi.NFSNAPIRequestError as e:
-    print "ERROR: Unable to get old IP address.\n" + str(e)
+    sys.stderr.write("ERROR: Unable to get old IP address.\n" + str(e) + "\n")
     sys.exit(1)
 
   try:
     # TODO: Check if IP addresses are being returned.
     new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
   except:
-    print "ERROR: Unable to get current IP address.\n"
+    sys.stderr.write("ERROR: Unable to get current IP address.\n")
     sys.exit(1)
 
   try:
@@ -59,5 +60,6 @@ if __name__ == "__main__":
       print "<http://%s.%s/> now points to %s." % (sub_domain, domain_name,
         new_ip_address)
   except nfsnapi.NFSNAPIRequestError as e:
-    print "ERROR: Unable to update resource record.\n" + str(e)
+    sys.stderr.write("ERROR: Unable to replace resource record.\n" + str(e) +
+        "\nWARNING: Previous resource record may have been deleted.")
     sys.exit(1)

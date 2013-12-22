@@ -17,6 +17,8 @@ Options:
   -w PERCENTAGE    Set the white point (default is $WHITE_POINT).
 USAGE
 )
+command -v convert >/dev/null 2>&1 || { 
+    echo "\"$(basename $0)\" requires ImageMagick." >&2; exit 1; }
 while getopts ":b:hw:" OPTIONS; do
   case $OPTIONS in
     # TODO: Handle non-percentage values.

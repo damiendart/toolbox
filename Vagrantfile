@@ -16,7 +16,7 @@ dpkg-reconfigure --frontend noninteractive tzdata
 # Prevent time on virtual machine from becoming severely out of sync.
 VBoxService --timesync-set-threshold 1000
 apt-get update -y
-apt-get install -y build-essential python screen vim
+apt-get install -y apache2 build-essential python screen vim
 # The version of Git available from "apt-get" is too old to work with GitHub.
 apt-get -y build-dep git
 wget -O - https://github.com/git/git/archive/v1.8.5.2.tar.gz | tar -zx

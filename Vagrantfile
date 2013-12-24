@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.provision :shell, :inline => <<SCRIPT
+trap "rm -fr git-1.8.3.3" EXIT
 set -ex
 echo "Europe/London" > /etc/timezone
 dpkg-reconfigure --frontend noninteractive tzdata
@@ -18,11 +19,8 @@ apt-get update -y
 apt-get install -y build-essential python screen vim
 # The version of Git available from "apt-get" is too old to work with GitHub.
 apt-get -y build-dep git
-wget --progress=dot https://github.com/git/git/archive/v1.8.3.3.tar.gz
-tar -zxf v1.8.3.3.tar.gz
-cd git-1.8.3.3
-make prefix=/usr/local all install
-cd .. && rm -rf git-1.8.3.3 v1.8.3.3.tar.gz
+wget -O - https://github.com/git/git/archive/v1.8.3.3.tar.gz | tar -zx
+(cd git-1.8.3.3 && make prefix=/usr/local all install)
 echo "*.swp" | sudo -u vagrant tee -a /home/vagrant/.gitignore
 sudo -iu vagrant git config --global core.excludesfile "/home/vagrant/.gitignore"
 sudo -iu vagrant git config --global user.email "damiendart@pobox.com"

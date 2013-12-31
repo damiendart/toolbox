@@ -54,9 +54,9 @@ if __name__ == "__main__":
     if (old_ip_address != new_ip_address):
       if old_ip_address:
         nfsnapi.run_request(username, API_key, "/dns/%s/removeRR" % domain_name,
-            "data=%s%name=%s&type=A" % (old_ip_address, sub_domain))
+            "data=%s&name=%s&type=A" % (old_ip_address, sub_domain))
       nfsnapi.run_request(username, API_key, "/dns/%s/addRR" % domain_name,
-          "data=%sname=%s&ttl=180&type=A" % (new_ip_address, sub_domain))
+          "data=%s&name=%s&ttl=180&type=A" % (new_ip_address, sub_domain))
       print "%s.%s now points to %s." % (sub_domain, domain_name, new_ip_address)
   except nfsnapi.NFSNAPIRequestError as e:
     sys.stderr.write("ERROR: Unable to replace resource record.\n" + str(e) +

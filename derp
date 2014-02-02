@@ -15,9 +15,9 @@ sub printUsageInstructionsAndQuit
 {
   print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
 "${\basename($0)}" highlights tabs and trailing whitespace in text files.
-Usage: ${\basename($0)} [-?] [-tw] [- | FILE...]
+Usage: ${\basename($0)} [-?] [-tw] [- | FILE]...
 Options:
-  -?, --help                Print this message.
+  -?, --help                Print this message and quit.
   -t, --ignore-tabs         Ignore tabs.
   -w, --ignore-whitespace   Ignore trailing whitespace.
 USAGE

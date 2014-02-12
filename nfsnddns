@@ -10,7 +10,6 @@ directory of the user running this script. The contents of the
 configuration file must adhere to the following structure:
 
   [credentials]
-  accountnumber = A1B2-C3D4E5F6
   apikey = abcdefgh12345678
   username = testuser
   [domain]
@@ -37,7 +36,7 @@ if __name__ == "__main__":
     config.read(["nfsnddns.cfg", os.path.expanduser("~/.nfsnddns.cfg"),
         os.path.expanduser("~/nfsnddns.cfg")])
   except ConfigParser.Error as e:
-    sys.stderr.write("ERROR: Unable to parse configuration file.\n")
+    sys.stderr.write("ERROR: Unable to read configuration file.\n")
     sys.stderr.write(str(e) + "\n")
     # TODO: Add usage instructions.
     sys.exit(1)
@@ -49,6 +48,11 @@ if __name__ == "__main__":
         config.get("credentials", "apikey"),
         "/dns/%s/listRRs" % config.get("domain", "domainname"),
         "name=%s" % config.get("domain", "subdomain")))[0]["data"]
+  except ConfigParser.Error as e:
+    sys.stderr.write("ERROR: Unable to parse configuration file.\n")
+    sys.stderr.write(str(e) + "\n")
+    # TODO: Add usage instructions.
+    sys.exit(1)
   except IndexError:
     old_ip_address = None
   except nfsnapi.NFSNAPIRequestError as e:

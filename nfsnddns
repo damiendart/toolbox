@@ -35,13 +35,6 @@ if __name__ == "__main__":
     config = ConfigParser.ConfigParser()
     config.read(["nfsnddns.cfg", os.path.expanduser("~/.nfsnddns.cfg"),
         os.path.expanduser("~/nfsnddns.cfg")])
-  except ConfigParser.Error as e:
-    sys.stderr.write("ERROR: Unable to read configuration file.\n")
-    sys.stderr.write(str(e) + "\n")
-    # TODO: Add usage instructions.
-    sys.exit(1)
-
-  try:
     # TODO: Check if IP addresses are being returned.
     old_ip_address = json.loads(nfsnapi.run_request(
         config.get("credentials", "username"),
@@ -49,7 +42,7 @@ if __name__ == "__main__":
         "/dns/%s/listRRs" % config.get("domain", "domainname"),
         "name=%s" % config.get("domain", "subdomain")))[0]["data"]
   except ConfigParser.Error as e:
-    sys.stderr.write("ERROR: Unable to parse configuration file.\n")
+    sys.stderr.write("ERROR: Unable to parse or read configuration file.\n")
     sys.stderr.write(str(e) + "\n")
     # TODO: Add usage instructions.
     sys.exit(1)

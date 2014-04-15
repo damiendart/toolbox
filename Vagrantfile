@@ -8,9 +8,11 @@ Vagrant.configure("2") do |config|
   config.vm.box = "hashicorp/precise64"
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.provision :shell, :inline => <<SCRIPT
+HAXE_VERSION="3.1.3"
+NEKO_VERSION="v2-0"
 RUBY_VERSION="2.0.0-p353"
 GIT_VERSION="1.9.0"
-trap "rm -fr git-$GIT_VERSION" EXIT
+trap "rm -fr git-$GIT_VERSION haxe neko" EXIT
 set -ex
 echo "Europe/London" > /etc/timezone
 dpkg-reconfigure --frontend noninteractive tzdata
@@ -37,5 +39,13 @@ sudo -iu vagrant rbenv rehash
 sudo -iu vagrant rbenv global $RUBY_VERSION
 sudo -iu vagrant gem update --system
 sudo -iu vagrant gem install bundler --no-document
+# The version of Haxe/Lime/OpenFL from "apt-get" is way out of date.
+apt-get -y build-dep haxe neko
+git clone --recursive https://github.com/HaxeFoundation/haxe.git haxe
+(cd haxe && git checkout $HAXE_VERSION && make prefix=/usr/local all install)
+git clone https://github.com/HaxeFoundation/neko
+(cd neko && git checkout $NEKO_VERSION && echo "s" | make prefix=/usr/local all install)
+apt-get install -y libgl1-mesa-dev
+echo | haxelib setup && haxelib install lime && echo "y" | haxelib run lime setup && lime install openfl
 SCRIPT
 end

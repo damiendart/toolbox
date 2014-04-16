@@ -46,6 +46,9 @@ git clone --recursive https://github.com/HaxeFoundation/haxe.git haxe
 git clone https://github.com/HaxeFoundation/neko
 (cd neko && git checkout $NEKO_VERSION && echo "s" | make prefix=/usr/local all install)
 apt-get install -y libgl1-mesa-dev
-echo | haxelib setup && haxelib install lime && echo "y" | haxelib run lime setup && lime install openfl
+echo | sudo -iu vagrant haxelib setup 
+sudo -iu vagrant haxelib install lime 
+echo "y" | sudo -iu vagrant haxelib run lime setup 
+sudo -iu vagrant lime install openfl
 SCRIPT
 end

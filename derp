@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Highlights tabs and trailing whitespace in source code and text files.
+# Highlights minor formatting issues in source code and text files.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is free
 # and unencumbered software released into the public domain. For more
@@ -14,24 +14,28 @@ use Getopt::Long;
 sub printUsageInstructionsAndQuit
 {
   print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
-"${\basename($0)}" highlights tabs and trailing whitespace in text files.
+"${\basename($0)}" highlights minor formatting issues in text files.
 Usage: ${\basename($0)} [-?] [-tw] [- | FILE]...
 Options:
-  -?, --help                Print this message and quit.
-  -t, --ignore-tabs         Ignore tabs.
-  -w, --ignore-whitespace   Ignore trailing whitespace.
+  -?, --help                        Print this message and quit.
+  -n, --ignore-no-newline-at-eof    Ignore missing newline at EOF.
+  -t, --ignore-tabs                 Ignore tabs.
+  -w, --ignore-whitespace           Ignore trailing whitespace.
 USAGE
   exit($_[0]);
 }
 
-our ($opt_help, $opt_ignore_tabs, $opt_ignore_trailing_whitespace);
-GetOptions("help|?", "ignore-tabs|t", "ignore-trailing-whitespace|w")
-    or printUsageInstructionsAndQuit(2);
+our ($opt_help, $opt_ignore_no_newline_at_eof, $opt_ignore_tabs,
+    $opt_ignore_trailing_whitespace);
+GetOptions("help|?", "ignore-no-newline-at-eof|n", "ignore-tabs|t",
+    "ignore-trailing-whitespace|w") or printUsageInstructionsAndQuit(2);
 defined($opt_help) && printUsageInstructionsAndQuit(0);
 while (<>) {
   print {*STDERR} "$ARGV:$.:$-[0]: One or more tabs.\n"
       if (/\t/ and not defined($opt_ignore_tabs));
   print {*STDERR} "$ARGV:$.:$-[0]: Trailing whitespace.\n" if
       (/[ \t]+$/ and not defined($opt_ignore_trailing_whitespace));
+  print {*STDERR} "$ARGV:$.: No newline at end of file.\n" if
+      (eof and !($_ =~ /\n$/) and not defined($opt_ignore_no_newline_at_eof));
   close ARGV if eof;
 }

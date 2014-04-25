@@ -31,8 +31,8 @@ GetOptions("help|?", "ignore-no-newline-at-eof|n", "ignore-tabs|t",
     "ignore-trailing-whitespace|w") or printUsageInstructionsAndQuit(2);
 defined($opt_help) && printUsageInstructionsAndQuit(0);
 while (<>) {
-  print {*STDERR} "$ARGV:$.:$-[0]: One or more tabs.\n"
-      if (/\t/ and not defined($opt_ignore_tabs));
+  print {*STDERR} "$ARGV:$.:$-[0]: One or more tabs.\n" if
+      (/\t/ and not defined($opt_ignore_tabs));
   print {*STDERR} "$ARGV:$.:$-[0]: Trailing whitespace.\n" if
       (/[ \t]+$/ and not defined($opt_ignore_trailing_whitespace));
   print {*STDERR} "$ARGV:$.: No newline at end of file.\n" if

@@ -35,14 +35,14 @@ sudo -iu vagrant rbenv global $RUBY_VERSION
 sudo -iu vagrant gem update --system
 sudo -iu vagrant gem install bundler --no-document
 # The version of Haxe/Lime/OpenFL from "apt-get" is way out of date.
-# TODO: Check to see if Trusty has a more up-to-date version. 
+# TODO: Check to see if Trusty has a more up-to-date version.
 apt-get -y build-dep haxe neko && apt-get -y install apache2-threaded-dev
 git clone --recursive https://github.com/HaxeFoundation/haxe.git haxe
 (cd haxe && git checkout $HAXE_VERSION && make prefix=/usr/local all install)
 git clone https://github.com/HaxeFoundation/neko
 (cd neko && git checkout $NEKO_VERSION && echo "s" | make prefix=/usr/local all install)
 apt-get install -y libgl1-mesa-dev
-echo | haxelib setup && haxelib install lime 
+echo | haxelib setup && haxelib install lime
 echo "y" | haxelib run lime setup && lime install openfl
 SCRIPT
 end

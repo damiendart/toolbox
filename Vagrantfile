@@ -18,7 +18,7 @@ dpkg-reconfigure --frontend noninteractive tzdata
 # Prevent time on virtual machine from becoming severely out of sync.
 VBoxService --timesync-set-threshold 1000
 apt-get update -y
-apt-get install -y apache2 build-essential git python screen vim
+apt-get install -y build-essential git python screen vim
 echo ".bundle\n*.pyc\n*.swp" | sudo -u vagrant tee -a /home/vagrant/.gitignore
 sudo -iu vagrant git config --global core.excludesfile "/home/vagrant/.gitignore"
 sudo -iu vagrant git config --global user.email "damiendart@pobox.com"

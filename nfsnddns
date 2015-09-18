@@ -14,7 +14,7 @@ configuration file must adhere to the following structure:
   username = testuser
   [domain]
   domainname = example.com
-  subdomain = test 
+  subdomain = test
 
 This file was written by Damien Dart, <damiendart@pobox.com>. This is
 free and unencumbered software released into the public domain. For more
@@ -64,15 +64,15 @@ if __name__ == "__main__":
       if old_ip_address:
         nfsnapi.run_request(config.get("credentials", "username"),
             config.get("credentials", "apikey"),
-            "/dns/%s/removeRR" % config.get("domain", "domainname"), 
-            "data=%s&name=%s&type=A" % (old_ip_address, 
+            "/dns/%s/removeRR" % config.get("domain", "domainname"),
+            "data=%s&name=%s&type=A" % (old_ip_address,
             config.get("domain", "subdomain")))
       nfsnapi.run_request(config.get("credentials", "username"),
           config.get("credentials", "apikey"),
           "/dns/%s/addRR" % config.get("domain", "domainname"),
           "data=%s&name=%s&ttl=180&type=A" % (new_ip_address,
           config.get("domain", "subdomain")))
-      print "%s.%s now points to %s." % (config.get("domain", "subdomain"), 
+      print "%s.%s now points to %s." % (config.get("domain", "subdomain"),
           config.get("domain", "domainname"), new_ip_address)
   except nfsnapi.NFSNAPIRequestError as e:
     sys.stderr.write("ERROR: Unable to replace resource record.\n" + str(e) +

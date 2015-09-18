@@ -1,5 +1,5 @@
 # A "save every command entered into Bash" doohickey.
-# 
+#
 # To use, source this file in ".bashrc" or equivalent. Based on
 # <https://www.tonyscelfo.com/2009/04/27/save-all-of-your-bash-history.html>.
 #

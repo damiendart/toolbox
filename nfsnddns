@@ -33,7 +33,8 @@ import urllib2
 if __name__ == "__main__":
   try:
     config = ConfigParser.ConfigParser()
-    config.read(["nfsnddns.cfg", os.path.expanduser("~/.nfsnddns.cfg"),
+    config.read(["nfsnddns.cfg", ".nfsnddns.cfg",
+        os.path.expanduser("~/.nfsnddns.cfg"),
         os.path.expanduser("~/nfsnddns.cfg")])
     # TODO: Check if IP addresses are being returned.
     old_ip_address = json.loads(nfsnapi.run_request(
@@ -54,7 +55,7 @@ if __name__ == "__main__":
 
   try:
     # TODO: Check if IP addresses are being returned.
-    new_ip_address = urllib2.urlopen("http://icanhazip.com").read().rstrip()
+    new_ip_address = urllib2.urlopen("http://myip.dnsomatic.com/").read().rstrip()
   except:
     sys.stderr.write("ERROR: Unable to get current IP address.\n")
     sys.exit(1)

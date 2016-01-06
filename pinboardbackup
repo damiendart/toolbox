@@ -8,7 +8,7 @@
 
 USAGE=`cat <<USAGE;
 USAGE: $(basename $0) BACKUP-DESTINATION AUTH-TOKEN`
-[ "$#" -lt 2 ] && { echo "Not enough operands\n$USAGE" >&2; exit 2; }
+[ "$#" -lt 2 ] && { printf "Not enough operands\n$USAGE\n" >&2; exit 2; }
 if [ ! -f ~/.pinboardbackup ] || [ `find ~/.pinboardbackup -mmin +5;` ]; then
   # TODO: Handle "429 Too Many Requests" server errors?
   curl -s "https://api.pinboard.in/v1/posts/all?auth_token=$2" -o $1

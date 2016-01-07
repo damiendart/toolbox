@@ -10,7 +10,7 @@
 
 export HISTCONTROL=ignoreboth
 export HISTTIMEFORMAT="%F %T "
-export SBH_OUTPUT_FILE=${SBH_OUTPUT_FILE:-~/.super_bash_history}
+export SBH_OUTPUT_FILE=${SBH_OUTPUT_FILE:-~/.superbashhistory}
 export PROMPT_COMMAND="${PROMPT_COMMAND:-:};super_bash_history"
 
 super_bash_history()

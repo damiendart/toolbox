@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+# Calculates the current streak of Git repository commits.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+use strict;
+
+use Date::Calc qw/Delta_Days Parse_Date Today/;
+
+my @commit_dates;
+my $commit_streak = 0;
+foreach (map { glob } @ARGV) {
+  if (system("((cd $_ && git rev-parse --git-dir) >/dev/null 2>&1)")) {
+    print STDERR "Ignoring \"$_\": not a Git repository.\n";
+    next;
+  }
+  push(@commit_dates, `(cd $_ && git log --pretty=format:%ad --date=short)`);
+}
+chomp(@commit_dates);
+foreach (reverse sort keys { map { $_, 1 } @commit_dates }) {
+  last if (Delta_Days(split(/-/), Today()) != $commit_streak);
+  $commit_streak++;
+}
+print "$commit_streak day" . ($commit_streak == 1 ? "" : "s") ."\n";

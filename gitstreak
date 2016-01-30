@@ -7,10 +7,11 @@
 
 use strict;
 
-use Date::Calc qw/Delta_Days Parse_Date Today/;
+use Date::Calc qw/Add_Delta_Days Delta_Days Today/;
 
 my @commit_dates;
 my $commit_streak = 0;
+my $date_offset = 0;
 foreach (map { glob } @ARGV) {
   if (system("((cd $_ && git rev-parse --git-dir) >/dev/null 2>&1)")) {
     print STDERR "Ignoring \"$_\": not a Git repository.\n";
@@ -19,8 +20,10 @@ foreach (map { glob } @ARGV) {
   push(@commit_dates, `(cd $_ && git log --pretty=format:%ad --date=short)`);
 }
 chomp(@commit_dates);
-foreach (reverse sort keys { map { $_, 1 } @commit_dates }) {
-  last if (Delta_Days(split(/-/), Today()) != $commit_streak);
+@commit_dates = reverse sort keys { map { $_, 1 } @commit_dates };
+$date_offset = -1 if (Delta_Days(split(/-/, $commit_dates[0]), Today()) != 0);
+foreach (@commit_dates) {
+  last if (Delta_Days(split(/-/), Add_Delta_Days(Today(), $date_offset)) != $commit_streak);
   $commit_streak++;
 }
 print "$commit_streak day" . ($commit_streak == 1 ? "" : "s") ."\n";

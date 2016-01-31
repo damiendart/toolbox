@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# Calculates the current streak of Git repository commits.
+# Calculates the current Git repository commit streak.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
 # free and unencumbered software released into the public domain. For
@@ -8,9 +8,30 @@
 use strict;
 
 use Date::Calc qw/Add_Delta_Days Delta_Days Today/;
+use File::Basename;
+use Getopt::Long;
+
+sub printUsageInstructionsAndQuit
+{
+  print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
+"${\basename($0)}" calculates the current Git repository commit streak.
+Usage: ${\basename($0)} [-?] [GIT-REPO]...
+Options:
+  -?, --help  Print this message and quit.
+Notes:
+  - Multiple Git repositories can be specified to calculate a
+    GitHub-style commit streak. However, unlike the GitHub commit
+    streak, GitHub pull requests and issues can't and won't be included.
+  - The streak will break if a day has passed without commits.
+USAGE
+  exit($_[0]);
+}
 
 my @commit_dates;
 my $streak = 0;
+our $opt_help;
+GetOptions("help|?") or printUsageInstructionsAndQuit(2);
+defined($opt_help) && printUsageInstructionsAndQuit(0);
 foreach (map { glob } @ARGV) {
   if (system("((cd $_ && git rev-parse --git-dir) >/dev/null 2>&1)")) {
     print STDERR "Ignoring \"$_\": not a Git repository.\n";

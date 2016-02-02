@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# Calculates the current Git repository commit streak.
+# Calculates the current Git commit streak.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
 # free and unencumbered software released into the public domain. For
@@ -14,14 +14,11 @@ use Getopt::Long;
 sub printUsageInstructionsAndQuit
 {
   print {$_[0] < 1 ? *STDOUT : *STDERR} <<USAGE;
-"${\basename($0)}" calculates the current Git repository commit streak.
+"${\basename($0)}" calculates the current Git commit streak.
 Usage: ${\basename($0)} [-?] [GIT-REPO]...
 Options:
   -?, --help  Print this message and quit.
 Notes:
-  - Multiple Git repositories can be specified to calculate a
-    GitHub-style commit streak. However, unlike the GitHub commit
-    streak, GitHub pull requests and issues can't and won't be included.
   - The streak will break if a day has passed without commits.
 USAGE
   exit($_[0]);

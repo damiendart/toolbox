@@ -17,7 +17,8 @@ sub printUsageInstructionsAndQuit
 "${\basename($0)}" calculates the current Git commit streak.
 Usage: ${\basename($0)} [-?] [GIT-REPO]...
 Options:
-  -?, --help  Print this message and quit.
+  -?, --help    Print this message and quit.
+  -q, --quiet   Suppress "ignoring directory" warning messages.
 Notes:
   - The streak will break if a day has passed without commits.
 USAGE
@@ -26,12 +27,12 @@ USAGE
 
 my @commit_dates;
 my $streak = 0;
-our $opt_help;
-GetOptions("help|?") or printUsageInstructionsAndQuit(2);
+our ($opt_help, $opt_quiet);
+GetOptions("help|?", "quiet|q") or printUsageInstructionsAndQuit(2);
 defined($opt_help) && printUsageInstructionsAndQuit(0);
 foreach (map { glob } @ARGV) {
   if (system("((cd $_ && git rev-parse --git-dir) >/dev/null 2>&1)")) {
-    print STDERR "Ignoring \"$_\": not a Git repository.\n";
+    print STDERR "Ignoring \"$_\": not a Git repository.\n" unless $opt_quiet;
     next;
   }
   push(@commit_dates, `(cd $_ && git log --pretty=format:%ad --date=short)`);

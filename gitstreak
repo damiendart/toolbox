@@ -37,7 +37,8 @@ foreach (map { glob } @ARGV) {
   }
   push(@commit_dates, `(cd $_ && git log --pretty=format:%ad --date=short)`);
 }
-chomp(@commit_dates = reverse sort keys %{{ map { $_, 1 } @commit_dates}} );
+chomp(@commit_dates);
+@commit_dates = reverse sort keys %{{ map { $_, 1 } @commit_dates}};
 foreach(@commit_dates) {
   last if (Delta_Days(split(/-/), Add_Delta_Days(Today(), Delta_Days(
       split(/-/, $commit_dates[0]), Today()) != 0 ? -1 : 0)) != $streak);

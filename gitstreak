@@ -44,4 +44,4 @@ foreach(@commit_dates) {
       split(/-/, $commit_dates[0]), Today()) != 0 ? -1 : 0)) != $streak);
   $streak++;
 }
-print "$streak day" . ($streak == 1 ? "" : "s") ."\n";
+print "$streak day" . ($streak == 1 ? "" : "s") . "\n";

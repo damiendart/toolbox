@@ -17,8 +17,12 @@ sub printUsageInstructionsAndQuit
 "${\basename($0)}" calculates the current Git commit streak.
 Usage: ${\basename($0)} [-?] [GIT-REPO]...
 Options:
-  -?, --help    Print this message and quit.
-  -q, --quiet   Suppress "ignoring directory" warning messages.
+  -?, --help        Print this message and quit.
+  -h, --html        Surround number of days with HTML "span" tags if
+                    commit streak is longer than a week.
+  -n, --no-newline  Suppress newlines from output.
+  -q, --quiet       Suppress "ignoring directory" warning messages.
+  -v, --verbose     Add "Current commit streak: " to output.
 Notes:
   - The streak will break if a day has passed without commits.
 USAGE
@@ -27,8 +31,9 @@ USAGE
 
 my @commit_dates;
 my $streak = 0;
-our ($opt_help, $opt_quiet);
-GetOptions("help|?", "quiet|q") or printUsageInstructionsAndQuit(2);
+our ($opt_help, $opt_html, $opt_no_newline, $opt_quiet, $opt_verbose);
+GetOptions("help|?", "html|h", "no-newline|n", "quiet|q", "verbose|v") or
+    printUsageInstructionsAndQuit(2);
 defined($opt_help) && printUsageInstructionsAndQuit(0);
 foreach (map { glob } @ARGV) {
   if (system("((cd $_ && git rev-parse --git-dir) >/dev/null 2>&1)")) {
@@ -44,4 +49,8 @@ foreach(@commit_dates) {
       split(/-/, $commit_dates[0]), Today()) != 0 ? -1 : 0)) != $streak);
   $streak++;
 }
-print "$streak day" . ($streak == 1 ? "" : "s") . "\n";
+print((defined($opt_verbose) ? "Current commit streak: " : "") .
+    (defined($opt_html) && $streak > 6 ? "<span class=\"fire\">" : "") .
+    "$streak day" . ($streak == 1 ? "" : "s") .
+    (defined($opt_html) && $streak > 6 ? "</span>" : "") .
+    (defined($opt_no_newline) ? "" : "\n"));

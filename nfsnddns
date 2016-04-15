@@ -2,7 +2,8 @@
 
 """A kinda-Dynamic-DNS client for NearlyFreeSpeech.NET-managed domains.
 
-Requires "nfsnapi", available at <https://pypi.python.org/pypi/nfsnapi>.
+Requires "nfsnapi", available at
+<https://www.robotinaponcho.net/git/?p=nfsnapi-python.git>.
 
 Credentials and other required information are read from a
 "nfsnddns.cfg" file located either in the current directory or the home

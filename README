@@ -6,8 +6,6 @@ Random scripts and things of varying quality.
   - _derp_: Highlights minor formatting issues in text files.
   - _dummytext_: A simple dummy text generator.
   - _gitstreak_: Calculates the current Git commit streak.
-  - _nfsnddns_: A kinda-Dynamic-DNS client for
-    NearlyFreeSpeech.NET-managed domains.
   - _pinboardbackup_: A simple Pinboard backup script.
 
 -- Damien

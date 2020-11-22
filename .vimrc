@@ -8,6 +8,7 @@ set laststatus=2
 set nocompatible
 set number
 set ruler
+set wildmenu
 
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs

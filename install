@@ -12,6 +12,7 @@ import pathlib
 import sys
 
 files = [
+  '.gitconfig',
   '.gitignore',
   '.vimrc'
 ]

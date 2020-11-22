@@ -1,8 +1,10 @@
 Damien's Toolbox
 ================
 
-Random scripts and things of varying quality.
+My dotfiles, random scripts, and other things of varying quality.
 
+  - My dotfiles are pretty unremarkable. Running `install` will create
+    symlinks into your home directory.
   - _derp_: Highlights minor formatting issues in text files.
   - _dummytext_: A simple dummy text generator.
   - _gitstreak_: Calculates the current Git commit streak.

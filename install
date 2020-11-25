@@ -12,9 +12,15 @@ import pathlib
 import sys
 
 files = [
+  '.bash_profile',
+  '.bashrc',
   '.gitconfig',
   '.gitignore',
-  '.vimrc'
+  '.profile',
+  '.shellrc',
+  '.vimrc',
+  '.zprofile',
+  '.zshrc',
 ]
 
 for file in files:

@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Damien Dart's cross-shell configuration file for interactive shells.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE file.
+
+# Given a new-line-seperated list of filenames via STDIN, source
+# the first file that exists. The first argument is a name for the list
+# of filenames and is only used in error messages to aid with debugging.
+shellrc__source_one ()
+{
+  # shellcheck disable=2034
+  IPS="\n"
+
+  while read -r ITEM; do
+    if [ -f "$ITEM" ]; then
+      # shellcheck disable=SC1090
+      . "$ITEM"
+      return
+    fi
+  done
+
+  echo "[✘] $0: Unable to source anything in \"$1\"" 1>&2
+}
+
+export FZF_DEFAULT_OPTS='--border'
+
+shellrc__source_one "virtualwrapper_lazy" <<VIRTUALWRAPPER_LAZY
+$HOME/Library/Python/3.7/bin/virtualenvwrapper_lazy.sh
+$HOME/.local/bin/virtualenvwrapper_lazy.sh
+VIRTUALWRAPPER_LAZY

@@ -18,6 +18,14 @@ jobs:
       - name: 'Check out repository'
         uses: 'actions/checkout@v1'
 
+      # The version of ShellCheck installed via APT is a little
+      # out-of-date and doesn't support the "shell" directive required
+      # for checking ".zshrc" and ".zprofile".
+      - name: 'Install ShellCheck'
+        run: |
+          wget -qO- https://github.com/koalaman/shellcheck/releases/download/v0.7.0/shellcheck-v0.7.1.linux.x86_64.tar.xz | tar -xJf -
+          sudo cp shellcheck-v0.7.1/shellcheck /usr/local/bin
+
       - name: 'Install Task'
         run: 'curl -sL https://taskfile.dev/install.sh | sh'
 

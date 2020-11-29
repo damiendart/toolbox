@@ -24,11 +24,11 @@ files = [
 ]
 
 for file in files:
-  destination = pathlib.Path(pathlib.Path.home(), file).resolve()
+  destination = pathlib.Path(pathlib.Path.home(), file)
   source = pathlib.Path(sys.path[0], file).resolve()
 
   if (os.path.exists(destination)):
-    if (os.path.samefile(destination, source)):
+    if (os.path.samefile(destination.resolve(), source)):
       print('[✔] Link to "' + str(source) + '" already exists')
     else:
       print('[✘] "' + str(destination) + '" already exists')

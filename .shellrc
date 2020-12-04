@@ -25,7 +25,13 @@ shellrc__source_one ()
   echo "[✘] $0: Unable to source anything in \"$1\"" 1>&2
 }
 
+if type 'rg' 1>/dev/null 2>&1; then
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  export FZF_DEFAULT_COMMAND='rg --files --hidden'
+fi
+
 export FZF_DEFAULT_OPTS='--border'
+export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS --preview \"cat {}\""
 
 shellrc__source_one "virtualwrapper_lazy" <<VIRTUALWRAPPER_LAZY
 $HOME/Library/Python/3.7/bin/virtualenvwrapper_lazy.sh

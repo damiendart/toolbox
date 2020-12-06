@@ -14,13 +14,27 @@ tasks:
 
   ci:
     cmds:
+      - task: 'dependencies'
       - task: 'lint'
     desc: 'Run all CI-related tasks'
 
+  dependencies:
+    cmds:
+      # ShellCheck is required for linting shell-related files and
+      # currently must be installed manually.
+      - 'pip3 install -r requirements.txt'
+    desc: 'Install Python dependencies'
+
   lint:
     cmds:
+      - task: 'lint:python'
       - task: 'lint:shell'
     desc: 'Run all linting-related tasks'
+
+  lint:python:
+    cmds:
+      - 'flake8 install'
+    desc: 'Lint Python scripts with Flake8'
 
   lint:shell:
     cmds:

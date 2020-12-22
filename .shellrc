@@ -26,12 +26,12 @@ shellrc__source_one ()
 }
 
 if type 'rg' 1>/dev/null 2>&1; then
-  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-  export FZF_DEFAULT_COMMAND='rg --files --hidden'
+  export FZF_CTRL_T_COMMAND='rg --files --hidden'
+  export FZF_DEFAULT_COMMAND="$FZF_CTRL_T_COMMAND"
 fi
 
+export FZF_CTRL_T_OPTS='--border --preview "cat {}"'
 export FZF_DEFAULT_OPTS='--border'
-export FZF_CTRL_T_OPTS="$FZF_DEFAULT_OPTS --preview \"cat {}\""
 
 shellrc__source_one "virtualwrapper_lazy" <<VIRTUALWRAPPER_LAZY
 $HOME/Library/Python/3.7/bin/virtualenvwrapper_lazy.sh

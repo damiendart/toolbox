@@ -24,19 +24,20 @@ files = [
     '.zshrc',
 ]
 
-for file in files:
-    destination = pathlib.Path(pathlib.Path.home(), file)
-    source = pathlib.Path(sys.path[0], file).resolve()
+if __name__ == "__main__":
+    for file in files:
+        destination = pathlib.Path(pathlib.Path.home(), file)
+        source = pathlib.Path(sys.path[0], file).resolve()
 
-    if (os.path.exists(destination)):
-        if (os.path.samefile(destination.resolve(), source)):
-            print('[✔] Link to "' + str(source) + '" already exists')
+        if os.path.exists(destination):
+            if os.path.samefile(destination.resolve(), source):
+                print('[✔] Link to "' + str(source) + '" already exists')
+            else:
+                print('[✘] "' + str(destination) + '" already exists')
+                errors = True
         else:
-            print('[✘] "' + str(destination) + '" already exists')
-            errors = True
-    else:
-        os.symlink(source, destination)
-        print('[✔] Created link to "' + str(source) + '"')
+            os.symlink(source, destination)
+            print('[✔] Created link to "' + str(source) + '"')
 
-if errors:
-    sys.exit(1)
+    if errors:
+        sys.exit(1)

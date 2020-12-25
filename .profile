@@ -17,7 +17,13 @@ export VIRTUALENVWRAPPER_PYTHON='/usr/bin/python3'
 
 while read -r ITEM; do
   if [ -d "$ITEM" ]; then
-    export PATH="$PATH:$ITEM"
+    # The following is a POSIX-compatible method of preventing duplicate
+    # entries in the PATH environmental variable; it is based on a
+    # snippet from <https://unix.stackexchange.com/a/32054>.
+    case ":$PATH:" in
+      *:$ITEM:*) echo "[!] \"$ITEM\" already exists in PATH" 1>&2 ;;
+      *) export PATH="$PATH:$ITEM" ;;
+    esac
   fi
 done <<PATHS
 $HOME/.cargo/bin

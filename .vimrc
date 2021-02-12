@@ -76,6 +76,10 @@ endfunction
 
 source $VIMRUNTIME/defaults.vim
 
+set colorcolumn=72,78
+set laststatus=2
+set number
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

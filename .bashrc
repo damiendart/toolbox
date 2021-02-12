@@ -23,6 +23,10 @@ export HISTSIZE="$HISTFILESIZE"
 export HISTTIMEFORMAT='%s '
 export PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
+if [ -n "$RANGER_LEVEL" ]; then
+  export PS1="[ranger] $PS1"
+fi
+
 shopt -s cmdhist
 
 shellrc__source_one "fzf-completion" <<FZF_COMPLETION

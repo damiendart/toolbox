@@ -15,6 +15,7 @@ errors = False
 files = [
     '.bash_profile',
     '.bashrc',
+    '.config/ranger/rc.conf',
     '.gitconfig',
     '.gitignore',
     '.profile',

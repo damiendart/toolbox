@@ -18,6 +18,10 @@ export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE="100000"
 export SAVEHIST="$HISTSIZE"
 
+if [ -n "$RANGER_LEVEL" ]; then
+  export PS1="[ranger] $PS1"
+fi
+
 setopt EXTENDED_HISTORY
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_ALL_DUPS

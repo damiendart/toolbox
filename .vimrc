@@ -59,12 +59,15 @@ function! GetCustomStatuslineFlags() abort
   let l:branch = filereadable(expand('%:p')) ? gitbranch#name() : ''
   let l:editorconfig = exists("b:EditorConfig_invoked") && b:EditorConfig_invoked
   let l:output = ''
+  let l:ranger = $RANGER_LEVEL
 
   if strlen(l:branch) > 0 || l:editorconfig
     let l:output = ' ['
-    let l:output .= strlen(l:branch) > 0 ? 'git:' . l:branch : ''
-    let l:output .= strlen(l:branch) > 0 && l:editorconfig ? ',' : ''
     let l:output .= l:editorconfig ? 'editorconfig:✔' : ''
+    let l:output .= l:editorconfig && (strlen(l:branch) > 0 || strlen(l:ranger)) ? ',' : ''
+    let l:output .= strlen(l:branch) > 0 ? 'git:' . l:branch : ''
+    let l:output .= strlen(l:ranger) && (l:editorconfig || strlen(l:branch) > 0) ? ',' : ''
+    let l:output .= strlen(l:ranger) > 0 ? 'ranger:✔' : ''
     let l:output .= ']'
   endif
 

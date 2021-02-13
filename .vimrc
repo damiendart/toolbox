@@ -61,7 +61,7 @@ function! GetCustomStatuslineFlags() abort
   let l:output = ''
   let l:ranger = $RANGER_LEVEL
 
-  if strlen(l:branch) > 0 || l:editorconfig
+  if l:editorconfig || strlen(l:branch) > 0 || strlen(l:ranger)
     let l:output = ' ['
     let l:output .= l:editorconfig ? 'editorconfig:✔' : ''
     let l:output .= l:editorconfig && (strlen(l:branch) > 0 || strlen(l:ranger)) ? ',' : ''

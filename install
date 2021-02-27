@@ -37,6 +37,9 @@ if __name__ == "__main__":
                 print('[✘] "' + str(destination) + '" already exists')
                 errors = True
         else:
+            if "/" in file:
+                os.makedirs(os.path.dirname(destination), 0o700, True)
+
             os.symlink(source, destination)
             print('[✔] Created link to "' + str(source) + '"')
 

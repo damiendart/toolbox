@@ -43,5 +43,9 @@ if __name__ == "__main__":
             os.symlink(source, destination)
             print('[✔] Created link to "' + str(source) + '"')
 
+    print('\nIf any shell-related dotfiles have changed, you may need to log out and')  # noqa:501
+    print('log back in, or "source" any new dotfiles so that they take effect in')  # noqa:501
+    print('the current interactive shell session.')
+
     if errors:
         sys.exit(1)

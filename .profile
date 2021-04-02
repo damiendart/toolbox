@@ -32,3 +32,8 @@ $HOME/Library/Python/3.7/bin
 $NPM_CONFIG_PREFIX/bin
 $TOOLBOX_ROOT/bin
 PATHS
+
+if [ -f ~/.machine.profile ]; then
+  # shellcheck disable=SC1090
+  . ~/.machine.profile
+fi

@@ -106,3 +106,7 @@ set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 autocmd BufNewFile,BufReadPost,BufFilePost * call s:CheckForEditorConfigInvocation()
 
 command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0)
+
+if filereadable($HOME . '/.machine.vimrc')
+  source ~/.machine.vimrc
+endif

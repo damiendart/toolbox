@@ -39,4 +39,9 @@ shellrc__source_one "fzf-key-bindings" <<FZF_KEY_BINDINGS
 /usr/local/etc/fzf-key-bindings.zsh
 FZF_KEY_BINDINGS
 
+if [[ -f ~/.machine.zshrc ]]; then
+  # shellcheck disable=SC1090
+  source ~/.machine.zshrc
+fi
+
 unfunction shellrc__source_one

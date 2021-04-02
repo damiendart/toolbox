@@ -9,3 +9,8 @@
 
 # shellcheck disable=SC1090
 source ~/.profile
+
+if [[ -f ~/.machine.zprofile ]]; then
+	# shellcheck disable=SC1090
+  source ~/.machine.zprofile
+fi

@@ -36,3 +36,8 @@ shellrc__source_one "virtualwrapper_lazy" <<VIRTUALWRAPPER_LAZY
 $HOME/Library/Python/3.7/bin/virtualenvwrapper_lazy.sh
 $HOME/.local/bin/virtualenvwrapper_lazy.sh
 VIRTUALWRAPPER_LAZY
+
+if [ -f ~/.machine.shellrc ]; then
+  # shellcheck disable=SC1090
+  . ~/.machine.shellrc
+fi

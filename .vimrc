@@ -79,6 +79,12 @@ source $VIMRUNTIME/defaults.vim
 set colorcolumn=72,78
 set laststatus=2
 set number
+set t_vb=
+set visualbell
+
+if has('mouse')
+  set mouse=a
+endif
 
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs

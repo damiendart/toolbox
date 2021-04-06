@@ -11,29 +11,6 @@
 scriptencoding utf-8
 set encoding=utf-8
 
-function! s:CheckForEditorConfigInvocation() abort
-  if !filereadable(expand('%:p'))
-      \ || (exists("b:EditorConfig_disable") && b:EditorConfig_disable)
-    return
-  endif
-
-  let l:path = expand('%:p')
-
-  " This check that follows is a bit basic (for example, it doesn't
-  " account for cases where a ".editorconfig" exists but none of the
-  " rules match) but it's generally good enough. A more robust version
-  " of this check is being considered for the "editorconfig-vim" plugin:
-  " <https://github.com/editorconfig/editorconfig-vim/issues/141>.
-  while l:path != '/'
-    if filereadable(l:path . '/.editorconfig')
-      let b:EditorConfig_invoked = 1
-      break
-    endif
-
-    let l:path = fnamemodify(l:path, ':h')
-  endwhile
-endfunction
-
 function! s:CustomFZFGitTrackedFiles(abandon) abort
   let l:root = split(system('git rev-parse --show-toplevel'), '\n')[0]
 
@@ -63,7 +40,7 @@ endfunction
 
 function! GetCustomStatuslineFlags() abort
   let l:branch = filereadable(expand('%:p')) ? gitbranch#name() : ''
-  let l:editorconfig = exists("b:EditorConfig_invoked") && b:EditorConfig_invoked
+  let l:editorconfig = exists("b:editorconfig_applied") && b:editorconfig_applied
   let l:output = ''
   let l:ranger = $RANGER_LEVEL
 
@@ -108,8 +85,6 @@ call plug#end()
 " (based on the example from ":h statusline") and adds a few extra
 " flags (see the implementation of "GetCustomStatuslineFlags" above).
 set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
-
-autocmd BufNewFile,BufReadPost,BufFilePost * call s:CheckForEditorConfigInvocation()
 
 command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0)
 

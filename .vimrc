@@ -34,7 +34,7 @@ function! s:CheckForEditorConfigInvocation() abort
   endwhile
 endfunction
 
-function! s:CustomFZFGitTrackedFiles(fullscreen) abort
+function! s:CustomFZFGitTrackedFiles(abandon) abort
   let l:root = split(system('git rev-parse --show-toplevel'), '\n')[0]
 
   if v:shell_error || l:root
@@ -44,14 +44,20 @@ function! s:CustomFZFGitTrackedFiles(fullscreen) abort
     return
   endif
 
+  if !a:abandon && getbufvar(bufname('%'), "&mod")
+    echohl ErrorMsg
+    echom "E37: No write since last change (add ! to override)"
+    echohl None
+    return
+  endif
+
   return fzf#run(fzf#wrap(
     \ {
       \ 'options': '--preview "cat {}"',
       \ 'source': 'git ls-files | uniq',
       \ 'root': l:root,
-      \ 'sink': 'e'
-    \ },
-    \ a:fullscreen)
+      \ 'sink': a:abandon ? 'e!' : 'e'
+    \ })
   \ )
 endfunction
 

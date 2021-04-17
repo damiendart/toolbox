@@ -10,6 +10,7 @@
 IPS="\n"
 
 export EDITOR='vim'
+export GOPATH="$HOME/.go"
 export NPM_CONFIG_PREFIX="$HOME/.npm"
 # shellcheck disable=SC2155
 export TOOLBOX_ROOT="$(dirname "$(readlink "$HOME/.profile")")"
@@ -26,11 +27,13 @@ while read -r ITEM; do
     esac
   fi
 done <<PATHS
+$GOPATH/bin
 $HOME/.cargo/bin
 $HOME/.local/bin
 $HOME/Library/Python/3.7/bin
 $NPM_CONFIG_PREFIX/bin
 $TOOLBOX_ROOT/bin
+/usr/local/go/bin
 PATHS
 
 if [ -f ~/.machine.profile ]; then

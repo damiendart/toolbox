@@ -11,7 +11,7 @@
 scriptencoding utf-8
 set encoding=utf-8
 
-function! s:CustomFZFGitTrackedFiles(abandon) abort
+function! s:CustomFZFGitTrackedFiles(abandon, command) abort
   let l:root = split(system('git rev-parse --show-toplevel'), '\n')[0]
 
   if v:shell_error || l:root
@@ -33,7 +33,7 @@ function! s:CustomFZFGitTrackedFiles(abandon) abort
       \ 'options': '--preview "cat {}"',
       \ 'source': 'git ls-files | uniq',
       \ 'root': l:root,
-      \ 'sink': a:abandon ? 'e!' : 'e'
+      \ 'sink': a:abandon ? a:command . '!' : a:command
     \ })
   \ )
 endfunction
@@ -86,7 +86,8 @@ call plug#end()
 " flags (see the implementation of "GetCustomStatuslineFlags" above).
 set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 
-command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0)
+command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0, 'e')
+command! -bang GBV call s:CustomFZFGitTrackedFiles(<bang>0, 'vsplit')
 
 if filereadable($HOME . '/.machine.vimrc')
   source ~/.machine.vimrc

@@ -87,7 +87,7 @@ call plug#end()
 set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 
 command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0, 'e')
-command! -bang GBV call s:CustomFZFGitTrackedFiles(<bang>0, 'vsplit')
+command! -bang GV call s:CustomFZFGitTrackedFiles(<bang>0, 'vsplit')
 
 if filereadable($HOME . '/.machine.vimrc')
   source ~/.machine.vimrc

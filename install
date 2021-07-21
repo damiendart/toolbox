@@ -37,11 +37,15 @@ if __name__ == '__main__':
                 print('[✘] "' + str(destination) + '" already exists')
                 errors = True
         else:
-            if "/" in file:
-                os.makedirs(os.path.dirname(destination), 0o700, True)
+            if os.path.islink(destination):
+                print('[✘] "' + str(destination) + '" is a dangling symlink')
+                errors = True
+            else:
+                if "/" in file:
+                    os.makedirs(os.path.dirname(destination), 0o700, True)
 
-            os.symlink(source, destination)
-            print('[✔] Created link to "' + str(source) + '"')
+                os.symlink(source, destination)
+                print('[✔] Created link to "' + str(source) + '"')
 
     print('\nIf any shell-related dotfiles have changed, you may need to log out and')  # noqa:501
     print('log back in, or "source" any new dotfiles so that they take effect in')  # noqa:501

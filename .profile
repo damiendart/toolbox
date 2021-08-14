@@ -22,7 +22,7 @@ while read -r ITEM; do
     # entries in the PATH environmental variable; it is based on a
     # snippet from <https://unix.stackexchange.com/a/32054>.
     case ":$PATH:" in
-      *:$ITEM:*) echo "[!] \"$ITEM\" already exists in PATH" 1>&2 ;;
+      *:$ITEM:*) ;;
       *) export PATH="$PATH:$ITEM" ;;
     esac
   fi

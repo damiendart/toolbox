@@ -25,6 +25,29 @@ shellrc__source_one ()
   echo "[✘] $0: Unable to source anything in \"$1\"" 1>&2
 }
 
+shellrc__prompt_command ()
+{
+  LAST_COMMAND_RETURN_STATUS="$?"
+  STATUS=""
+
+  if [ -n "$RANGER_LEVEL" ]; then
+    STATUS=" ranger "
+  fi
+
+  # The following super-minimalist interactive shell prompt is based on
+  # <https://twitter.com/thingskatedid/status/1316081075043463170>
+  # and <https://twitter.com/thingskatedid/status/1316081732467081217>.
+  # It makes copying-and-pasting multiple lines of commands easier.
+  # shellcheck disable=SC2181
+  if [ $LAST_COMMAND_RETURN_STATUS != "0" ]; then
+    PS1="\[\e[1;31m\]:$STATUS; \[\e[0m\]"
+  else
+    PS1=":$STATUS; "
+  fi
+}
+
+export PROMPT_COMMAND="shellrc__prompt_command"
+
 if type 'rg' 1>/dev/null 2>&1; then
   export FZF_CTRL_T_COMMAND='rg --files --hidden'
   export FZF_CTRL_T_OPTS='--border --preview "cat {}"'

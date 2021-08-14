@@ -21,11 +21,8 @@ export HISTCONTROL=ignoreboth
 export HISTFILESIZE=100000
 export HISTSIZE="$HISTFILESIZE"
 export HISTTIMEFORMAT='%s '
-export PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
+export PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
 
-if [ -n "$RANGER_LEVEL" ]; then
-  export PS1="[ranger] $PS1"
-fi
 
 shopt -s cmdhist
 

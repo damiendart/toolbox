@@ -20,6 +20,7 @@ files = [
     '.gitignore',
     '.profile',
     '.shellrc',
+    '.tmux.conf',
     '.vimrc',
     '.zprofile',
     '.zshrc',

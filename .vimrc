@@ -69,6 +69,14 @@ if has('mouse')
   set mouse=a
 endif
 
+" Improves Vim-in-tmux colour-related funkiness (for more information,
+" see <https://unix.stackexchange.com/q/348771>). This doesn't work all
+" the time; Vim will still sometimes set the wrong value for the
+" "background" option during Git rebasing.
+if exists('$TMUX')
+  let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
+endif
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

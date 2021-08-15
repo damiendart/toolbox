@@ -1,8 +1,9 @@
 " Damien Dart's ".vimrc".
 "
-" An unremarkable Vim configuration file: it imports the default
-" settings, adds a few nice-to-have plugins using vim-plug, and tweaks
-" the stock statusline to add a few extra pieces of information.
+" A generally unremarkable Vim configuration file: it imports the
+" default settings, tweaks a few visual-related settings, includes a few
+" plugins using "vim-plug", and adds a few extra bits of information to
+" the stock statusline.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
@@ -89,9 +90,9 @@ Plug 'itchyny/vim-gitbranch'
 Plug 'junegunn/fzf'
 call plug#end()
 
-" This statusline emulates the standard status line
-" (based on the example from ":h statusline") and adds a few extra
-" flags (see the implementation of "GetCustomStatuslineFlags" above).
+" This emulates the standard statusline based on the example from
+" ":h statusline", and adds a few extra flags (see the implementation of
+" "GetCustomStatuslineFlags" above).
 set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 
 command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0, 'e')

@@ -23,7 +23,6 @@ export HISTSIZE="$HISTFILESIZE"
 export HISTTIMEFORMAT='%s '
 export PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
 
-
 shopt -s cmdhist
 
 shellrc__source_one "fzf-completion" <<FZF_COMPLETION

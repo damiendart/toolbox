@@ -27,7 +27,7 @@ shellrc__source_one ()
 
 shellrc__prompt_command ()
 {
-  LAST_COMMAND_RETURN_STATUS="$?"
+  LAST_COMMAND_EXIT_STATUS="$?"
   STATUS=""
 
   if [ -n "$RANGER_LEVEL" ]; then
@@ -35,14 +35,13 @@ shellrc__prompt_command ()
   fi
 
   # The following super-minimalist interactive shell prompt is based on
-  # <https://twitter.com/thingskatedid/status/1316081075043463170>
-  # and <https://twitter.com/thingskatedid/status/1316081732467081217>.
-  # It makes copying-and-pasting multiple lines of commands easier.
-  # shellcheck disable=SC2181
-  if [ $LAST_COMMAND_RETURN_STATUS != "0" ]; then
-    PS1="\[\e[1;31m\]:$STATUS; \[\e[0m\]"
-  else
+  # <https://twitter.com/thingskatedid/status/1316081075043463170>,
+  # <https://twitter.com/thingskatedid/status/1316081732467081217>, and
+  # <https://unix.stackexchange.com/questions/62173/exit-status-of-148-upon-ctrlz>.
+  if [ $LAST_COMMAND_EXIT_STATUS = "0" ] || [ $LAST_COMMAND_EXIT_STATUS = "148" ]; then
     PS1=":$STATUS; "
+  else
+    PS1="\[\e[1;31m\]:$STATUS; \[\e[0m\]"
   fi
 }
 

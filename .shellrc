@@ -48,8 +48,9 @@ shellrc__prompt_command ()
 export PROMPT_COMMAND="shellrc__prompt_command"
 
 if type 'rg' 1>/dev/null 2>&1; then
+  export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
   export FZF_CTRL_T_COMMAND='rg --files --hidden'
-  export FZF_CTRL_T_OPTS='--border --preview "cat {}"'
+  export FZF_CTRL_T_OPTS='--exit-0 --border --preview "(cat {} || tree -C {}) 2>/dev/null | head -200" --select-1'
   export FZF_DEFAULT_COMMAND="$FZF_CTRL_T_COMMAND"
   export FZF_DEFAULT_OPTS='--border'
 fi

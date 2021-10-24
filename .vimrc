@@ -58,6 +58,14 @@ function! GetCustomStatuslineFlags() abort
   return l:output
 endfunction
 
+" Improves Vim-in-tmux colour-related funkiness (for more information,
+" see <https://unix.stackexchange.com/q/348771>). This doesn't work all
+" the time; Vim will still sometimes set the wrong value for the
+" "background" option during Git rebasing.
+if exists('$TMUX')
+  let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
+endif
+
 source $VIMRUNTIME/defaults.vim
 
 set colorcolumn=72,78
@@ -68,14 +76,6 @@ set visualbell
 
 if has('mouse')
   set mouse=a
-endif
-
-" Improves Vim-in-tmux colour-related funkiness (for more information,
-" see <https://unix.stackexchange.com/q/348771>). This doesn't work all
-" the time; Vim will still sometimes set the wrong value for the
-" "background" option during Git rebasing.
-if exists('$TMUX')
-  let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
 endif
 
 if empty(glob('~/.vim/autoload/plug.vim'))

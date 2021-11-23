@@ -12,15 +12,8 @@
 scriptencoding utf-8
 set encoding=utf-8
 
-function! s:CustomFZFGitTrackedFiles(abandon, command) abort
-  let l:root = split(system('git rev-parse --show-toplevel'), '\n')[0]
-
-  if v:shell_error || l:root
-    echohl WarningMsg
-    echom "Cannot locate Git repository!"
-    echohl None
-    return
-  endif
+function! s:FzfFiles(abandon, command) abort
+  let l:root = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
 
   if !a:abandon && getbufvar(bufname('%'), "&mod")
     echohl ErrorMsg
@@ -31,10 +24,11 @@ function! s:CustomFZFGitTrackedFiles(abandon, command) abort
 
   return fzf#run(fzf#wrap(
     \ {
-      \ 'options': '--preview "cat {}"',
-      \ 'source': 'git ls-files | uniq',
-      \ 'root': l:root,
-      \ 'sink': a:abandon ? a:command . '!' : a:command
+      \ 'dir': l:root,
+      \ 'options': '--preview "cat {}" ' .
+          \ (strlen(l:root) > 0 ? '--prompt="Project > "' : '--prompt="CD > "'),
+      \ 'sink': a:abandon ? a:command . '!' : a:command,
+      \ 'source': 'rg --files --hidden',
     \ })
   \ )
 endfunction
@@ -95,8 +89,8 @@ call plug#end()
 " "GetCustomStatuslineFlags" above).
 set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 
-command! -bang GB call s:CustomFZFGitTrackedFiles(<bang>0, 'e')
-command! -bang GV call s:CustomFZFGitTrackedFiles(<bang>0, 'vsplit')
+command! -bang GB call s:FzfFiles(<bang>0, 'e')
+command! -bang GV call s:FzfFiles(<bang>0, 'vsplit')
 
 if filereadable($HOME . '/.machine.vimrc')
   source ~/.machine.vimrc

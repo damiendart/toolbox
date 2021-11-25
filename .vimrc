@@ -13,7 +13,9 @@ scriptencoding utf-8
 set encoding=utf-8
 
 function! s:FzfFiles(abandon, command) abort
-  let l:root = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
+  let l:gitRoot = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
+  let l:prompt = pathshorten(strlen(l:gitRoot) > 0 ? l:gitRoot : getcwd()) .
+    \ (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/')
 
   if !a:abandon && getbufvar(bufname('%'), "&mod")
     echohl ErrorMsg
@@ -24,9 +26,8 @@ function! s:FzfFiles(abandon, command) abort
 
   return fzf#run(fzf#wrap(
     \ {
-      \ 'dir': l:root,
-      \ 'options': '--preview "cat {}" ' .
-          \ (strlen(l:root) > 0 ? '--prompt="Project > "' : '--prompt="CD > "'),
+      \ 'dir': strlen(l:gitRoot) > 0 ? l:gitRoot : getcwd(),
+      \ 'options': '--preview "cat {}" --prompt="' . l:prompt . '"',
       \ 'sink': a:abandon ? a:command . '!' : a:command,
       \ 'source': 'rg --files --hidden',
     \ })

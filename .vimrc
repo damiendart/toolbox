@@ -12,10 +12,22 @@
 scriptencoding utf-8
 set encoding=utf-8
 
-function! s:FzfFiles(abandon, command) abort
-  let l:gitRoot = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
-  let l:prompt = pathshorten(strlen(l:gitRoot) > 0 ? l:gitRoot : getcwd()) .
-    \ (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/')
+function! s:FzfFiles(abandon, dir) abort
+  function! s:FzfFilesHandler(abandon, lines) abort
+    if len(a:lines) < 1
+      return
+    endif
+
+    let l:command = get(
+      \ { 'ctrl-t': 'tabe', 'ctrl-v': 'vsplit', 'ctrl-x': 'split' },
+      \ a:lines[0],
+      \ 'e' . (a:abandon ? '!' : '')
+    \ )
+
+    for line in a:lines[1:]
+      execute l:command line
+    endfor
+  endfunction
 
   if !a:abandon && getbufvar(bufname('%'), "&mod")
     echohl ErrorMsg
@@ -24,13 +36,27 @@ function! s:FzfFiles(abandon, command) abort
     return
   endif
 
-  return fzf#run(fzf#wrap(
-    \ {
-      \ 'dir': strlen(l:gitRoot) > 0 ? l:gitRoot : getcwd(),
-      \ 'options': '--preview "cat {}" --prompt="' . l:prompt . '"',
-      \ 'sink': a:abandon ? a:command . '!' : a:command,
-      \ 'source': 'rg --files --hidden',
-    \ })
+  if (strlen(a:dir) > 0)
+    let l:root = fnamemodify(a:dir, ':p')[:-2]
+  else
+    let l:gitRoot = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
+    let l:root = strlen(l:gitRoot) > 0 ? l:gitRoot : getcwd()
+  endif
+
+  let l:prompt = pathshorten(l:root)
+  let l:prompt .= ((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'
+
+  call fzf#run(
+    \ fzf#wrap(
+      \ {
+        \ 'dir': l:root,
+        \ 'options': '--bind=ctrl-a:select-all,ctrl-d:deselect-all'
+          \ . ' --expect=ctrl-t,ctrl-v,ctrl-x --multi'
+          \ . ' --preview "cat {}" --prompt="' . l:prompt . '"',
+        \ 'sink*': function('s:FzfFilesHandler', [a:abandon]),
+        \ 'source': 'rg --files --hidden',
+      \ }
+    \ )
   \ )
 endfunction
 
@@ -90,8 +116,8 @@ call plug#end()
 " "GetCustomStatuslineFlags" above).
 set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 
-command! -bang GB call s:FzfFiles(<bang>0, 'e')
-command! -bang GV call s:FzfFiles(<bang>0, 'vsplit')
+command! -nargs=? -complete=dir -bang FZF call s:FzfFiles(<bang>0, <q-args>)
+command! -nargs=? -complete=dir -bang GB call s:FzfFiles(<bang>0, <q-args>)
 
 if filereadable($HOME . '/.machine.vimrc')
   source ~/.machine.vimrc

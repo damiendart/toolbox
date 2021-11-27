@@ -1,9 +1,7 @@
 " Damien Dart's ".vimrc".
 "
-" A generally unremarkable Vim configuration file: it imports the
-" default settings, tweaks a few visual-related settings, includes a few
-" plugins using "vim-plug", and adds a few extra bits of information to
-" the stock statusline.
+" A generally unremarkable Vim configuration file; probably the most
+" exciting stuff here is the fzf and ripgrep integration.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

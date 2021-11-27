@@ -48,7 +48,7 @@ function! s:FzfFiles(abandon, dir) abort
     \ fzf#wrap(
       \ {
         \ 'dir': l:root,
-        \ 'options': '--bind=ctrl-a:select-all,ctrl-d:deselect-all'
+        \ 'options': '--bind=ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort'
           \ . ' --expect=ctrl-t,ctrl-v,ctrl-x --multi'
           \ . ' --preview "bat --color=always --style=plain {} || cat {}" '
           \ . ' --prompt="' . l:prompt . '"',
@@ -109,7 +109,7 @@ function s:FzfGrep(abandon, query) abort
     \ fzf#wrap(
       \ {
         \ 'dir': l:root,
-        \ 'options': '--ansi --bind=ctrl-a:select-all,ctrl-d:deselect-all'
+        \ 'options': '--ansi --bind=ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort'
           \ . ' --bind "change:reload:sleep 0.05;' . printf(l:rgCommand, '{q}') . '"'
           \ . ' --disabled --delimiter=":" --expect=ctrl-t,ctrl-v,ctrl-x --multi'
           \ . ' --preview="bat --color=always --style=plain {1} --highlight-line {2} || cat {1}"'

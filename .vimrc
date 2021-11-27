@@ -52,9 +52,10 @@ function! s:FzfFiles(abandon, dir) abort
         \ 'dir': l:root,
         \ 'options': '--bind=ctrl-a:select-all,ctrl-d:deselect-all'
           \ . ' --expect=ctrl-t,ctrl-v,ctrl-x --multi'
-          \ . ' --preview "cat {}" --prompt="' . l:prompt . '"',
+          \ . ' --preview "bat --color=always --style=plain {} || cat {}" '
+          \ . ' --prompt="' . l:prompt . '"',
         \ 'sink*': function('s:FzfFilesHandler', [a:abandon]),
-        \ 'source': 'rg --files --hidden',
+        \ 'source': 'rg --files --hidden --glob="!.git/objects"',
       \ }
     \ )
   \ )

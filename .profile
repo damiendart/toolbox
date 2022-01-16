@@ -34,6 +34,7 @@ $HOME/Library/Python/3.7/bin
 $NPM_CONFIG_PREFIX/bin
 $TOOLBOX_ROOT/bin
 /usr/local/go/bin
+/usr/local/node/bin
 PATHS
 
 if [ -f ~/.machine.profile ]; then

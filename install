@@ -18,6 +18,7 @@ files = [
     '.config/ranger/rc.conf',
     '.gitconfig',
     '.gitignore',
+    '.ideavimrc',
     '.profile',
     '.shellrc',
     '.tmux.conf',

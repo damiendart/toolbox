@@ -9,6 +9,7 @@
   branch-freshness = for-each-ref --sort='-authordate:iso8601' --format='%(color:green)%(authordate:relative)%09%(color:reset)%(refname:short)%(HEAD)' refs/heads
   # Based on <https://seb.jambor.dev/posts/improving-shell-workflows-with-fzf/>.
   fuzzy-checkout = !git for-each-ref --format='%(refname:short)' | xargs -0I{} echo \"{}HEAD\" | sort | fzf --preview=\"git log {} --\" | xargs git checkout
+  last-commit-hash = log -n 1 --format=format:"%H"
 [core]
   excludesfile = ~/.gitignore
 [user]

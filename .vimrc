@@ -1,8 +1,5 @@
 " Damien Dart's ".vimrc".
 "
-" A generally unremarkable Vim configuration file; probably the most
-" exciting stuff here is the fzf and ripgrep integration.
-"
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
@@ -50,7 +47,7 @@ function! s:FzfFiles(abandon, dir) abort
         \ 'dir': l:root,
         \ 'options': '--bind=ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort'
           \ . ' --expect=ctrl-t,ctrl-v,ctrl-x --multi'
-          \ . ' --preview "bat --color=always --style=plain {} || cat {}" '
+          \ . ' --preview "(bat --color=always --style=plain {} || cat {}) 2>/dev/null" '
           \ . ' --prompt="' . l:prompt . '"',
         \ 'sink*': function('s:FzfFilesHandler', [a:abandon]),
         \ 'source': 'rg --files --hidden --glob="!.git/objects"',
@@ -112,7 +109,7 @@ function s:FzfGrep(abandon, query) abort
         \ 'options': '--ansi --bind=ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort'
           \ . ' --bind "change:reload:sleep 0.05;' . printf(l:rgCommand, '{q}') . '"'
           \ . ' --disabled --delimiter=":" --expect=ctrl-t,ctrl-v,ctrl-x --multi'
-          \ . ' --preview="bat --color=always --style=plain {1} --highlight-line {2} || cat {1}"'
+          \ . ' --preview="(bat --color=always --style=plain {1} --highlight-line {2} || cat {1}) 2>/dev/null"'
           \ . ' --preview-window=''+{2}/3'' --prompt="(' . pathshorten(l:root) . ') > "'
           \ . ' --query=''' . shellescape(a:query) . '''',
         \ 'sink*': function('s:FzfGrepHandler', [a:abandon]),
@@ -186,6 +183,17 @@ set statusline=%<%f%{GetCustomStatuslineFlags()}\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 command! -nargs=? -complete=dir -bang FZF call s:FzfFiles(<bang>0, <q-args>)
 command! -nargs=? -complete=dir -bang FF call s:FzfFiles(<bang>0, <q-args>)
 command! -nargs=* -complete=dir -bang FG call s:FzfGrep(<bang>0, <q-args>)
+
+augroup vimStartup
+  au!
+
+  " This is the same jump-to-last-known-cursor-postion doohickey from
+  " "$VIMRUNTIME/defaults.vim", but with a few tweaks.
+  autocmd BufReadPost *
+    \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit' && &ft !~# 'rebase'
+    \ |   exe "normal! g`\""
+    \ | endif
+augroup END
 
 if filereadable($HOME . '/.machine.vimrc')
   source ~/.machine.vimrc

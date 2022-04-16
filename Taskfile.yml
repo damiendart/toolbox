@@ -38,5 +38,5 @@ tasks:
 
   lint:shell:
     cmds:
-      - 'shellcheck .bash_profile .bashrc .profile .shellrc .zprofile .zshrc bin/pinboardbackup'
+      - 'shellcheck .bash_profile .bashrc .profile .shellrc bin/pinboardbackup'
     desc: 'Lint shell configuration files and scripts with ShellCheck'

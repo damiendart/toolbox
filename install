@@ -23,8 +23,6 @@ files = [
     '.shellrc',
     '.tmux.conf',
     '.vimrc',
-    '.zprofile',
-    '.zshrc',
 ]
 
 if __name__ == '__main__':

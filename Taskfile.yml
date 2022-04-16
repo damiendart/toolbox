@@ -33,6 +33,17 @@ tasks:
 
   lint:python:
     cmds:
+      - task: 'lint:python:black'
+      - task: 'lint:python:flake8'
+    desc: 'Run all Python linting tasks'
+
+  lint:python:black:
+    cmds:
+      - 'black --check install bin/markdown-tidy'
+    desc: 'Lint Python scripts with Black'
+
+  lint:python:flake8:
+    cmds:
       - 'flake8 install bin/markdown-tidy'
     desc: 'Lint Python scripts with Flake8'
 

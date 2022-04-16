@@ -13,19 +13,24 @@ import sys
 
 errors = False
 files = [
-    '.bash_profile',
-    '.bashrc',
-    '.config/ranger/rc.conf',
-    '.gitconfig',
-    '.gitignore',
-    '.ideavimrc',
-    '.profile',
-    '.shellrc',
-    '.tmux.conf',
-    '.vimrc',
+    ".bash_profile",
+    ".bashrc",
+    ".config/ranger/rc.conf",
+    ".gitconfig",
+    ".gitignore",
+    ".ideavimrc",
+    ".profile",
+    ".shellrc",
+    ".tmux.conf",
+    ".vimrc",
 ]
+notice = """
+If any shell-related dotfiles have changed, you may need to log out and
+log back in, or "source" any new dotfiles so that they take effect in
+the current interactive shell session.
+"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for file in files:
         destination = pathlib.Path(pathlib.Path.home(), file)
         source = pathlib.Path(sys.path[0], file).resolve()
@@ -47,9 +52,7 @@ if __name__ == '__main__':
                 os.symlink(source, destination)
                 print('[✔] Created link to "' + str(source) + '"')
 
-    print('\nIf any shell-related dotfiles have changed, you may need to log out and')  # noqa:501
-    print('log back in, or "source" any new dotfiles so that they take effect in')  # noqa:501
-    print('the current interactive shell session.')
+    print(notice)
 
     if errors:
         sys.exit(1)

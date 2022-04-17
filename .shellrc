@@ -6,7 +6,7 @@
 # free and unencumbered software released into the public domain. For
 # more information, please refer to the accompanying "UNLICENCE file.
 
-# Given a new-line-seperated list of filenames via STDIN, source
+# Given a new-line-separated list of filenames via STDIN, source
 # the first file that exists. The first argument is a name for the list
 # of filenames, and is used in error messages to aid with debugging and
 # to prevent files from being sourced again on subsequent invocations.

@@ -8,16 +8,25 @@
 
 # Given a new-line-seperated list of filenames via STDIN, source
 # the first file that exists. The first argument is a name for the list
-# of filenames and is only used in error messages to aid with debugging.
+# of filenames, and is used in error messages to aid with debugging and
+# to prevent files from being sourced again on subsequent invocations.
 shellrc__source_one ()
 {
   # shellcheck disable=2034
   IPS="\n"
 
+  case "$__SOURCE_ONE_SOURCED" in
+    *$1*)
+      return
+      ;;
+  esac
+
   while read -r ITEM; do
     if [ -f "$ITEM" ]; then
       # shellcheck disable=SC1090
       . "$ITEM"
+      export __SOURCE_ONE_SOURCED="$1 $__SOURCE_ONE_SOURCED"
+
       return
     fi
   done

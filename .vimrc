@@ -147,6 +147,7 @@ if exists('$TMUX')
 endif
 
 source $VIMRUNTIME/defaults.vim
+packadd! matchit
 
 set colorcolumn=72,78
 set laststatus=2

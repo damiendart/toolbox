@@ -53,6 +53,9 @@ shellrc__prompt_command ()
     PS1="\[\e[1;31m\]:$STATUS; \[\e[0m\]"
   fi
 
+  # "pathshorten" is a standalone implementation of Vim's "pathshorten"
+  # function written in Go. For more information, see
+  # <https://github.com/damiendart/pathshorten>.
   if command -v pathshorten 1>/dev/null 2>&1; then
     # shellcheck disable=SC2089
     FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS_BASE} --prompt '$(pathshorten -n)/'"

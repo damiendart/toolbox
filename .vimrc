@@ -146,6 +146,7 @@ if exists('$TMUX')
   let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
 endif
 
+unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 packadd! matchit
 

@@ -22,6 +22,8 @@ files = [
     ".profile",
     ".shellrc",
     ".tmux.conf",
+    ".vim/pack",
+    ".vim/plugin",
     ".vimrc",
 ]
 notice = """

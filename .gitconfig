@@ -12,6 +12,8 @@
   last-commit-hash = log -n 1 --format=format:"%H"
 [core]
   excludesfile = ~/.gitignore
+[diff]
+  colorMoved = default
 [user]
   email = damiendart@pobox.com
   name = Damien Dart

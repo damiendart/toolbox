@@ -12,6 +12,7 @@ IPS="\n"
 export EDITOR='vim'
 export GOPATH="$HOME/.go"
 export NPM_CONFIG_PREFIX="$HOME/.npm"
+export SNIPPET_LIBRARY_ROOT="$HOME/Shed/snippets"
 # shellcheck disable=SC2155
 export TOOLBOX_ROOT="$(dirname "$(readlink "$HOME/.profile")")"
 export VIRTUALENVWRAPPER_PYTHON='/usr/bin/python3'

@@ -114,8 +114,24 @@ function s:FzfGrep(abandon, query) abort
   \ )
 endfunction
 
+function s:FzfSnippets() abort
+  call fzf#run(
+    \ fzf#wrap(
+      \ {
+        \ 'dir': '$SNIPPET_LIBRARY_ROOT',
+        \ 'options': '--bind=ctrl-z:abort'
+          \ . ' --preview "(bat --color=always --style=plain {} || cat {}) 2>/dev/null" '
+          \ . ' --prompt="--8<-- > "',
+        \ 'sink': '0r',
+        \ 'source': 'rg --files --hidden --glob="!.git/"',
+      \ }
+    \ )
+  \ )
+endfunction
+
 command! -nargs=? -complete=dir -bang FF call s:FzfFiles(<bang>0, <q-args>)
 command! -nargs=* -complete=dir -bang FG call s:FzfGrep(<bang>0, <q-args>)
+command! FS call s:FzfSnippets()
 command! -nargs=? -complete=dir -bang FZF call s:FzfFiles(<bang>0, <q-args>)
 
 " Slightly improve the appearance of the the fuzzy finder by hiding

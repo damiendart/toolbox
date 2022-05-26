@@ -15,7 +15,7 @@ autocmd BufEnter,WinEnter * let b:dotfiles_defaultColourColumns = '72,78,+0'
 " text that goes over fifty characters, but it's pretty hard to make it
 " out with the default colour scheme.
 autocmd BufEnter,WinEnter * if &filetype == "gitcommit" | let b:dotfiles_defaultColourColumns = '50,+0' | endif
-"
+
 " Having multiple coloured columns can be a bit much sometimes,
 " especially when you have multiple split windows, so the following
 " shortcut allows quick toggling of the coloured columns.

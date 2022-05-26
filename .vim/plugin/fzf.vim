@@ -134,7 +134,7 @@ command! -nargs=* -complete=dir -bang FG call s:FzfGrep(<bang>0, <q-args>)
 command! FS call s:FzfSnippets()
 command! -nargs=? -complete=dir -bang FZF call s:FzfFiles(<bang>0, <q-args>)
 
-" Slightly improve the appearance of the the fuzzy finder by hiding
+" Slightly improve the appearance of the fuzzy finder by hiding
 " some Vim things while active. Based on the snippet from
 " <https://github.com/junegunn/fzf/blob/master/README-VIM.md#hide-statusline>
 autocmd! FileType fzf

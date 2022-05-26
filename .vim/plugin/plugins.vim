@@ -7,6 +7,7 @@
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
 
+let loaded_2html_plugin = 1
 let loaded_getscriptPlugin = 1
 let loaded_logiPat = 1
 let loaded_rrhelper = 1

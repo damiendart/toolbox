@@ -1,5 +1,19 @@
 " Damien Dart's ".vimrc".
 "
+" This file should only contain simple configuration gubbins; anything
+" more complex gets shipped to self-contained files in
+" "$HOME/.vim/plugin" (use "gf" to edit or view these files):
+"
+" - "$HOME/.vim/plugin/colorcolumn.vim"
+" - "$HOME/.vim/plugin/fuzzy-files.vim"
+" - "$HOME/.vim/plugin/fuzzy-grep.vim"
+" - "$HOME/.vim/plugin/fuzzy-snippets.vim"
+" - "$HOME/.vim/plugin/fzf.vim"
+" - "$HOME/.vim/plugin/plugins.vim"
+"
+" For more information about this approach, please see
+" <https://vimways.org/2018/from-vimrc-to-vim/>.
+"
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.

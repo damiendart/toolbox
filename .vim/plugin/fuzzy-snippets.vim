@@ -1,22 +1,35 @@
-" A basic fzf-powered snippet doohickey.
+" A simple fzf-powered snippet browser and selector.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
 
-function s:FuzzySnippets() abort
-  call fzf#run(
-    \ fzf#wrap(
-      \ {
-        \ 'dir': '$SNIPPET_LIBRARY_ROOT',
-        \ 'options': '--bind=ctrl-z:abort'
-          \ . ' --preview "(bat --color=always --style=plain {} || cat {}) 2>/dev/null" '
-          \ . ' --prompt="--8<-- > "',
-        \ 'sink': '0r',
-        \ 'source': 'rg --files --hidden --glob="!.git/"',
-      \ }
-    \ )
+if exists('g:loaded_fuzzy_snippets')
+  finish
+endif
+
+let g:fuzzy_snippets_source_command = 'rg --files --ignore-file "fuzzy-snippets.rgignore"'
+let g:loaded_fuzzy_snippets = 1
+
+function! s:FuzzySnippets() abort
+  if !executable('fzf') || !executable('rg') || !exists('g:loaded_fzf')
+    throw 'FS requires fzf, fzf.vim, and ripgrep'
+  elseif !exists('$SNIPPET_LIBRARY_ROOT')
+    throw 'SNIPPET_LIBRARY_ROOT environment variable not set'
+  endif
+
+  let l:spec = copy(g:fzf_base_spec)
+
+  call extend(
+    \ l:spec,
+    \ {
+      \ 'dir': '$SNIPPET_LIBRARY_ROOT',
+      \ 'options': ['--preview', g:fzf_preview_command, '--prompt', '--8<-- '],
+      \ 'sink': 'r',
+      \ 'source': g:fuzzy_snippets_source_command,
+    \ }
   \ )
+  call fzf#run(l:spec)
 endfunction
 
 command! FS call s:FuzzySnippets()

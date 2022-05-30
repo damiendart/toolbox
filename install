@@ -22,6 +22,7 @@ files = [
     ".profile",
     ".shellrc",
     ".tmux.conf",
+    ".vim/after/plugin",
     ".vim/pack",
     ".vim/plugin",
     ".vimrc",

@@ -1,9 +1,10 @@
 " Damien Dart's ".vimrc".
 "
 " This file should only contain simple configuration gubbins; anything
-" more complex gets shipped to self-contained files in
-" "$HOME/.vim/plugin" (use "gf" to edit or view these files):
+" more complex gets shipped to self-contained files in "$HOME/.vim/"
+" (use "gf" to edit or view these files):
 "
+" - "$HOME/.vim/after/plugin/plugins.vim"
 " - "$HOME/.vim/plugin/colorcolumn.vim"
 " - "$HOME/.vim/plugin/fuzzy-files.vim"
 " - "$HOME/.vim/plugin/fuzzy-grep.vim"
@@ -11,7 +12,7 @@
 " - "$HOME/.vim/plugin/fzf.vim"
 " - "$HOME/.vim/plugin/plugins.vim"
 "
-" For more information about this approach, please see
+" For more information about this organisation approach, please see
 " <https://vimways.org/2018/from-vimrc-to-vim/>.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is

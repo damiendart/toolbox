@@ -53,19 +53,18 @@ function! s:FuzzyGrepHandler(abandon, lines) abort
     \ 'e' . (a:abandon ? '!' : '')
   \ )
 
-  " Handling the no-write-since-last-change error ourselves produces
-  " a slightly better looking error message (otherwise you get a small
-  " stack-track-looking thing).
-  if l:command == 'e' && getbufvar(bufname('%'), '&mod')
-    echohl ErrorMsg
-    echom "E37: No write since last change (add ! to override)"
-    echohl None
-    return
-  endif
-
   let l:results = map(a:lines[1:], 's:ToQuickfix(v:val)')
 
-  execute l:command escape(l:results[0].filename, ' %#\')
+  try
+    execute l:command escape(l:results[0].filename, ' %#\')
+  " Improve the appearance of some commonly-encountered errors.
+  catch /E37/
+    echohl ErrorMsg
+    echom join(split(v:exception, ':')[1:], ':')
+    echohl None
+    return
+  endtry
+
   execute l:results[0].lnum
   execute 'normal!' l:results[0].col . '|zz'
 

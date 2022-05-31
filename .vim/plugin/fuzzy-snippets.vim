@@ -13,7 +13,7 @@ let g:loaded_fuzzy_snippets = 1
 
 function! s:FuzzySnippets() abort
   if !executable('fzf') || !executable('rg') || !exists('g:loaded_fzf')
-    throw 'FS requires fzf, fzf.vim, and ripgrep'
+    throw 'FuzzySnippets requires fzf, fzf.vim, and ripgrep'
   elseif !exists('$SNIPPET_LIBRARY_ROOT')
     throw 'SNIPPET_LIBRARY_ROOT environment variable not set'
   endif

@@ -1,4 +1,6 @@
-" A simple fzf-powered snippet browser and selector.
+" A Vim-orientated version of "$TOOLBOX_ROOT/bin/fuzzy-snippets".
+"
+" Selecting a snippet inserts it below the cursor.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

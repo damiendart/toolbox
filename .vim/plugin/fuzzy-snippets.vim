@@ -10,7 +10,7 @@ if exists('g:loaded_fuzzy_snippets')
   finish
 endif
 
-let g:fuzzy_snippets_source_command = 'rg --files --ignore-file "fuzzy-snippets.rgignore"'
+let g:fuzzy_snippets_source_command = 'rg --files --ignore-file "fuzzy-snippets.ignore"'
 let g:loaded_fuzzy_snippets = 1
 
 function! s:FuzzySnippets() abort

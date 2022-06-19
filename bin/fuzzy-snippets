@@ -19,9 +19,9 @@ Opens up a fzf-powered snippet browser.
 Requires fzf, ripgrep, and xsel, and that the SNIPPET_LIBRARY_ROOT
 environment variable is set to the location of your snippets directory.
 
-The list of snippets can be tamed with a "fuzzy-snippets.rgignore" file
-in the root of your snippets directory. See the ripgrep documentation
-for more information on ignoring files.
+The list of snippets can be tamed with a "fuzzy-snippets.ignore" file in
+the root of your snippets directory. See the ripgrep documentation for
+more information on ignoring files.
 
 By default, selecting a snippet will copy it to the clipboard.
 Alternatively, the selected snippet can be printed to standard input
@@ -37,7 +37,7 @@ HELP
 
 COPY_TO_CLIPBOARD=1
 # shellcheck disable=2034
-FZF_DEFAULT_COMMAND='rg --files --ignore-file "fuzzy-snippets.rgignore"'
+FZF_DEFAULT_COMMAND='rg --files --ignore-file "fuzzy-snippets.ignore"'
 
 # The following command-line argument and option parser is based on
 # <http://mywiki.wooledge.org/BashFAQ/035>.

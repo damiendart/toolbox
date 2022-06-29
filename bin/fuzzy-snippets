@@ -34,7 +34,7 @@ HELP
 }
 
 # shellcheck disable=2034
-FZF_DEFAULT_COMMAND='rg --files --ignore-file "fuzzy-snippets.ignore"'
+FZF_DEFAULT_COMMAND='rg --files --ignore-file="fuzzy-snippets.ignore" --sort=path'
 
 # The following command-line argument and option parser is based on
 # <http://mywiki.wooledge.org/BashFAQ/035>.

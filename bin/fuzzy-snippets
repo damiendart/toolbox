@@ -23,19 +23,16 @@ The list of snippets can be tamed with a "fuzzy-snippets.ignore" file in
 the root of your snippets directory. See the ripgrep documentation for
 more information on ignoring files.
 
-By default, selecting a snippet will copy it to the clipboard.
+Pressing Enter will copy the selected snippet to the clipboard.
 Alternatively, the selected snippet can be printed to standard input
-by specifying the "-s" or "--stdout" flags.
+by pressing Ctrl-O.
 
 FLAGS:
 
   -h, --help      Displays this help text and exits.
-  -s, --stdout    Print the selected snippet to standard input instead
-                  of copying it to the clipboard.
 HELP
 }
 
-COPY_TO_CLIPBOARD=1
 # shellcheck disable=2034
 FZF_DEFAULT_COMMAND='rg --files --ignore-file "fuzzy-snippets.ignore"'
 
@@ -46,9 +43,6 @@ while :; do
     -h|-\?|--help)
       help
       exit
-      ;;
-    -s|--stdout)
-      COPY_TO_CLIPBOARD=0
       ;;
     --)
       shift
@@ -82,15 +76,21 @@ fi
 
 cd "$SNIPPET_LIBRARY_ROOT"
 
-SELECTED_SNIPPET=$(\
+FZF_OUTPUT=$(\
   fzf \
+    --expect="ctrl-o" \
     --preview='(bat --color=always --style=plain {} || cat {}) 2>/dev/null' \
     --prompt='--%<-- ' \
 )
+SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
+SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 
-if [ $COPY_TO_CLIPBOARD -eq 1 ]; then
-  xsel -i --clipboard < "$SELECTED_SNIPPET"
-  echo "[✔] Copied snippet \"$SELECTED_SNIPPET\" to the clipboard!"
-else
-  cat "$SELECTED_SNIPPET"
-fi
+case $SELECTED_ACTION in
+  ctrl-o)
+    cat "$SELECTED_FILE"
+    ;;
+  *)
+    xsel -i --clipboard < "$SELECTED_FILE"
+    echo "[✔] Copied snippet \"$SELECTED_FILE\" to the clipboard!"
+    ;;
+esac

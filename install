@@ -31,7 +31,7 @@ notice = """
 If any shell-related dotfiles have changed, you may need to log out and
 log back in, or "source" any new dotfiles so that they take effect in
 the current interactive shell session.
-"""
+""".rstrip()
 
 if __name__ == "__main__":
     for file in files:

@@ -26,13 +26,13 @@ export PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
 shopt -s cmdhist
 
 shellrc__source_one "fzf-completion" <<FZF_COMPLETION
+${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/completion.bash
 /usr/local/opt/fzf/shell/completion.bash
-/usr/local/etc/fzf-completion.bash
 FZF_COMPLETION
 
 shellrc__source_one "fzf-key-bindings" <<FZF_KEY_BINDINGS
+${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/key-bindings.bash
 /usr/local/opt/fzf/shell/key-bindings.bash
-/usr/local/etc/fzf-key-bindings.bash
 FZF_KEY_BINDINGS
 
 if [[ -f ~/.machine.bashrc ]]; then

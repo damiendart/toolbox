@@ -31,6 +31,7 @@ done <<PATHS
 $GOPATH/bin
 $HOME/.cargo/bin
 $HOME/.local/bin
+$HOME/.local/share/JetBrains/Toolbox/scripts
 $HOME/Library/Python/3.7/bin
 $NPM_CONFIG_PREFIX/bin
 $TOOLBOX_ROOT/bin

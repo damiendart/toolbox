@@ -35,6 +35,14 @@ ${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/key-bindings.bash
 /usr/local/opt/fzf/shell/key-bindings.bash
 FZF_KEY_BINDINGS
 
+shellrc__source_one "ripgrep-completion" <<RIPGREP_COMPLETION
+/usr/share/bash-completion/completions/rg
+RIPGREP_COMPLETION
+
+shellrc__source_one "task-completion" <<TASK_COMPLETION
+/etc/bash_completion.d/task
+TASK_COMPLETION
+
 if [[ -f ~/.machine.bashrc ]]; then
   # shellcheck disable=SC1090
   source ~/.machine.bashrc

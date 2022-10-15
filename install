@@ -15,6 +15,7 @@ errors = False
 files = [
     ".bash_profile",
     ".bashrc",
+    ".config/nvim/init.vim",
     ".config/ranger/rc.conf",
     ".gitconfig",
     ".gitignore",

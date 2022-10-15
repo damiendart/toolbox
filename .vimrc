@@ -13,6 +13,8 @@
 " - "$HOME/.vim/plugin/fzf.vim"
 " - "$HOME/.vim/plugin/plugins.vim"
 "
+" Everything here and in "$HOME/.vim/" should also work in Neovim.
+"
 " For more information about this organisation approach, please see
 " <https://vimways.org/2018/from-vimrc-to-vim/>.
 "
@@ -26,6 +28,7 @@ scriptencoding utf-8
 set backspace=indent,eol,start
 set display=truncate
 set history=200
+set laststatus=1
 set lazyredraw
 set nrformats-=octal
 set scrolloff=5

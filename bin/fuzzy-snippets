@@ -12,7 +12,7 @@ set -e
 
 help() {
   cat << HELP
-Usage: $(basename "$0") [-h|--help] [--stdout]
+Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
 Opens up a fzf-powered snippet browser.
 
@@ -25,7 +25,7 @@ more information on ignoring files.
 
 Pressing Enter will copy the selected snippet to the clipboard.
 Alternatively, the selected snippet can be printed to standard input
-by pressing Ctrl-O.
+by pressing Ctrl-P.
 
 FLAGS:
 
@@ -78,15 +78,17 @@ cd "$SNIPPET_LIBRARY_ROOT"
 
 FZF_OUTPUT=$(\
   fzf \
-    --expect="ctrl-o" \
+    --expect="ctrl-p" \
+    --header='CTRL+P: Print snippet ╱ ENTER: Copy snippet' \
     --preview='(bat --color=always --style=plain {} || cat {}) 2>/dev/null' \
     --prompt='--%<-- ' \
+    --query="$1" \
 )
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 
 case $SELECTED_ACTION in
-  ctrl-o)
+  ctrl-p)
     cat "$SELECTED_FILE"
     ;;
   *)

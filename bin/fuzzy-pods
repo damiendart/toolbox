@@ -1,0 +1,111 @@
+#!/bin/sh
+#
+# A simple fzf-powered Kubernetes pod browser.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+set -e
+
+help() {
+  cat << HELP
+Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
+
+Opens up a fzf-powered Kubernetes pod browser.
+
+Requires fzf and kubectl.
+
+FLAGS:
+
+  -h, --help
+    Displays this help text and exits.
+
+  -n NAMESPACE, --namespace=NAMESPACE
+    Specify the namespace for "kubectl" to use.
+HELP
+}
+
+# shellcheck disable=2034
+FZF_DEFAULT_COMMAND='kubectl get pods'
+
+# The following command-line argument and option parser is based on
+# <http://mywiki.wooledge.org/BashFAQ/035>.
+while :; do
+  case $1 in
+    -h|-\?|--help)
+      help
+      exit
+      ;;
+    -n|--namespace)
+      if [ "$2" ]; then
+        FZF_DEFAULT_COMMAND="${FZF_DEFAULT_COMMAND} --namespace='$2'"
+        shift
+      else
+        echo 'ERROR: "-n/--namespace" requires a non-empy option argument' >&2
+        exit 2
+      fi
+      ;;
+    -n=?*|--namespace=?*)
+      FZF_DEFAULT_COMMAND="${FZF_DEFAULT_COMMAND} --namespace='${1#*=}'"
+      ;;
+    --n=|--namespace=)
+      echo 'ERROR: "-n/--namespace" requires a non-empy option argument' >&2
+      exit 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -?*)
+      printf 'ERROR: Unknown option: "%s"\n' "$1" >&2
+      printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+      exit 2
+      ;;
+    *)
+      break
+  esac
+
+  shift
+done
+
+if ! type 'fzf' 1>/dev/null 2>&1 || ! type 'kubectl' 1>/dev/null 2>&1;
+then
+  printf 'ERROR: "%s" requires fzf and kubectl\n' "$(basename "$0")" >&2
+  exit 2
+fi
+
+if [ -n "${FZF_DEFAULT_COMMAND##*--namespace*}" ]; then
+  FZF_DEFAULT_COMMAND="${FZF_DEFAULT_COMMAND} --all-namespaces"
+fi
+
+INITIAL_INPUT=$(eval "$FZF_DEFAULT_COMMAND")
+
+[ -z "$INITIAL_INPUT" ] && exit 2
+
+FZF_OUTPUT=$(\
+  # shellcheck disable=SC2016
+  echo "$INITIAL_INPUT" | fzf \
+    --bind='ctrl-r:reload:$FZF_DEFAULT_COMMAND' \
+    --expect="ctrl-d,ctrl-l" \
+    --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Reload ╱ ENTER: Shell' \
+    --header-lines=1 \
+    --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
+    --query="$1" \
+)
+SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
+SELECTED_ITEM=$(echo "$FZF_OUTPUT" | tail -1)
+SELECTED_NAMESPACE=$(echo "$SELECTED_ITEM" | awk -F' +' '{print $1}')
+SELECTED_POD=$(echo "$SELECTED_ITEM" | awk -F' +' '{print $2}')
+
+case $SELECTED_ACTION in
+  ctrl-d)
+    kubectl describe pod --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD"
+    ;;
+  ctrl-l)
+    kubectl logs --all-containers --namespace="$SELECTED_NAMESPACE" --tail=500 "$SELECTED_POD"
+    ;;
+  *)
+    kubectl exec -it --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD" -- bash
+    ;;
+esac

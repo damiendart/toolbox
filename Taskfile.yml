@@ -49,5 +49,5 @@ tasks:
 
   lint:shell:
     cmds:
-      - 'shellcheck .bash_profile .bashrc .profile .shellrc bin/pinboardbackup bin/fuzzy-snippets'
+      - 'shellcheck .bash_profile .bashrc .profile .shellrc bin/pinboardbackup bin/fuzzy-*'
     desc: 'Lint shell configuration files and scripts with ShellCheck'

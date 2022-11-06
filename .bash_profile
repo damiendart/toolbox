@@ -12,6 +12,6 @@ source ~/.profile
 source ~/.bashrc
 
 if [[ -f ~/.machine.bash_profile ]]; then
-	# shellcheck disable=SC1090
+  # shellcheck disable=SC1090
   source ~/.machine.bash_profile
 fi

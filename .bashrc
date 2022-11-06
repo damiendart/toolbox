@@ -6,24 +6,24 @@
 # free and unencumbered software released into the public domain. For
 # more information, please refer to the accompanying "UNLICENCE file.
 
-if [[ -f '/etc/skel/.bashrc' ]]; then
-  # shellcheck disable=SC1091
-  source /etc/skel/.bashrc
-elif [[ -f '/etc/bashrc' ]]; then
-  # shellcheck disable=SC1091
-  source /etc/bashrc
-fi
-
 # shellcheck disable=SC1090
 source "$HOME/.shellrc"
 
-export HISTCONTROL=ignoreboth
-export HISTFILESIZE=100000
-export HISTSIZE="$HISTFILESIZE"
-export HISTTIMEFORMAT='%s '
-export PROMPT_COMMAND="$PROMPT_COMMAND;history -a"
+# shellcheck disable=SC1091
+source "$HOME/.bash_aliases"
 
-shopt -s cmdhist
+HISTCONTROL=ignoreboth
+HISTFILESIZE=100000
+HISTSIZE=100000
+HISTTIMEFORMAT='%s '
+PROMPT_COMMAND="${PROMPT_COMMAND};history -a"
+
+shopt -s cmdhist histappend
+
+shellrc__source_one "bash-completion" <<BASH_COMPLETION
+/usr/share/bash-completion/bash_completion
+/etc/bash_completion
+BASH_COMPLETION
 
 shellrc__source_one "fzf-completion" <<FZF_COMPLETION
 ${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/completion.bash

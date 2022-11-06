@@ -62,7 +62,7 @@ shellrc__prompt_command ()
   fi
 }
 
-export PROMPT_COMMAND='shellrc__prompt_command'
+PROMPT_COMMAND='shellrc__prompt_command'
 
 if type 'fzf' 1>/dev/null 2>&1; then
   export FZF_CTRL_R_OPTS="--prompt=';; '"
@@ -83,6 +83,11 @@ if type 'fzf' 1>/dev/null 2>&1; then
     # shellcheck disable=SC2090
     export FZF_CTRL_T_OPTS_BASE="${FZF_CTRL_T_OPTS}"
   fi
+fi
+
+# Improve the viewing of some non-text input in "less" with "lesspipe".
+if type 'lesspipe' 1>/dev/null 2>&1; then
+  eval "$(SHELL=/bin/sh lesspipe)"
 fi
 
 shellrc__source_one "virtualwrapper_lazy" <<VIRTUALWRAPPER_LAZY

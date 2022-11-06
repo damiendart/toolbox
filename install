@@ -13,6 +13,7 @@ import sys
 
 errors = False
 files = [
+    ".bash_aliases",
     ".bash_profile",
     ".bashrc",
     ".config/nvim/init.vim",

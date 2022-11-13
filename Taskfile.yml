@@ -49,5 +49,13 @@ tasks:
 
   lint:shell:
     cmds:
-      - 'shellcheck .bash_profile .bashrc .profile .shellrc bin/pinboardbackup bin/fuzzy-*'
+      - >-
+        shellcheck
+        .bash_profile
+        .bashrc
+        .profile
+        .shellrc
+        bin/fuzzy-*
+        bin/gnome-terminal-tmux-launcher
+        bin/pinboardbackup
     desc: 'Lint shell configuration files and scripts with ShellCheck'

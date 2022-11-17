@@ -56,6 +56,5 @@ tasks:
         .profile
         .shellrc
         bin/fuzzy-*
-        bin/gnome-terminal-tmux-launcher
         bin/pinboardbackup
     desc: 'Lint shell configuration files and scripts with ShellCheck'

@@ -4,9 +4,8 @@
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
 
-" Prevent the EditorConfig plugin from updating the "colorcolumn"
-" setting as it doesn't preserve any existing "colorcolumn" values and
-" doesn't take advantage of the "-/+" feature.
+" Prevent the EditorConfig plugin from overriding the following
+" "colorcolumn"-related settings.
 let EditorConfig_max_line_indicator = 'none'
 
 autocmd BufEnter,WinEnter * let b:dotfiles_defaultColourColumns = '72,78,+0'

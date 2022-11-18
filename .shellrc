@@ -37,20 +37,15 @@ shellrc__source_one ()
 shellrc__prompt_command ()
 {
   LAST_COMMAND_EXIT_STATUS="$?"
-  STATUS=""
-
-  if [ -n "$RANGER_LEVEL" ]; then
-    STATUS=" ranger "
-  fi
 
   # The following super-minimalist interactive shell prompt is based on
   # <https://twitter.com/thingskatedid/status/1316081075043463170>,
   # <https://twitter.com/thingskatedid/status/1316081732467081217>, and
   # <https://unix.stackexchange.com/questions/62173/exit-status-of-148-upon-ctrlz>.
   if [ $LAST_COMMAND_EXIT_STATUS = "0" ] || [ $LAST_COMMAND_EXIT_STATUS = "148" ]; then
-    PS1=":$STATUS; "
+    PS1=":; "
   else
-    PS1="\[\e[1;31m\]:$STATUS; \[\e[0m\]"
+    PS1="\[\e[1;31m\]:; \[\e[0m\]"
   fi
 
   # "pathshorten" is a standalone implementation of Vim's "pathshorten"

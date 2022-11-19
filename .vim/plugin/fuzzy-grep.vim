@@ -1,5 +1,17 @@
 " A simple fzf-powered interactive grep/ripgrep doohickey.
 "
+" The following provides similar functionality to the ":Rg" command
+" from <https://github.com/junegunn/fzf.vim>, but with a few tweaks:
+"
+" - Changing the query string will rerun ripgrep instead of filtering
+"   the initial input.
+" - FuzzyGrep is Git-aware: if the current working directory is within a
+"   Git repository, FuzzyGrep will automatically run ripgrep from the
+"   repository root directory.
+" - Using the bang modifier forces the editing of files even when there
+"   are are changes to the current buffer. (The ":Rg" command uses the
+"   bang modifier to start fzf in fullscreen mode instead.)
+"
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
@@ -30,9 +42,11 @@ function! s:FuzzyGrep(abandon, ...) abort
         \ 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort','--bind',
         \ 'change:reload:sleep 0.05;' . printf(g:fuzzy_grep_source_command, '{q}'),
         \ '--disabled', '--delimiter', ':', '--expect',
-        \ 'ctrl-t,ctrl-v,ctrl-x', '--multi', '--preview',
-        \ g:fzf_preview_line_command, '--preview-window', '+{2}/3',
-        \ '--prompt', '(' . pathshorten(l:spec.dir) . ') > ', '--query', l:query,
+        \ 'ctrl-t,ctrl-v,ctrl-x', '--header',
+        \ 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
+        \ '--multi', '--preview', g:fzf_preview_line_command,
+        \'--preview-window', '+{2}/3', '--prompt',
+        \'(' . pathshorten(l:spec.dir) . ') > ', '--query', l:query,
       \ ],
       \ 'sink*': function('s:FuzzyGrepHandler', [a:abandon]),
       \ 'source': printf(g:fuzzy_grep_source_command, shellescape(l:query)),

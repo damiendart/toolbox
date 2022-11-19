@@ -3,12 +3,12 @@
 " The following provides similar functionality to the ":FZF" command
 " provided by fzf.vim, but with a few tweaks:
 "
-" - Using the bang modifier forces the editing of files even when there
-"   are are changes to the current buffer. (The ":FZF" command uses the
-"   bang modifier to start fzf in fullscreen mode.)
 " - FuzzyFiles is Git-aware: if no directory is specified and the
 "   current working directory is within a Git repository, FuzzyFiles
 "   will automatically search from the repository root directory.
+" - Using the bang modifier forces the editing of files even when there
+"   are are changes to the current buffer. (The ":FZF" command uses the
+"   bang modifier to start fzf in fullscreen mode instead.)
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
@@ -42,8 +42,9 @@ function! s:FuzzyFiles(abandon, ...) abort
     \ {
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
-        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x', '--multi',
-        \ '--preview', g:fzf_preview_command, '--prompt',
+        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x', '--header',
+        \ 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
+        \ '--multi', '--preview', g:fzf_preview_command, '--prompt',
         \ pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/')
       \ ],
       \ 'sink*': function('s:FuzzyFilesHandler', [a:abandon]),

@@ -20,8 +20,19 @@ tasks:
 
   dependencies:
     cmds:
-      # ShellCheck is required for linting shell-related files and
-      # currently must be installed manually.
+      - cmd: 'shellcheck -V 1&>/dev/null || (echo "ERROR: Shellcheck is not installed!"; exit 1)'
+      - task: 'dependencies:git-submodules'
+      - task: 'dependencies:python'
+    desc: 'Run all dependency-installing tasks'
+
+  dependencies:git-submodules:
+    cmds:
+      - 'git submodule sync'
+      - 'git submodule update'
+    desc: 'Initial and update Git submodules'
+
+  dependencies:python:
+    cmds:
       - 'pip3 install -r requirements.txt'
     desc: 'Install Python dependencies'
 

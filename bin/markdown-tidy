@@ -20,7 +20,7 @@ import sys
 
 
 def process_markdown(markdown):
-    pandoc_command = "pandoc -f markdown -t gfm --reference-links --reference-location=section --columns=72 --tab-stop=4"  # noqa: E501
+    pandoc_command = "pandoc -f markdown -t gfm+definition_lists --reference-links --reference-location=section --columns=72 --tab-stop=4"  # noqa: E501
     process = subprocess.run(
         pandoc_command.split(" "),
         capture_output=True,

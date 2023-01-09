@@ -7,6 +7,9 @@
 # more information, please refer to the accompanying "UNLICENCE file.
 
 alias egrep='egrep --color=auto'
+alias f-grep='fuzzy-grep'
+alias f-pods='fuzzy-pods'
+alias f-snippets='fuzzy-snippets'
 alias fgrep='fgrep --color=auto'
 alias grep='grep --color=auto'
 alias ls='ls --color=auto'

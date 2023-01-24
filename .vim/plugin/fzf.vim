@@ -17,10 +17,12 @@ let g:fzf_preview_line_command = '(bat --color=always --style=plain {1} --highli
 
 autocmd! FileType fzf
 
-if (s:popup_support)
-  " Close the floating window running fzf if it loses focus, otherwise
-  " you're left with a floating window that cannot be refocused and has
-  " to be closed by other means.
+if (s:popup_support && has('nvim'))
+  " In Neovim, close the popup window running fzf once it loses focus,
+  " otherwise you're left with a window that cannot be refocused (and
+  " has to be closed by other means). This isn't required for Vim as
+  " popup windows running a terminal cannot lose focus (for more
+  " information, see "popup-terminal" under Vim help).
   autocmd FileType fzf autocmd WinLeave <buffer> close!
 else
   " Hide unneccesary Vim chrome when displaying fzf in a non-floating

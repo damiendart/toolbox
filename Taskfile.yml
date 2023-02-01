@@ -29,7 +29,7 @@ tasks:
     cmds:
       - 'git submodule sync'
       - 'git submodule update'
-    desc: 'Initial and update Git submodules'
+    desc: 'Initialise and update Git submodules'
 
   dependencies:python:
     cmds:

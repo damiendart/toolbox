@@ -27,8 +27,8 @@ tasks:
 
   dependencies:git-submodules:
     cmds:
-      - 'git submodule sync'
-      - 'git submodule update'
+      - 'git submodule sync --recursive'
+      - 'git submodule update --recursive'
     desc: 'Initialise and update Git submodules'
 
   dependencies:python:

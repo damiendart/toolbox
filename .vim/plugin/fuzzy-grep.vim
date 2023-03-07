@@ -1,5 +1,8 @@
 " A simple fzf-powered interactive grep/ripgrep doohickey.
 "
+" The ":FG" command will respect any ignore files (e.g. ".gitignore") in
+" the root directory, while the ":FGA" command will search every file.
+"
 " The following provides similar functionality to the ":Rg" command
 " from <https://github.com/junegunn/fzf.vim>, but with a few tweaks:
 "
@@ -20,10 +23,10 @@ if exists('g:loaded_fuzzy_grep')
   finish
 endif
 
-let g:fuzzy_grep_source_command = 'rg --color=always --column --hidden --glob="!.git/" --line-number --smart-case -- %s || true'
+let g:fuzzy_grep_source_command = 'rg --color=always --column --hidden --line-number --smart-case %s -- %s || true'
 let g:loaded_fuzzy_grep = 1
 
-function! s:FuzzyGrep(abandon, ...) abort
+function! s:FuzzyGrep(abandon, options, ...) abort
   if !executable('fzf') || !executable('rg') || !executable('git') || !exists('g:loaded_fzf')
     throw 'FuzzyGrep requires fzf, fzf.vim, Git, and ripgrep'
   endif
@@ -40,7 +43,7 @@ function! s:FuzzyGrep(abandon, ...) abort
       \ 'options': [
         \ '--ansi', '--bind',
         \ 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort','--bind',
-        \ 'change:reload:sleep 0.05;' . printf(g:fuzzy_grep_source_command, '{q}'),
+        \ 'change:reload:sleep 0.05;' . printf(g:fuzzy_grep_source_command, a:options, '{q}'),
         \ '--disabled', '--delimiter', ':', '--expect',
         \ 'ctrl-t,ctrl-v,ctrl-x', '--header',
         \ 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
@@ -49,7 +52,7 @@ function! s:FuzzyGrep(abandon, ...) abort
         \'(' . pathshorten(l:spec.dir) . ') > ', '--query', l:query,
       \ ],
       \ 'sink*': function('s:FuzzyGrepHandler', [a:abandon]),
-      \ 'source': printf(g:fuzzy_grep_source_command, shellescape(l:query)),
+      \ 'source': printf(g:fuzzy_grep_source_command, a:options, shellescape(l:query)),
     \ }
   \ )
   call fzf#run(l:spec)
@@ -99,4 +102,5 @@ function! s:ToQuickfix(line)
   \ }
 endfunction
 
-command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, <f-args>)
+command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', <f-args>)
+command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', <f-args>)

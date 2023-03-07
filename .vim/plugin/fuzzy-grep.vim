@@ -30,7 +30,7 @@ function! s:FuzzyGrep(abandon, ...) abort
 
   let l:arguments = copy(a:000)
   let l:gitRoot = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
-  let l:query = len(l:arguments) > 0 ? remove(l:arguments, -1) : ''
+  let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
   let l:spec = copy(g:fzf_base_spec)
 
   call extend(l:spec, { 'dir': strlen(l:gitRoot) > 1 ? l:gitRoot : getcwd() })
@@ -52,7 +52,6 @@ function! s:FuzzyGrep(abandon, ...) abort
       \ 'source': printf(g:fuzzy_grep_source_command, shellescape(l:query)),
     \ }
   \ )
-  call extend(l:spec.options, l:arguments)
   call fzf#run(l:spec)
 endfunction
 

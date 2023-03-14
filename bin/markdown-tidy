@@ -95,6 +95,10 @@ if __name__ == "__main__":
         os.makedirs(arguments.outdir, 0o700, True)
 
         for infile in arguments.infiles:
+            input = infile.read().strip()
+
+            infile.close()
+
             outfile = open(
                 os.path.join(
                     arguments.outdir,
@@ -105,7 +109,7 @@ if __name__ == "__main__":
                 "w",
             )
 
-            outfile.write(process_markdown(infile.read()) + "\n")
+            outfile.write(process_markdown(input) + "\n")
     else:
         input = ""
 

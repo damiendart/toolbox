@@ -42,10 +42,11 @@ function! s:FuzzyFiles(abandon, ...) abort
     \ {
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
-        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x', '--header',
-        \ 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
-        \ '--multi', '--preview', g:fzf_preview_command, '--prompt',
-        \ pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/')
+        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x',
+        \ '--header', 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
+        \ '--multi',
+        \ '--preview', g:fzf_preview_command,
+        \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/')
       \ ],
       \ 'sink*': function('s:FuzzyFilesHandler', [a:abandon]),
       \ 'source': g:fuzzy_files_source_command,

@@ -26,7 +26,7 @@ endif
 let g:fuzzy_grep_source_command = 'rg --color=always --column --hidden --line-number --smart-case %s -- %s || true'
 let g:loaded_fuzzy_grep = 1
 
-function! s:FuzzyGrep(abandon, options, ...) abort
+function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
   if !executable('fzf') || !executable('rg') || !executable('git') || !exists('g:loaded_fzf')
     throw 'FuzzyGrep requires fzf, fzf.vim, Git, and ripgrep'
   endif
@@ -51,7 +51,7 @@ function! s:FuzzyGrep(abandon, options, ...) abort
         \ '--multi',
         \ '--preview', g:fzf_preview_line_command,
         \ '--preview-window', '+{2}/3',
-        \ '--prompt', '(' . pathshorten(l:spec.dir) . ') > ',
+        \ '--prompt', '(' . pathshorten(l:spec.dir) . ')' . a:prompt_embellishment . ' > ',
         \ '--query', l:query,
       \ ],
       \ 'sink*': function('s:FuzzyGrepHandler', [a:abandon]),
@@ -105,5 +105,5 @@ function! s:ToQuickfix(line)
   \ }
 endfunction
 
-command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', <f-args>)
-command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', <f-args>)
+command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', '', <f-args>)
+command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', '*' <f-args>)

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# A simple Vim "FuzzyGrep" launcher.
+# A Vim fuzzy grep/ripgrep launcher.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
 # free and unencumbered software released into the public domain. For
@@ -12,17 +12,24 @@ help() {
   cat << HELP
 Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
-Launches Vim with the "FuzzyGrep" doohickey already active.
+Launches Vim with the fuzzy grep/ripgrep doohickey already active. By
+default, the ":FG" Vim command will be used, which respects any ignore
+files (e.g. ".gitignore").
 
 Requires whatever "$HOME/.vim/plugin/fuzzy-grep.vim" requires and that
 the EDITOR environment variable is set to some sort of Vim.
 
 FLAGS:
 
+  -e, --everything
+    Use the ":FGA" Vim command, which searches through everything.
+
   -h, --help
-    Displays this help text and exits.
+    Display this help text and exit.
 HELP
 }
+
+FUZZY_GREP_COMMAND=":FG"
 
 # The following command-line argument and option parser is based on
 # <http://mywiki.wooledge.org/BashFAQ/035>.
@@ -31,6 +38,9 @@ while :; do
     -h|-\?|--help)
       help
       exit
+      ;;
+    -e|--everything)
+      FUZZY_GREP_COMMAND=":FGA"
       ;;
     --)
       shift
@@ -48,4 +58,4 @@ while :; do
   shift
 done
 
-$EDITOR -c ":FG $1"
+$EDITOR -c "$FUZZY_GREP_COMMAND $1"

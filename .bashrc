@@ -13,8 +13,14 @@ source "$HOME/.shellrc"
 source "$HOME/.bash_aliases"
 
 HISTCONTROL=ignoreboth
-HISTFILESIZE=100000
-HISTSIZE=100000
+
+# Increase the default Bash command history size (usually around 500
+# lines) to something a little more reasonable, while keeping the hit to
+# Bash's startup time to a minimum. For more information, see
+# <http://mywiki.wooledge.org/BashFAQ/088>.
+HISTFILESIZE=20000
+HISTSIZE=20000
+
 HISTTIMEFORMAT='%s '
 PROMPT_COMMAND="${PROMPT_COMMAND};history -a"
 

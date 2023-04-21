@@ -106,4 +106,4 @@ function! s:ToQuickfix(line)
 endfunction
 
 command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', '', <f-args>)
-command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', '*' <f-args>)
+command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', '*', <f-args>)

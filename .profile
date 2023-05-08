@@ -15,7 +15,6 @@ export NPM_CONFIG_PREFIX="$HOME/.npm"
 export SNIPPET_LIBRARY_ROOT="$HOME/Shed/snippets"
 # shellcheck disable=SC2155
 export TOOLBOX_ROOT="$(dirname "$(readlink "$HOME/.profile")")"
-export VIRTUALENVWRAPPER_PYTHON='/usr/bin/python3'
 
 while read -r ITEM; do
   if [ -d "$ITEM" ]; then
@@ -37,6 +36,7 @@ $NPM_CONFIG_PREFIX/bin
 $TOOLBOX_ROOT/bin
 /usr/local/go/bin
 /usr/local/node/bin
+/usr/local/python/bin
 PATHS
 
 if [ -f ~/.machine.profile ]; then

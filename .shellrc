@@ -59,6 +59,11 @@ shellrc__prompt_command ()
 
 PROMPT_COMMAND='shellrc__prompt_command'
 
+# Improve support for coloured terminal output and special key presses
+# when using python-build-standalone Python distributions. For more
+# information, see <https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html#backspace-key-doesn-t-work-in-python-repl>.
+export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
+
 if type 'fzf' 1>/dev/null 2>&1; then
   export FZF_CTRL_R_OPTS="--prompt=';; '"
   # shellcheck disable=SC2089,SC2090
@@ -84,11 +89,6 @@ fi
 if type 'lesspipe' 1>/dev/null 2>&1; then
   eval "$(SHELL=/bin/sh lesspipe)"
 fi
-
-shellrc__source_one "virtualwrapper_lazy" <<VIRTUALWRAPPER_LAZY
-$HOME/Library/Python/3.7/bin/virtualenvwrapper_lazy.sh
-$HOME/.local/bin/virtualenvwrapper_lazy.sh
-VIRTUALWRAPPER_LAZY
 
 if [ -f ~/.machine.shellrc ]; then
   # shellcheck disable=SC1090

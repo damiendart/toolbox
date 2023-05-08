@@ -22,7 +22,7 @@ jobs:
         uses: 'actions/setup-python@v4'
         with:
           cache: 'pip'
-          python-version: '3.x'
+          python-version: '3.8'
 
       # The version of ShellCheck installed via APT is a little
       # out-of-date and doesn't support the "shell" directive required

@@ -14,6 +14,7 @@ tasks:
 
   ci:
     cmds:
+      - task: 'start'
       - task: 'dependencies'
       - task: 'lint'
     desc: 'Run all CI-related tasks'
@@ -68,3 +69,10 @@ tasks:
         .shellrc
         bin/fuzzy-*
     desc: 'Lint shell configuration files and scripts with ShellCheck'
+
+  start:
+    cmds:
+      - 'python3.8 -m venv .venv'
+      - 'source .venv/bin/activate'
+    desc: 'Create and activate a virtual Python environment for development and testing'
+

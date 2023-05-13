@@ -80,5 +80,5 @@ tasks:
             echo "Active Python virtual environment: $VIRTUAL_ENV"
           fi
         silent: true
-    desc: 'Create a virtual Python environment for development and testing'
+    desc: 'Create a Python virtual environment for development and testing'
 

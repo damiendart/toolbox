@@ -34,7 +34,7 @@ tasks:
 
   dependencies:python:
     cmds:
-      - 'pip3 install -r requirements.txt'
+      - '.venv/bin/python -m pip install -r requirements.txt'
     desc: 'Install Python dependencies'
 
   lint:
@@ -51,12 +51,12 @@ tasks:
 
   lint:python:black:
     cmds:
-      - 'black --check install bin/markdown-tidy'
+      - '.venv/bin/black --check install bin/markdown-tidy'
     desc: 'Lint Python scripts with Black'
 
   lint:python:flake8:
     cmds:
-      - 'flake8 install bin/markdown-tidy'
+      - '.venv/bin/flake8 install bin/markdown-tidy'
     desc: 'Lint Python scripts with Flake8'
 
   lint:shell:
@@ -73,6 +73,12 @@ tasks:
   start:
     cmds:
       - 'python3.8 -m venv .venv'
-      - 'source .venv/bin/activate'
-    desc: 'Create and activate a virtual Python environment for development and testing'
+      - cmd: |
+          if [ -z "$VIRTUAL_ENV" ]; then
+            echo "Run \"source .venv/bin/activate\" to activate the virtual environment"
+          else
+            echo "Active Python virtual environment: $VIRTUAL_ENV"
+          fi
+        silent: true
+    desc: 'Create a virtual Python environment for development and testing'
 

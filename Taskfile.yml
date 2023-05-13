@@ -47,7 +47,7 @@ tasks:
     cmds:
       - task: 'lint:python:black'
       - task: 'lint:python:flake8'
-    desc: 'Run all Python linting tasks'
+    desc: 'Run all Python-linting tasks'
 
   lint:python:black:
     cmds:

@@ -42,7 +42,7 @@ set visualbell
 set wildmenu
 
 if executable('rg')
-  set grepformat=%f:%l:%c:%m
+  set grepformat+=%f:%l:%c:%m
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
 endif
 

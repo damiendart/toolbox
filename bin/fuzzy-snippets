@@ -16,25 +16,39 @@ Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
 Opens up a fzf-powered snippet browser.
 
-Requires fzf, ripgrep, and xsel, and that the SNIPPET_LIBRARY_ROOT
-environment variable is set to the location of your snippets directory.
+Requires fzf, ripgrep, and xsel, and that the SNIPPET_PATH environment
+variable is set to a colon-seperated list of directories containing
+files to use as snippets.
 
-The list of snippets can be tamed with a "fuzzy-snippets.ignore" file in
-the root of your snippets directory. See the ripgrep documentation for
-more information on ignoring files.
-
-Pressing Enter will copy the selected snippet to the clipboard.
-Alternatively, the selected snippet can be printed to standard input
-by pressing Ctrl-P.
+When browsing snippets with fzf, pressing Enter will copy the selected
+snippet to the clipboard. Alternatively, the selected snippet can be
+printed to standard input by pressing Ctrl-P.
 
 FLAGS:
 
-  -h, --help      Displays this help text and exits.
+  -h, --help
+    Displays this help text and exits.
+
+  -l, --list
+    Prints out a list of available snippet files and exits.
 HELP
 }
 
-# shellcheck disable=2034
-FZF_DEFAULT_COMMAND='rg --files --ignore-file="fuzzy-snippets.ignore" --sort=path'
+LIST_FILES=0
+
+if ! type 'fzf' 1>/dev/null 2>&1 || \
+  ! type 'rg' 1>/dev/null 2>&1 || \
+  ! type 'xsel' 1>/dev/null 2>&1;
+then
+  printf 'ERROR: "%s" requires fzf, ripgrep, and xsel\n' "$(basename "$0")" >&2
+  exit 2
+fi
+
+if [ -z ${SNIPPET_PATH+x} ]; then
+  echo 'ERROR: SNIPPET_PATH environment variable has not been set' >&2
+  printf 'See "%s --help" for more information\n' "$(basename "$0")" >&2
+  exit 2
+fi
 
 # The following command-line argument and option parser is based on
 # <http://mywiki.wooledge.org/BashFAQ/035>.
@@ -43,6 +57,11 @@ while :; do
     -h|-\?|--help)
       help
       exit
+      ;;
+    -l|--list)
+      LIST_FILES=1
+      shift
+      break
       ;;
     --)
       shift
@@ -60,26 +79,28 @@ while :; do
   shift
 done
 
-if ! type 'fzf' 1>/dev/null 2>&1 || \
-  ! type 'rg' 1>/dev/null 2>&1 || \
-  ! type 'xsel' 1>/dev/null 2>&1;
-then
-  printf 'ERROR: "%s" requires fzf, ripgrep, and xsel\n' "$(basename "$0")" >&2
-  exit 2
-fi
+IFS=':'
+SNIPPET_FILES=''
 
-if [ ! -d "$SNIPPET_LIBRARY_ROOT" ]; then
-  echo 'ERROR: Snippets cannot be found' >&2
-  printf 'See "%s --help" for more information\n' "$(basename "$0")" >&2
-  exit 2
-fi
+for DIRECTORY in $SNIPPET_PATH; do
+  if [ ! -d "$DIRECTORY" ]; then
+    continue
+  fi
 
-cd "$SNIPPET_LIBRARY_ROOT"
+  SNIPPET_FILES="$SNIPPET_FILES$(rg --files --sort=path "$DIRECTORY")"
+done
+
+if [ "$LIST_FILES" = 1 ]; then
+  echo "$SNIPPET_FILES"
+  exit
+fi
 
 FZF_OUTPUT=$(\
-  fzf \
-    --expect="ctrl-p" \
+  echo "$SNIPPET_FILES" | sort | fzf \
+    --delimiter='/' \
+    --expect='ctrl-p' \
     --header='CTRL+P: Print snippet ╱ ENTER: Copy snippet' \
+    --with-nth='-1' \
     --preview='(bat --color=always --style=plain {} || cat {}) 2>/dev/null' \
     --prompt='--%<-- ' \
     --query="$1" \

@@ -10,14 +10,14 @@ if exists('g:loaded_fuzzy_snippets')
   finish
 endif
 
-let g:fuzzy_snippets_source_command = 'rg --files --ignore-file="fuzzy-snippets.ignore" --sort=path'
+let g:fuzzy_snippets_source_command = 'fuzzy-snippets --list'
 let g:loaded_fuzzy_snippets = 1
 
 function! s:FuzzySnippets() abort
-  if !executable('fzf') || !executable('rg') || !exists('g:loaded_fzf')
-    throw 'FuzzySnippets requires fzf, fzf.vim, and ripgrep'
-  elseif !exists('$SNIPPET_LIBRARY_ROOT')
-    throw 'SNIPPET_LIBRARY_ROOT environment variable not set'
+  if !executable('fuzzy-snippets') || !exists('g:loaded_fzf')
+    throw 'FuzzySnippets requires fzf, fzf.vim, and fuzzy-snippets'
+  elseif !exists('$SNIPPET_PATH')
+    throw 'SNIPPET_PATH environment variable not set'
   endif
 
   let l:spec = copy(g:fzf_base_spec)
@@ -25,8 +25,12 @@ function! s:FuzzySnippets() abort
   call extend(
     \ l:spec,
     \ {
-      \ 'dir': '$SNIPPET_LIBRARY_ROOT',
-      \ 'options': ['--preview', g:fzf_preview_command, '--prompt', '--8<-- '],
+      \ 'options': [
+        \ '--delimiter', '/',
+        \ '--preview', g:fzf_preview_command,
+        \ '--prompt', '--8<-- ',
+        \ '--with-nth', '-1',
+      \ ],
       \ 'sink': 'r',
       \ 'source': g:fuzzy_snippets_source_command,
     \ }

@@ -12,7 +12,8 @@ IPS="\n"
 export EDITOR='vim'
 export GOPATH="$HOME/.go"
 export NPM_CONFIG_PREFIX="$HOME/.npm"
-export SNIPPET_LIBRARY_ROOT="$HOME/Shed/snippets"
+export NOTES_ROOT="$HOME/Syncthing/Notes"
+export SNIPPET_PATH="$HOME/Shed/snippets/snippets:$NOTES_ROOT/templates"
 # shellcheck disable=SC2155
 export TOOLBOX_ROOT="$(dirname "$(readlink "$HOME/.profile")")"
 

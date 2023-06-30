@@ -27,12 +27,14 @@ function! s:FuzzyFiles(abandon, ...) abort
   endif
 
   let l:arguments = copy(a:000)
+  let l:query = ''
   let l:spec = copy(g:fzf_base_spec)
 
   if len(l:arguments) > 0 && isdirectory(expand(l:arguments[-1]))
     call extend(l:spec, { 'dir': fnamemodify(remove(l:arguments, -1), ':p')[:-2] })
   else
     let l:gitRoot = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
+    let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
 
     call extend(l:spec, { 'dir': strlen(l:gitRoot) > 1 ? l:gitRoot : getcwd() })
   endif
@@ -46,13 +48,13 @@ function! s:FuzzyFiles(abandon, ...) abort
         \ '--header', 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
         \ '--multi',
         \ '--preview', g:fzf_preview_command,
-        \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/')
+        \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),
+        \ '--query', l:query,
       \ ],
       \ 'sink*': function('s:FuzzyFilesHandler', [a:abandon]),
       \ 'source': g:fuzzy_files_source_command,
     \ },
   \ )
-  call extend(l:spec.options, l:arguments)
   call fzf#run(l:spec)
 endfunction
 

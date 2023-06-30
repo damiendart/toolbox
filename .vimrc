@@ -5,6 +5,7 @@
 " (use "gf" to edit or view these files):
 "
 " - "$HOME/.vim/after/plugin/plugins.vim"
+" - "$HOME/.vim/ftplugin/markdown.vim"
 " - "$HOME/.vim/plugin/base64.vim"
 " - "$HOME/.vim/plugin/colorcolumn.vim"
 " - "$HOME/.vim/plugin/fuzzy-files.vim"

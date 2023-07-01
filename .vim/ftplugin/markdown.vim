@@ -19,7 +19,7 @@ if exists('$NOTES_ROOT')
 
   if s:path =~ '^' . expand('$NOTES_ROOT')
     " Add support for links to other notes when using "gf" and friends.
-    execute 'setlocal path+=' . s:path
+    execute 'setlocal path+=' . fnameescape(expand('$NOTES_ROOT'))
     setlocal suffixesadd+=.markdown,.md
   endif
 endif

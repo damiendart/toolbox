@@ -75,7 +75,7 @@ function! s:FuzzyGrepHandler(abandon, lines) abort
   let l:results = map(a:lines[1:], 's:ToQuickfix(v:val)')
 
   try
-    execute l:command escape(l:results[0].filename, ' %#\')
+    execute l:command fnameescape(l:results[0].filename)
   " Improve the appearance of some commonly-encountered errors.
   catch /E37/
     echohl ErrorMsg

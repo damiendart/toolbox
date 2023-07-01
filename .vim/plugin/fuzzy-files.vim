@@ -71,7 +71,7 @@ function! s:FuzzyFilesHandler(abandon, lines) abort
 
   try
     for line in a:lines[1:]
-      execute l:command line
+      execute l:command fnameescape(line)
     endfor
   " Improve the appearance of some commonly-encountered errors.
   catch /E37/

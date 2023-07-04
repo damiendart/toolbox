@@ -51,12 +51,12 @@ tasks:
 
   lint:python:black:
     cmds:
-      - '.venv/bin/black --check --diff install bin/get-html-title bin/markdown-tidy'
+      - '.venv/bin/black --check --diff install bin/get-html-title bin/markdown-tidy bin/notes'
     desc: 'Lint Python scripts with Black'
 
   lint:python:flake8:
     cmds:
-      - '.venv/bin/flake8 install bin/get-html-title bin/markdown-tidy'
+      - '.venv/bin/flake8 install bin/get-html-title bin/markdown-tidy bin/notes'
     desc: 'Lint Python scripts with Flake8'
 
   lint:shell:

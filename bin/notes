@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""
+Note-taking helper doohickeys.
+
+This file was written by Damien Dart, <damiendart@pobox.com>. This is
+free and unencumbered software released into the public domain. For
+more information, please refer to the accompanying "UNLICENCE" file.
+"""
+
+import argparse
+import os
+import shutil
+import subprocess
+import sys
+
+
+def fatal_error(message):
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def parse_arguments(arguments):
+    parser = argparse.ArgumentParser()
+    subparser = parser.add_subparsers(required=True)
+
+    edit_parser = subparser.add_parser(
+        "edit",
+        aliases=["open"],
+        help="open top-level index note in $EDITOR",
+    )
+    edit_parser.set_defaults(function=run_edit_command)
+
+    list_tags_parser = subparser.add_parser(
+        "list-tags",
+        aliases=["tags"],
+        help="list all tags in use",
+    )
+    list_tags_parser.set_defaults(function=run_list_tags_command)
+
+    return parser.parse_args(arguments)
+
+
+def run_edit_command(notes_directory, arguments):
+    subprocess.run(
+        [os.environ.get("EDITOR", "vim"), "inbox.md"],
+        cwd=notes_directory,
+    )
+
+
+def run_list_tags_command(notes_directory, arguments):
+    if not shutil.which("rg"):
+        fatal_error("ripgrep is required")
+
+    tags = (
+        subprocess.run(
+            [
+                "rg",
+                "-INo",
+                "-r",
+                "$1",
+                "--no-heading",
+                "[ ']#([a-zA-Z-]+)",
+            ],
+            capture_output=True,
+            check=True,
+            cwd=notes_directory,
+        )
+        .stdout.decode()
+        .strip()
+        .split("\n")
+    )
+
+    print("\n".join(sorted(set(tags))))
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+    notes_directory = os.environ.get("NOTES_ROOT", None)
+
+    if not notes_directory:
+        fatal_error("NOTES_ROOT environment variable not set")
+
+    if not os.path.isdir(notes_directory):
+        fatal_error('"{}" is not a directory'.format(notes_directory))
+
+    arguments.function(notes_directory, arguments)

@@ -12,6 +12,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 
 
 def fatal_error(message):
@@ -30,9 +31,16 @@ def parse_arguments(arguments):
     edit_parser = subparser.add_parser(
         "edit",
         aliases=["open"],
-        help="open top-level index note in $EDITOR",
+        help="open top-level inbox note in $EDITOR",
     )
     edit_parser.set_defaults(function=run_edit_command)
+
+    jot_parser = subparser.add_parser(
+        "jot",
+        help="append timestamped text to top-level inbox note",
+    )
+    jot_parser.add_argument("text", help="text to append", nargs="+")
+    jot_parser.set_defaults(function=run_jot_command)
 
     list_tags_parser = subparser.add_parser(
         "list-tags",
@@ -49,6 +57,16 @@ def run_edit_command(notes_directory, arguments):
         [os.environ.get("EDITOR", "vim"), "inbox.md"],
         cwd=notes_directory,
     )
+
+
+def run_jot_command(notes_directory, arguments):
+    with open(os.path.join(notes_directory, "inbox.md"), "a") as inbox_file:
+        inbox_file.write(
+            "\n- {}: {}".format(
+                time.ctime(),
+                " ".join(arguments.text),
+            ),
+        )
 
 
 def run_list_tags_command(notes_directory, arguments):

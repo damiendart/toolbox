@@ -60,13 +60,15 @@ def run_edit_command(notes_directory, arguments):
 
 
 def run_jot_command(notes_directory, arguments):
+    text = " ".join(arguments.text)
+
     with open(os.path.join(notes_directory, "inbox.md"), "a") as inbox_file:
-        inbox_file.write(
-            "\n- {}: {}".format(
-                time.ctime(),
-                " ".join(arguments.text),
-            ),
-        )
+        inbox_file.write("\n- {}: {}".format(time.ctime(), text))
+        # Some characters, such as "#" and quotation marks, may cause
+        # unintended side-effects when inputting text as positional
+        # arguments. Displaying the input gives the user the opportunity
+        # to confirm that it has been saved correctly.
+        print(text)
 
 
 def run_list_tags_command(notes_directory, arguments):

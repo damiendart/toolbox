@@ -39,7 +39,7 @@ def parse_arguments(arguments):
         "jot",
         help="append timestamped text to top-level inbox note",
     )
-    jot_parser.add_argument("text", help="text to append", nargs="+")
+    jot_parser.add_argument("text", help="text to append", nargs="*")
     jot_parser.set_defaults(function=run_jot_command)
 
     list_tags_parser = subparser.add_parser(
@@ -60,15 +60,17 @@ def run_edit_command(notes_directory, arguments):
 
 
 def run_jot_command(notes_directory, arguments):
-    text = " ".join(arguments.text)
+    text = " ".join(arguments.text) if arguments.text else input("> ")
 
     with open(os.path.join(notes_directory, "inbox.md"), "a") as inbox_file:
         inbox_file.write("\n- {}: {}".format(time.ctime(), text))
+
         # Some characters, such as "#" and quotation marks, may cause
         # unintended side-effects when inputting text as positional
         # arguments. Displaying the input gives the user the opportunity
-        # to confirm that it has been saved correctly.
-        print(text)
+        # to confirm that it is what they intended.
+        if arguments.text:
+            print(text)
 
 
 def run_list_tags_command(notes_directory, arguments):

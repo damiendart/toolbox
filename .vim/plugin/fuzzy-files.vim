@@ -44,8 +44,8 @@ function! s:FuzzyFiles(abandon, ...) abort
     \ {
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
-        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x',
-        \ '--header', 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
+        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x,ctrl-y',
+        \ '--header', 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ CTRL+Y: yank filenames ╱ ENTER: edit',
         \ '--multi',
         \ '--preview', g:fzf_preview_command,
         \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),
@@ -64,15 +64,19 @@ function! s:FuzzyFilesHandler(abandon, lines) abort
   endif
 
   let l:command = get(
-    \ { 'ctrl-t': 'tabe', 'ctrl-v': 'vsplit', 'ctrl-x': 'split' },
+    \ { 'ctrl-t': 'tabe', 'ctrl-v': 'vsplit', 'ctrl-x': 'split', 'ctrl-y': 'yank-filenames' },
     \ a:lines[0],
     \ 'e' . (a:abandon ? '!' : '')
   \ )
 
   try
-    for line in a:lines[1:]
-      execute l:command fnameescape(line)
-    endfor
+    if l:command ==? 'yank-filenames'
+      let @" = join(a:lines[1:], "\n")
+    else
+      for line in a:lines[1:]
+        execute l:command fnameescape(line)
+      endfor
+    endif
   " Improve the appearance of some commonly-encountered errors.
   catch /E37/
     echohl ErrorMsg

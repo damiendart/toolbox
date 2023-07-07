@@ -87,7 +87,11 @@ for DIRECTORY in $SNIPPET_PATH; do
     continue
   fi
 
-  SNIPPET_FILES="$SNIPPET_FILES$(rg --files --sort=path "$DIRECTORY")"
+  if [ "$SNIPPET_FILES" ]; then
+    SNIPPET_FILES="$SNIPPET_FILES\n$(rg --files --sort=path "$DIRECTORY")"
+  else
+    SNIPPET_FILES="$(rg --files --sort=path "$DIRECTORY")"
+  fi
 done
 
 if [ "$LIST_FILES" = 1 ]; then

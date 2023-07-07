@@ -27,15 +27,27 @@ function! s:FuzzySnippets() abort
     \ {
       \ 'options': [
         \ '--delimiter', '/',
+        \ '--expect', 'ctrl-y',
         \ '--preview', g:fzf_preview_command,
+        \ '--header', 'CTRL+Y: yank ╱ ENTER: read',
         \ '--prompt', '--8<-- ',
         \ '--with-nth', '-1',
       \ ],
-      \ 'sink': 'r',
+      \ 'sink*': function('s:FuzzySnippetsHandler'),
       \ 'source': g:fuzzy_snippets_source_command,
     \ }
   \ )
   call fzf#run(l:spec)
+endfunction
+
+function! s:FuzzySnippetsHandler(lines) abort
+  if a:lines[0] ==? 'ctrl-y'
+    let @" = join(readfile(a:lines[1]), "\n")
+
+    return
+  endif
+
+  execute "read" a:lines[1]
 endfunction
 
 command! FS call s:FuzzySnippets()

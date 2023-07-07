@@ -11,15 +11,16 @@ endif
 let b:loaded = 1
 
 if exists('$NOTES_ROOT')
+  let s:notesRoot = fnamemodify($NOTES_ROOT, ':p')
   let s:path = expand('%:p')
 
   if empty(s:path) || !filereadable(s:path)
     let s:path = getcwd()
   endif
 
-  if s:path =~ '^' . expand('$NOTES_ROOT')
+  if s:path =~ '^' . s:notesRoot
     " Add support for links to other notes when using "gf" and friends.
-    execute 'setlocal path+=' . fnameescape(expand('$NOTES_ROOT'))
+    execute 'setlocal path+=' . fnameescape(s:notesRoot)
     setlocal suffixesadd+=.markdown,.md
   endif
 endif

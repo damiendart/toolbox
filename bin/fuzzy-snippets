@@ -20,10 +20,6 @@ Requires fzf, ripgrep, and xsel, and that the SNIPPET_PATH environment
 variable is set to a colon-seperated list of directories containing
 files to use as snippets.
 
-When browsing snippets with fzf, pressing Enter will copy the selected
-snippet to the clipboard. Alternatively, the selected snippet can be
-printed to standard input by pressing Ctrl-P.
-
 FLAGS:
 
   -h, --help
@@ -31,6 +27,14 @@ FLAGS:
 
   -l, --list
     Prints out a list of available snippet files and exits.
+
+FZF COMMANDS:
+
+  ENTER
+    Copy the selected snippet to the clipboard.
+
+  CTRL-P
+    Pring the selected snippet to standard input.
 HELP
 }
 

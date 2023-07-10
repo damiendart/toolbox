@@ -23,6 +23,20 @@ FLAGS:
 
   -n NAMESPACE, --namespace=NAMESPACE
     Specify the namespace for "kubectl" to use.
+
+FZF COMMANDS:
+
+  ENTER
+    Get a Bash shell to the default container of the selected pod.
+
+  CTRL-D
+    Fetch details about the selected pod.
+
+  CTRL-L
+    Print the last 500 log entries from the selected pod.
+
+  CTRL-R
+    Refresh the list of pods.
 HELP
 }
 

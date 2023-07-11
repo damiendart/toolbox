@@ -85,7 +85,7 @@ def run_list_tags_command(notes_directory, arguments):
                 "-r",
                 "$1",
                 "--no-heading",
-                "[ ']#([a-zA-Z-]+)",
+                "[ ']#([a-zA-Z:-]+)",
             ],
             capture_output=True,
             check=True,

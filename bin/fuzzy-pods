@@ -37,6 +37,9 @@ FZF COMMANDS:
 
   CTRL-R
     Refresh the list of pods.
+
+  CTRL-Y
+    Copy the selected pod name to the clipboard.
 HELP
 }
 
@@ -83,9 +86,11 @@ while :; do
   shift
 done
 
-if ! type 'fzf' 1>/dev/null 2>&1 || ! type 'kubectl' 1>/dev/null 2>&1;
+if ! type 'fzf' 1>/dev/null 2>&1 || \
+  ! type 'kubectl' 1>/dev/null 2>&1 || \
+  ! type 'xsel' 1>/dev/null 2>&1;
 then
-  printf 'ERROR: "%s" requires fzf and kubectl\n' "$(basename "$0")" >&2
+  printf 'ERROR: "%s" requires fzf, kubectl, and xsel\n' "$(basename "$0")" >&2
   exit 2
 fi
 
@@ -101,8 +106,8 @@ FZF_OUTPUT=$(\
   # shellcheck disable=SC2016
   echo "$INITIAL_INPUT" | fzf \
     --bind='ctrl-r:reload:$FZF_DEFAULT_COMMAND' \
-    --expect="ctrl-d,ctrl-l" \
-    --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Reload ╱ ENTER: Shell' \
+    --expect="ctrl-d,ctrl-l,ctrl-y" \
+    --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Reload ╱ CTRL+Y: Copy pod name ╱ ENTER: Shell' \
     --header-lines=1 \
     --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
     --query="$1" \
@@ -118,6 +123,10 @@ case $SELECTED_ACTION in
     ;;
   ctrl-l)
     kubectl logs --all-containers --namespace="$SELECTED_NAMESPACE" --tail=500 "$SELECTED_POD"
+    ;;
+  ctrl-y)
+    printf "%s" "$SELECTED_POD" | xsel -i --clipboard
+    echo "[✔] Copied \"$SELECTED_POD\" to the clipboard!"
     ;;
   *)
     kubectl exec -it --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD" -- bash

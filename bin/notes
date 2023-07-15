@@ -8,6 +8,7 @@ more information, please refer to the accompanying "UNLICENCE" file.
 """
 
 import argparse
+import datetime
 import os
 import shutil
 import subprocess
@@ -48,6 +49,20 @@ def parse_arguments(arguments):
         help="list all tags in use",
     )
     list_tags_parser.set_defaults(function=run_list_tags_command)
+
+    new_parser = subparser.add_parser(
+        "new",
+        aliases=["create"],
+        help="create a new note",
+    )
+    new_parser.add_argument(
+        "-z",
+        "--zettel",
+        action="store_true",
+        help="update filename to a Zettelkasten-style format",
+    )
+    new_parser.add_argument("filename", help="note filename", nargs=1)
+    new_parser.set_defaults(function=run_new_command)
 
     return parser.parse_args(arguments)
 
@@ -99,9 +114,35 @@ def run_list_tags_command(notes_directory, arguments):
     print("\n".join(sorted(set(tags))))
 
 
+def run_new_command(notes_directory, arguments):
+    filename = os.path.basename(os.path.splitext(arguments.filename[0])[0])
+
+    if arguments.zettel:
+        filename = "{0:%Y}/{0:%m}/{0:%Y%m%d%H%M}-{1}".format(
+            datetime.datetime.now(), filename
+        )
+
+    filename = os.path.abspath(
+        os.path.join(
+            notes_directory,
+            os.path.dirname(arguments.filename[0]),
+            filename + ".md",
+        )
+    )
+
+    if os.path.commonpath([notes_directory, filename]) != notes_directory:
+        fatal_error("File would be created outside of NOTES_ROOT")
+
+    os.makedirs(os.path.dirname(filename), 0o700, True)
+    subprocess.run(
+        [os.environ.get("EDITOR", "vim"), filename],
+        cwd=notes_directory,
+    )
+
+
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
-    notes_directory = os.environ.get("NOTES_ROOT", None)
+    notes_directory = os.path.abspath(os.environ.get("NOTES_ROOT", None))
 
     if not notes_directory:
         fatal_error("NOTES_ROOT environment variable not set")

@@ -29,12 +29,11 @@ def parse_arguments(arguments):
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(required=True)
 
-    edit_parser = subparser.add_parser(
-        "edit",
-        aliases=["open"],
+    inbox_parser = subparser.add_parser(
+        "inbox",
         help="open top-level inbox note in $EDITOR",
     )
-    edit_parser.set_defaults(function=run_edit_command)
+    inbox_parser.set_defaults(function=run_inbox_command)
 
     jot_parser = subparser.add_parser(
         "jot",
@@ -52,7 +51,7 @@ def parse_arguments(arguments):
 
     new_parser = subparser.add_parser(
         "new",
-        aliases=["create"],
+        aliases=["create", "edit", "open"],
         help="create a new note",
     )
     new_parser.add_argument(
@@ -67,7 +66,7 @@ def parse_arguments(arguments):
     return parser.parse_args(arguments)
 
 
-def run_edit_command(notes_directory, arguments):
+def run_inbox_command(notes_directory, arguments):
     subprocess.run(
         [os.environ.get("EDITOR", "vim"), "inbox.md"],
         cwd=notes_directory,

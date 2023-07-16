@@ -27,7 +27,7 @@ def fatal_error(message):
 
 def parse_arguments(arguments):
     parser = argparse.ArgumentParser()
-    subparser = parser.add_subparsers(required=True)
+    subparser = parser.add_subparsers(dest="command", required=True)
 
     inbox_parser = subparser.add_parser(
         "inbox",

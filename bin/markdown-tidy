@@ -76,6 +76,7 @@ if __name__ == "__main__":
         type=pathlib.Path,
     )
     group.add_argument(
+        "-o",
         "--outfile",
         help="write output to OUTFILE instead of standard output",
         default=sys.stdout,

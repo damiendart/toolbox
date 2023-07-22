@@ -16,9 +16,9 @@ Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
 Opens up a fzf-powered snippet browser.
 
-Requires fzf, ripgrep, and xsel, and that the SNIPPET_PATH environment
-variable is set to a colon-seperated list of directories containing
-files to use as snippets.
+Requires fzf, ripgrep, snippet-placeholder, and xsel, and that the
+SNIPPET_PATH environment variable is set to a colon-seperated list of
+directories containing files to use as snippets.
 
 FLAGS:
 
@@ -31,10 +31,12 @@ FLAGS:
 FZF COMMANDS:
 
   ENTER
-    Copy the selected snippet to the clipboard.
+    Pass the selected snippet through snippet-placeholder and copy the
+    output to the clipboard.
 
   CTRL-P
-    Pring the selected snippet to standard input.
+    Pass the selected snippet through snippet-placeholder and print the
+    output to standard input.
 HELP
 }
 
@@ -118,10 +120,11 @@ SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 
 case $SELECTED_ACTION in
   ctrl-p)
-    cat "$SELECTED_FILE"
+    snippet-placeholder "$SELECTED_FILE"
     ;;
   *)
-    xsel -i --clipboard < "$SELECTED_FILE"
+    SNIPPET="$(snippet-placeholder "$SELECTED_FILE")"
+    printf "%s" "$SNIPPET" | xsel -i --clipboard
     echo "[✔] Copied snippet \"$SELECTED_FILE\" to the clipboard!"
     ;;
 esac

@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""
+Checks Git repositories for dirty working directories and unpushed work.
+"""
+
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+import argparse
+import os
+import pathlib
+import subprocess
+import sys
+import typing
+
+
+def main(arguments: argparse.Namespace) -> None:
+    issues_found = False
+
+    for directory in arguments.repositories:
+        absolute_pathname = os.path.abspath(directory)
+
+        if not os.path.exists(os.path.join(absolute_pathname, ".git")):
+            print('[-] "{}" is not a Git repository'.format(directory))
+            continue
+
+        if arguments.dirty_directories:
+            status = run_git_command(
+                "git status --porcelain",
+                absolute_pathname,
+            )
+
+            if status:
+                print(
+                    '[✘] "{}": Working directory is dirty'.format(
+                        directory,
+                    ),
+                )
+
+                issues_found = True
+
+        if arguments.unpushed_commits or arguments.upstream_branches:
+            branches = run_git_command(
+                'git for-each-ref --format="%(refname:short)\t%(upstream:short)\t%(upstream:trackshort)" refs/heads',  # noqa: E501
+                absolute_pathname,
+            )
+
+            for branch in branches.splitlines():
+                [name, upstream_branch_name, status] = branch.split("\t")
+
+                if not upstream_branch_name and arguments.upstream_branches:
+                    print(
+                        '[✘] "{}": Branch "{}" has no corresponding upstream branch'.format(  # noqa: E501
+                            directory,
+                            name,
+                        ),
+                    )
+                    issues_found = True
+                    continue
+
+                if ">" in status and arguments.unpushed_commits:
+                    print(
+                        '[✘] "{}": Branch "{}" has unpushed commits'.format(
+                            directory, name
+                        ),
+                    )
+                    issues_found = True
+
+    if issues_found:
+        sys.exit(1)
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument(
+        "-c",
+        "--no-unpushed-commits",
+        action="store_false",
+        dest="unpushed_commits",
+        help="do not show branches with unpushed commits",
+    )
+    parser.add_argument(
+        "-d",
+        "--no-dirty-directories",
+        action="store_false",
+        dest="dirty_directories",
+        help="do not show repositories with dirty working directories",
+    )
+    parser.add_argument(
+        "-u",
+        "--no-upstream-branches",
+        action="store_false",
+        dest="upstream_branches",
+        help="do not show branches with no corresponding upstream branch",
+    )
+    parser.add_argument(
+        "repositories",
+        default=["."],
+        help="local git repositories to check",
+        nargs="*",
+        type=pathlib.Path,
+    )
+
+    return parser.parse_args(arguments)
+
+
+def run_git_command(command: str, cwd: str) -> str:
+    try:
+        output = subprocess.check_output(
+            command,
+            cwd=cwd,
+            shell=True,
+            stderr=subprocess.STDOUT,
+        )
+    except subprocess.CalledProcessError as e:
+        if isinstance(e.output, bytes):
+            e.output = e.output.decode("utf-8")
+
+        print(
+            '{}: git error: "{}"'.format(
+                os.path.basename(sys.argv[0]),
+                e.output.splitlines()[0],
+            ),
+            file=sys.stderr,
+        )
+
+        raise SystemExit(1)
+
+    return output.decode("utf-8") if isinstance(output, bytes) else output
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+
+    main(arguments)

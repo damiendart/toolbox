@@ -22,5 +22,7 @@ if exists('$NOTES_ROOT')
     " Add support for links to other notes when using "gf" and friends.
     execute 'setlocal path+=' . fnameescape(s:notesRoot)
     setlocal suffixesadd+=.markdown,.md
+
+    let b:enable_wikilinks_syntax = 1
   endif
 endif

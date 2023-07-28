@@ -1,19 +1,19 @@
 " Damien Dart's ".vimrc".
 "
 " This file should only contain simple configuration gubbins; anything
-" more complex gets shipped to self-contained files in "$HOME/.vim/"
-" (use "gf" to edit or view these files):
+" more complex should get shipped to self-contained files
+" in "$TOOLBOX_ROOT/.vim/" (use "gf" to edit or view these files):
 "
-" - "$HOME/.vim/after/plugin/plugins.vim"
-" - "$HOME/.vim/after/syntax/markdown.vim"
-" - "$HOME/.vim/ftplugin/markdown.vim"
-" - "$HOME/.vim/plugin/base64.vim"
-" - "$HOME/.vim/plugin/colorcolumn.vim"
-" - "$HOME/.vim/plugin/fuzzy-files.vim"
-" - "$HOME/.vim/plugin/fuzzy-grep.vim"
-" - "$HOME/.vim/plugin/fuzzy-snippets.vim"
-" - "$HOME/.vim/plugin/fzf.vim"
-" - "$HOME/.vim/plugin/plugins.vim"
+" - "$TOOLBOX_ROOT/.vim/after/plugin/plugins.vim"
+" - "$TOOLBOX_ROOT/.vim/after/syntax/markdown.vim"
+" - "$TOOLBOX_ROOT/.vim/ftplugin/markdown.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/base64.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/colorcolumn.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-files.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-grep.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-snippets.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/fzf.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/plugins.vim"
 "
 " Everything here and in "$HOME/.vim/" should also work in Neovim.
 "

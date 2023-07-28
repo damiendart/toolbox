@@ -1,14 +1,14 @@
 " A simple fzf-powered file browser and selector.
 "
-" The following provides similar functionality to the ":FZF" command
-" provided by fzf.vim, but with a few tweaks:
-"
-" - FuzzyFiles is Git-aware: if no directory is specified and the
-"   current working directory is within a Git repository, FuzzyFiles
-"   will automatically search from the repository root directory.
-" - Using the bang modifier forces the editing of files even when there
-"   are are changes to the current buffer. (The ":FZF" command uses the
-"   bang modifier to start fzf in fullscreen mode instead.)
+" - By default, the search will start from the current working
+"   directory. If the current working directory is within a Git
+"   repository, the search will instead start from the repository root.
+" - Ignore files (e.g. ".gitignore") in the search root directory are
+"   respected.
+" - The bang modifier works in a similar fashion to when using it with
+"   the ":edit" command: it forces the editing of files even when there
+"   are are changes to the current buffer.
+" - See the fzf prompt header for available actions.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

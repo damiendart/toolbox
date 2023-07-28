@@ -1,19 +1,16 @@
 " A simple fzf-powered interactive grep/ripgrep doohickey.
 "
-" The ":FG" command will respect any ignore files (e.g. ".gitignore") in
-" the root directory, while the ":FGA" command will search every file.
-"
-" The following provides similar functionality to the ":Rg" command
-" from <https://github.com/junegunn/fzf.vim>, but with a few tweaks:
-"
-" - Changing the query string will rerun ripgrep instead of filtering
-"   the initial input.
-" - FuzzyGrep is Git-aware: if the current working directory is within a
-"   Git repository, FuzzyGrep will automatically run ripgrep from the
-"   repository root directory.
-" - Using the bang modifier forces the editing of files even when there
-"   are are changes to the current buffer. (The ":Rg" command uses the
-"   bang modifier to start fzf in fullscreen mode instead.)
+" - The ":FG" command will respect ignore files (e.g. ".gitignore") in
+"   the search root directory, whereas ":FGA" will search every file.
+" - By default, ripgrep will run from the current working directory. If
+"   the current working directory is within a Git repository, ripgrep
+"   will instead run from the repository root.
+" - Changing the query will rerun ripgrep using the new query instead of
+"   filtering the initial input.
+" - The bang modifier works in a similar fashion to when using it with
+"   the ":edit" command: it forces the editing of files even when there
+"   are are changes to the current buffer.
+" - See the fzf prompt header for available actions.
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

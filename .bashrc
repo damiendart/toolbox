@@ -40,7 +40,6 @@ FZF_COMPLETION
 
 shellrc__source_one "fzf-key-bindings" <<FZF_KEY_BINDINGS
 ${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/key-bindings.bash
-/usr/local/opt/fzf/shell/key-bindings.bash
 FZF_KEY_BINDINGS
 
 if [[ -f ~/.machine.bashrc ]]; then

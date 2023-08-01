@@ -40,6 +40,21 @@ def main(arguments: argparse.Namespace) -> None:
 
                 issues_found = True
 
+        if arguments.stashes:
+            status = run_git_command(
+                "git stash list",
+                absolute_pathname,
+            )
+
+            if status:
+                print(
+                    '[✘] "{}": Repository has stashed modifications'.format(
+                        directory,
+                    ),
+                )
+
+                issues_found = True
+
         if arguments.unpushed_commits or arguments.upstream_branches:
             branches = run_git_command(
                 'git for-each-ref --format="%(refname:short)\t%(upstream:short)\t%(upstream:trackshort)" refs/heads',  # noqa: E501
@@ -87,6 +102,13 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         action="store_false",
         dest="dirty_directories",
         help="do not show repositories with dirty working directories",
+    )
+    parser.add_argument(
+        "-s",
+        "--no-stashes",
+        action="store_false",
+        dest="stashes",
+        help="do not show repositories with stashed modifications",
     )
     parser.add_argument(
         "-u",

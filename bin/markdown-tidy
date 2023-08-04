@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
-A simple Markdown-tidying script.
+An opinionated Markdown-formatting script.
 
-This script uses Pandoc (<https://pandoc.org/>) to do the majority of
-the tidying-up.
-
-This file was written by Damien Dart, <damiendart@pobox.com>. This is
-free and unencumbered software released into the public domain. For
-more information, please refer to the accompanying "UNLICENCE" file.
+(Ab)uses Pandoc (<https://pandoc.org/>).
 """
+
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
 
 import argparse
 import os
@@ -17,81 +16,77 @@ import re
 import shutil
 import subprocess
 import sys
+import typing
 
 
-def process_markdown(markdown):
-    pandoc_command = "pandoc -f markdown -t gfm+definition_lists --reference-links --reference-location=section --columns=72 --tab-stop=4"  # noqa: E501
-    process = subprocess.run(
-        pandoc_command.split(" "),
-        capture_output=True,
+def fatal_error(message: str) -> None:
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def format_markdown(markdown: str) -> str:
+    markdown = subprocess.check_output(
+        [
+            "pandoc",
+            "-f",
+            "markdown",
+            "-t",
+            "".join(
+                [
+                    # For a list of Pandoc Markdown extensions, see
+                    # <https://pandoc.org/MANUAL.html#pandocs-markdown>.
+                    "markdown",
+                    "+definition_lists",
+                    "+pipe_tables",
+                    "-bracketed_spans",
+                    "-raw_attribute",
+                    "-shortcut_reference_links",
+                    "-simple_tables",
+                    "-smart",
+                ],
+            ),
+            "--reference-links",
+            "--reference-location=section",
+            "--columns=72",
+            "--tab-stop=4",
+        ],
         input=markdown,
         text=True,
     )
-    processed_markdown = process.stdout.strip()
 
-    # fmt: off
-    processed_markdown = re.sub(
-        r"(https?|mailto):[^ \n]+",
+    # Surround the URL portion of reference links with angle brackets
+    # to match the syntax of automatic links.
+    markdown = re.sub(
+        r"(?<=]: )((https?|mailto):[^ \n]+)",
         r"<\g<0>>",
-        processed_markdown
+        markdown,
     )
-    # fmt: on
-    processed_markdown = re.sub(
-        r"^##? ",
-        r"\n\g<0>",
-        processed_markdown,
-        flags=re.MULTILINE,
-    )
-    processed_markdown = re.sub(
+
+    # Convert first-level ATX-style headings to setext-style.
+    markdown = re.sub(
         r"^# (.*)",
-        lambda m: "{0}\n{1}".format(m.group(1), re.sub(".", "=", m.group(1))),
-        processed_markdown,
-        flags=re.MULTILINE,
-    )
-    processed_markdown = re.sub(
-        r"=\n\n\n##",
-        "=\n\n##",
-        processed_markdown,
+        lambda m: "\n".join([m.group(1), re.sub(".", "=", m.group(1))]),
+        markdown,
         flags=re.MULTILINE,
     )
 
-    return processed_markdown.strip()
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "infiles",
-        help="input Markdown files to be processed",
-        nargs="*",
-        type=argparse.FileType("r"),
-        default=sys.stdin,
+    # Add extra spacing before a second-level heading, unless it
+    # immediately follows a first-level heading.
+    markdown = re.sub(
+        r"(?<!=\n\n)^## ",
+        r"\n\g<0>",
+        markdown,
+        flags=re.MULTILINE,
     )
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        "--outdir",
-        help="write output to individual files in OUTDIR",
-        nargs="?",
-        type=pathlib.Path,
-    )
-    group.add_argument(
-        "-o",
-        "--outfile",
-        help="write output to OUTFILE instead of standard output",
-        default=sys.stdout,
-        nargs="?",
-        type=pathlib.Path,
-    )
+    return markdown.strip()
 
-    if not shutil.which("pandoc"):
-        parser.exit(1, "Error: Pandoc is required\n")
 
-    arguments = parser.parse_args()
-
-    if not isinstance(arguments.infiles, list):
-        arguments.infiles = [arguments.infiles]
-
+def main(arguments: argparse.Namespace) -> None:
     if arguments.outdir:
         os.makedirs(arguments.outdir, 0o700, True)
 
@@ -110,7 +105,9 @@ if __name__ == "__main__":
                 "w",
             )
 
-            outfile.write(process_markdown(input) + "\n")
+            outfile.write(format_markdown(input) + "\n")
+            outfile.close()
+            print('[✔] Written "{}"'.format(os.path.abspath(outfile.name)))
     else:
         input = ""
 
@@ -121,4 +118,45 @@ if __name__ == "__main__":
         if isinstance(arguments.outfile, pathlib.Path):
             arguments.outfile = arguments.outfile.open(mode="w")
 
-        arguments.outfile.write(process_markdown(input) + "\n")
+        arguments.outfile.write(format_markdown(input) + "\n")
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "infiles",
+        help="input Markdown files to be processed",
+        nargs="*",
+        type=argparse.FileType("r"),
+        default=[sys.stdin],
+    )
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "--outdir",
+        help="write output to individual files in OUTDIR",
+        nargs="?",
+        type=pathlib.Path,
+    )
+    group.add_argument(
+        "-o",
+        "--outfile",
+        help="write output to OUTFILE instead of standard output",
+        default=sys.stdout,
+        nargs="?",
+        type=pathlib.Path,
+    )
+
+    return parser.parse_args(arguments)
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+
+    if not shutil.which("pandoc"):
+        fatal_error("Pandoc is required")
+
+    main(arguments)

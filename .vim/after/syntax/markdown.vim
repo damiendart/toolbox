@@ -16,12 +16,12 @@ endif
 " to support both the "[[standard-wikilink|standard style]]" and
 " the "[[bare-wikilink]]" style.
 if exists('b:enable_wikilinks_syntax')
-  syntax region markdownWikiLink start=+\[\[\ze[^!]+ms=e+1 end=+\]\]+
-     \ contains=markdownWikiLinkSeparator,markdownWikiLinkUrl,markdownWikiLinkText
+  syntax region markdownWikiLink start=+\[\[+ end=+\]\]+
+    \ contains=markdownWikiLinkSeparator,markdownWikiLinkUrl,markdownWikiLinkText
 
   syntax match markdownWikiLinkSeparator !|! contained nextgroup=markdownWikiLinkText
   syntax match markdownWikiLinkText !\(\w\|[ -/#.]\)\+! contained
-  syntax match markdownWikiLinkUrl !\_[^\]|]\+\ze|\?! contained nextgroup=markdownWikiLinkSeparator
+  syntax match markdownWikiLinkUrl !\[\[\zs\_[^\]|]\+\ze|\?! contained nextgroup=markdownWikiLinkSeparator
 
   highlight def link markdownWikiLinkUrl Identifier
   highlight def link markdownWikiLinkText htmlLink

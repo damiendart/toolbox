@@ -14,7 +14,7 @@ if exists('$NOTES_ROOT')
   let s:notesRoot = fnamemodify($NOTES_ROOT, ':p')
   let s:path = expand('%:p')
 
-  if empty(s:path) || !filereadable(s:path)
+  if empty(s:path)
     let s:path = getcwd()
   endif
 

@@ -4,7 +4,7 @@
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
 
-if exists('b:loaded')
+if exists('b:loaded') || !exists('$NOTES_ROOT')
   finish
 endif
 
@@ -34,21 +34,15 @@ endfun
 
 let b:loaded = 1
 
-if exists('$NOTES_ROOT')
-  let s:notesRoot = fnamemodify($NOTES_ROOT, ':p')
-  let s:path = expand('%:p')
+let s:notesRoot = fnamemodify($NOTES_ROOT, ':p')
+let s:path = empty(expand('%:p')) ? getcwd() : expand('%:p')
 
-  if empty(s:path)
-    let s:path = getcwd()
-  endif
+if s:path =~ '^' . s:notesRoot
+  " Add support for links to other notes when using "gf" and friends.
+  execute 'setlocal path+=' . fnameescape(s:notesRoot)
 
-  if s:path =~ '^' . s:notesRoot
-    " Add support for links to other notes when using "gf" and friends.
-    execute 'setlocal path+=' . fnameescape(s:notesRoot)
+  setlocal completefunc=CompleteTags
+  setlocal suffixesadd+=.markdown,.md
 
-    setlocal completefunc=CompleteTags
-    setlocal suffixesadd+=.markdown,.md
-
-    let b:enable_wikilinks_syntax = 1
-  endif
+  let b:enable_wikilinks_syntax = 1
 endif

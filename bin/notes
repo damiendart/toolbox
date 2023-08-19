@@ -25,6 +25,20 @@ def fatal_error(message):
     raise SystemExit(1)
 
 
+def open_note(notes_directory, filename):
+    if os.environ.get("VIM_TERMINAL"):
+        # The following functionality uses Vim's terminal API to open
+        # files in the existing Vim instance instead of opening a new
+        # instance of Vim inside the terminal window. For more
+        # information, search for "terminal-api" in Vim's help.
+        print(f'\033]51;["drop", "{filename}"]\007', end="")
+    else:
+        subprocess.run(
+            [os.environ.get("EDITOR", "vim"), filename],
+            cwd=notes_directory,
+        )
+
+
 def parse_arguments(arguments):
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(dest="command", required=True)
@@ -67,10 +81,7 @@ def parse_arguments(arguments):
 
 
 def run_inbox_command(notes_directory, arguments):
-    subprocess.run(
-        [os.environ.get("EDITOR", "vim"), "inbox.md"],
-        cwd=notes_directory,
-    )
+    open_note(notes_directory, os.path.join(notes_directory, "inbox.md"))
 
 
 def run_jot_command(notes_directory, arguments):
@@ -133,10 +144,7 @@ def run_new_command(notes_directory, arguments):
         fatal_error("File would be created outside of NOTES_ROOT")
 
     os.makedirs(os.path.dirname(filename), 0o700, True)
-    subprocess.run(
-        [os.environ.get("EDITOR", "vim"), filename],
-        cwd=notes_directory,
-    )
+    open_note(notes_directory, filename)
 
 
 if __name__ == "__main__":

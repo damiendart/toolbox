@@ -52,7 +52,7 @@ endif
 " see <https://unix.stackexchange.com/q/348771>). This doesn't work all
 " the time; Vim will still sometimes set the wrong value for the
 " "background" option during Git rebasing.
-if exists('$TMUX')
+if exists('$TMUX') && !exists('$VIM_TERMINAL')
   let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
 endif
 

@@ -105,11 +105,10 @@ if [ "$LIST_FILES" = 1 ]; then
   exit
 fi
 
+# CTRL+Z process suspension is suppressed as it doesn't work properly
+# (see <https://github.com/junegunn/fzf/issues/2289>).
 FZF_OUTPUT=$(\
   echo "$SNIPPET_FILES" | sort | fzf \
-    # CTRL+Z process suspension is suppressed as it doesn't work
-    # properly (see <https://github.com/junegunn/fzf/issues/2289> for
-    # more information).
     --bind='ctrl-z:ignore' \
     --delimiter='/' \
     --expect='ctrl-p' \

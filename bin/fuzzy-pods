@@ -107,7 +107,8 @@ INITIAL_INPUT=$(eval "$FZF_DEFAULT_COMMAND")
 FZF_OUTPUT=$(\
   # shellcheck disable=SC2016
   echo "$INITIAL_INPUT" | fzf \
-    --bind='ctrl-r:reload:$FZF_DEFAULT_COMMAND,ctrl-z:ignore' \
+    --bind='ctrl-r:reload:$FZF_DEFAULT_COMMAND' \
+    --bind='ctrl-z:ignore' \
     --expect="ctrl-d,ctrl-l,ctrl-y" \
     --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Reload ╱ CTRL+Y: Copy pod name ╱ ENTER: Shell' \
     --header-lines=1 \

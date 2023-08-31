@@ -48,12 +48,16 @@ if s:path =~ '^' . s:notesRoot
   if has('patch-8.2.3198')
     setlocal breakindent
     setlocal briopt+=list:-1
-    " The following regular expression jamboree is based on
-    " <https://vimways.org/2018/formatting-lists-with-vim/>, with tweaks
-    " to support GitHub Flavoured Markdown task list items.
+    " The following list-formatting regular expression jamboree is based
+    " on <https://vimways.org/2018/formatting-lists-with-vim/>, with
+    " additions and tweaks to support GitHub Flavoured Markdown task
+    " list items and quoted lists.
     setlocal formatlistpat=^\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
+    setlocal formatlistpat+=\\\|^>\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
     setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\[[\ -x]\\]\\s\\+
+    setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\[[\ -x]\\]\\s\\+
     setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+
+    setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\+
   endif
 
   let b:enable_wikilinks_syntax = 1

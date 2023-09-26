@@ -114,7 +114,7 @@ FZF_OUTPUT=$(\
     --expect='ctrl-p' \
     --header='CTRL+P: Print snippet ╱ ENTER: Copy snippet' \
     --with-nth='-1' \
-    --preview='(bat --color=always --style=plain {} || cat {}) 2>/dev/null' \
+    --preview='cat {} 2>/dev/null' \
     --prompt='--%<-- ' \
     --query="$1" \
 )

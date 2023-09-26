@@ -12,8 +12,8 @@ let g:fzf_base_spec = s:popup_support
   \? { 'window': { 'width': 0.9, 'height': 0.6 } }
   \: { 'down': '~40%' }
 
-let g:fzf_preview_command = '(bat --color=always --style=plain {} || cat {}) 2>/dev/null'
-let g:fzf_preview_line_command = '(bat --color=always --style=plain {1} --highlight-line {2} || cat {1}) 2>/dev/null'
+let g:fzf_preview_command = 'cat {} 2>/dev/null'
+let g:fzf_preview_line_command = '(nl -ba {1} | grep --color=always -E "$(printf "|^\s*%s\s.*" {2})") 2>/dev/null'
 
 autocmd! FileType fzf
 

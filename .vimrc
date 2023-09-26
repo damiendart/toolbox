@@ -1,8 +1,8 @@
 " Damien Dart's ".vimrc".
 "
 " This file should only contain simple configuration gubbins; anything
-" more complex should get shipped to self-contained files
-" in "$TOOLBOX_ROOT/.vim/" (use "gf" to edit or view these files):
+" more complex should get shipped off to self-contained files in
+" "$TOOLBOX_ROOT/.vim/" (use "gf" to edit or view these files):
 "
 " - "$TOOLBOX_ROOT/.vim/after/plugin/plugins.vim"
 " - "$TOOLBOX_ROOT/.vim/after/syntax/markdown.vim"

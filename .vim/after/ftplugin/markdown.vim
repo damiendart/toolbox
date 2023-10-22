@@ -21,7 +21,7 @@ function! CompleteTags(findStart, base) abort
   endif
 
   let l:results = []
-  let l:tags = split(system('notes tags'))
+  let l:tags = split(system('nt tags'))
 
   for l:tag in l:tags
       if l:tag =~ '^' . a:base

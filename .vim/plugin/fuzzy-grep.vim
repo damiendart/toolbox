@@ -102,5 +102,31 @@ function! s:ToQuickfix(line)
   \ }
 endfunction
 
+function! s:FuzzyGrepSelection(visualmode, command)
+  " "getreginfo" is the preferred function to use when saving and
+  " restoring registers. See <https://github.com/vim/vim/issues/2345>
+  " and <https://vi.stackexchange.com/a/26272> for more information.
+  let l:register = has('patch-8.2.0924')
+    \? getreginfo('"')
+    \: ['"', getreg('"', 1, 1), getregtype('"')]
+
+  try
+    if a:visualmode == 'v'
+      normal! gvy
+    else
+      call setreg('"', expand('<cword>'))
+    endif
+
+    execute ":" . a:command join(getreg('"', 1, 1), "")
+  finally
+    call call('setreg', l:register)
+  endtry
+endfunction
+
 command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', '', <f-args>)
 command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', '*', <f-args>)
+
+nnoremap <silent> <leader>fa :<C-U>call <SID>FuzzyGrepSelection('n', 'FGA')<CR>
+vnoremap <silent> <leader>fa :<C-U>call <SID>FuzzyGrepSelection('v', 'FGA')<CR>
+nnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('n', 'FG')<CR>
+vnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('v', 'FG')<CR>

@@ -12,5 +12,5 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[{get-title,git-hometime,install,*.py}]
+[{git-hometime,install,*.py}]
 indent_size = 4

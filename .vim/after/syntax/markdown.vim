@@ -26,3 +26,12 @@ if exists('b:enable_wikilinks_syntax')
   highlight def link markdownWikiLinkUrl Identifier
   highlight def link markdownWikiLinkText htmlLink
 endif
+
+if exists('b:enable_tags_highlighting')
+  " Note: if updating the following regular expressions, the regular
+  " expression used to match tags in <https://github.com/damiendart/nt>
+  " may also require updating.
+  syntax match tag ![ ']#[a-zA-Z/:-]\+!hs=s+1
+  syntax match tag !^#[a-zA-Z/:-]\+!
+  highlight link tag Statement
+endif

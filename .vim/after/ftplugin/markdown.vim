@@ -61,4 +61,5 @@ if s:path =~ '^' . s:notesRoot
   endif
 
   let b:enable_wikilinks_syntax = 1
+  let b:enable_tags_highlighting = 1
 endif

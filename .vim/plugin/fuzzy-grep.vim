@@ -119,7 +119,11 @@ function! s:FuzzyGrepSelection(visualmode, command)
 
     execute ":" . a:command join(getreg('"', 1, 1), "")
   finally
-    call call('setreg', l:register)
+    if type(l:register) == type({})
+      call setreg('"', l:register)
+    else
+      call call('setreg', l:register)
+    endif
   endtry
 endfunction
 

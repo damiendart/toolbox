@@ -31,7 +31,7 @@ if exists('b:enable_tags_highlighting')
   " Note: if updating the following regular expressions, the regular
   " expression used to match tags in <https://github.com/damiendart/nt>
   " may also require updating.
-  syntax match tag ![ ']#[a-zA-Z/:-]\+!hs=s+1
-  syntax match tag !^#[a-zA-Z/:-]\+!
-  highlight link tag Statement
+  syntax match markdownTag ![ ']#[a-zA-Z/:-]\+!hs=s+1
+  syntax match markdownTag !^#[a-zA-Z/:-]\+!
+  highlight link markdownTag Statement
 endif

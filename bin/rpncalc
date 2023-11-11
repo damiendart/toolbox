@@ -11,7 +11,9 @@ Inspired by <https://johnlekberg.com/blog/2020-05-22-cli-rpn.html>.
 
 import decimal
 import inspect
+import math
 import readline
+import typing
 
 
 class RPNCalculator:
@@ -42,24 +44,48 @@ class RPNCalculator:
 
         return decorator
 
+    @property
     def keywords(self):
-        return self._operations.keys()
+        return tuple(self._operations.keys())
 
-    def execute(self, command: str) -> decimal.Decimal:
+    def execute(self, command: str) -> typing.Optional[decimal.Decimal]:
         for token in command.split():
             if token in self._operations:
                 self._operations[token]()
             else:
                 try:
-                    token = decimal.Decimal(token)
-                    self._stack.append(token)
+                    number = decimal.Decimal(token)
+                    self._stack.append(number)
                 except decimal.InvalidOperation:
-                    raise ValueError(f"unrecognised token: {token}")
+                    raise ValueError(f"unrecognised command: {token}")
 
         try:
-            return self._stack[0]
+            return self._stack[-1]
         except IndexError:
-            return
+            return None
+
+    @property
+    def stack(self):
+        return tuple(self._stack)
+
+
+class RPNInterpreter:
+    def __init__(self, calculator):
+        self._calculator = calculator
+
+    def execute(self, line) -> typing.Union[decimal.Decimal, str]:
+        line = line.lower().strip()
+
+        if line == "stack":
+            return f"[{', '.join([str(i) for i in self._calculator.stack])}]"
+        elif line == "exit":
+            raise SystemExit(0)
+
+        return self._calculator.execute(line)
+
+    @property
+    def keywords(self):
+        return self._calculator.keywords + ("stack",)
 
 
 def make_calculator() -> RPNCalculator:
@@ -98,6 +124,10 @@ def make_calculator() -> RPNCalculator:
     def dup(x):
         return [x, x]
 
+    @calculator.operation("pi")
+    def pi():
+        return [decimal.Decimal(math.pi)]
+
     @calculator.operation("swap")
     def swap(x, y):
         return [y, x]
@@ -105,9 +135,9 @@ def make_calculator() -> RPNCalculator:
     return calculator
 
 
-def make_completer(calculator):
+def make_completer(interpreter):
     def complete(text, state):
-        keywords = calculator.keywords()
+        keywords = interpreter.keywords
         results = [x for x in keywords if x.startswith(text)] + [None]
 
         return results[state] + " "
@@ -117,9 +147,10 @@ def make_completer(calculator):
 
 if __name__ == "__main__":
     calculator = make_calculator()
+    interpreter = RPNInterpreter(calculator)
 
     readline.parse_and_bind("tab: complete")
-    readline.set_completer(make_completer(calculator))
+    readline.set_completer(make_completer(interpreter))
 
     while True:
         try:
@@ -129,11 +160,13 @@ if __name__ == "__main__":
             break
 
         try:
-            result = calculator.execute(line)
+            result = interpreter.execute(line)
         except decimal.DivisionByZero:
             print("ERROR: division by zero")
+            continue
         except Exception as e:
             print("ERROR:", e)
-        else:
-            if result is not None:
-                print(result)
+            continue
+
+        if result is not None:
+            print(result)

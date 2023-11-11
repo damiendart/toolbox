@@ -47,6 +47,7 @@ tasks:
     cmds:
       - task: 'lint:python:black'
       - task: 'lint:python:flake8'
+      - task: 'lint:python:mypy'
     desc: 'Run all Python-linting tasks'
 
   lint:python:black:
@@ -58,6 +59,11 @@ tasks:
     cmds:
       - '.venv/bin/flake8 install bin/git-hometime bin/markdown-tidy bin/rpncalc'
     desc: 'Lint Python scripts with Flake8'
+
+  lint:python:mypy:
+    cmds:
+      - '.venv/bin/mypy bin/rpncalc'
+    desc: 'Type check Python scripts with mypy'
 
   lint:shell:
     cmds:

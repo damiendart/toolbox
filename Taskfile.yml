@@ -28,6 +28,7 @@ tasks:
 
   dependencies:git-submodules:
     cmds:
+      - 'git submodule init'
       - 'git submodule sync --recursive'
       - 'git submodule update --recursive'
     desc: 'Initialise and update Git submodules'

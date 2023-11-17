@@ -48,10 +48,10 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
 endif
 
-" Improves Vim-in-tmux colour-related funkiness (for more information,
-" see <https://unix.stackexchange.com/q/348771>). This doesn't work all
-" the time; Vim will still sometimes set the wrong value for the
-" "background" option during Git rebasing.
+" Fixes some Vim-in-tmux colour-related funkiness caused by the
+" "background" option being incorrectly set. For more information, see
+" <https://github.com/vim/vim/issues/7867#issuecomment-781794423> and
+" <https://unix.stackexchange.com/q/348771>.
 if exists('$TMUX') && !exists('$VIM_TERMINAL')
   let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
 endif

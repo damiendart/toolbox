@@ -3,13 +3,12 @@ toolbox
 
 My dotfiles and random scripts of varying quality.
 
-To get set up:
+Once a copy of this repository has been downloaded with Git:
 
-1.  Use Git to download a copy of the *toolbox* repository, ensuring
-    that any [Git submodules][] (currently used to manage third-party
-    Vim plugins) are also initialised and updated.
-2.  Run the `install` script located in the repository root to create
-    the relevant symlinks in your home directory.
+1.  Ensure that any [Git submodules][], currently used to manage
+    third-party Vim plugins, are initialised and updated.
+2.  Run the `install` script in the repository root to create the
+    relevant symlinks in your home directory.
 
   [Git submodules]: <https://git-scm.com/book/en/v2/Git-Tools-Submodules>
 

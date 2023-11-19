@@ -30,7 +30,7 @@ class RPNCalculator:
 
                 if len(self._stack) < arity:
                     raise IndexError(
-                        f"{code!a} requires {arity} item{'s'[:arity^1]} on stack"  # noqa: E501
+                        f"{code!a} requires {arity} item{'s'[:arity ^ 1]} on stack"  # noqa: E501
                     )
 
                 arguments = [self._stack.pop() for _ in range(arity)]

@@ -39,7 +39,13 @@ function! s:Base64DecodeSelection() abort
   endfunction
 
   let l:paste = &paste
-  let l:register = @"
+
+  " "getreginfo" is the preferred function to use when saving and
+  " restoring registers. See <https://github.com/vim/vim/issues/2345>
+  " and <https://vi.stackexchange.com/a/26272> for more information.
+  let l:register = has('patch-8.2.0924')
+    \? getreginfo('"')
+    \: ['"', getreg('"', 1, 1), getregtype('"')]
 
   set paste
   normal! gvy
@@ -50,21 +56,35 @@ function! s:Base64DecodeSelection() abort
   finally
     normal! `[
     let &paste = l:paste
-    let @" = l:register
+
+    if type(l:register) == type({})
+      call setreg('"', l:register)
+    else
+      call call('setreg', l:register)
+    endif
   endtry
 endfunction
 
 function! s:Base64EncodeSelection()
   let l:paste = &paste
-  let l:register = @"
+  let l:register = has('patch-8.2.0924')
+    \? getreginfo('"')
+    \: ['"', getreg('"', 1, 1), getregtype('"')]
 
-  set paste
-  normal! gv
-  execute "normal! c\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
-  normal! `[
+  try
+    set paste
+    normal! gv
+    execute "normal! c\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
+    normal! `[
+  finally
+    let &paste = l:paste
 
-  let &paste = l:paste
-  let @" = l:register
+    if type(l:register) == type({})
+      call setreg('"', l:register)
+    else
+      call call('setreg', l:register)
+    endif
+  endtry
 endfunction
 
 vnoremap <silent> <leader>be :<C-U>call <SID>Base64EncodeSelection()<CR>

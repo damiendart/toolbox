@@ -14,7 +14,9 @@ Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
 Opens up a fzf-powered Kubernetes pod browser.
 
-Requires fzf and kubectl.
+Requires fzf and kubectl. If the GNU version of getopt is available it
+will be used to parse command-line arguments, adding support for grouped
+short options and other niceties.
 
 FLAGS:
 
@@ -45,6 +47,17 @@ HELP
 
 # shellcheck disable=2034
 FZF_DEFAULT_COMMAND='kubectl get pods'
+
+# Using the GNU version of getopt to parse command-line arguments adds
+# support for grouped short options and other niceties.
+if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
+  if ! ARGS=$(getopt -l help,namespace: -n "$(basename "$0")" -o hn: -- "$@"); then
+    printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+    exit 2
+  fi
+
+  eval set -- "$ARGS"
+fi
 
 # The following command-line argument and option parser is based on
 # <http://mywiki.wooledge.org/BashFAQ/035>.

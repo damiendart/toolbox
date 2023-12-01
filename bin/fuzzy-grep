@@ -16,8 +16,10 @@ Launches Vim with the fuzzy grep/ripgrep doohickey already active. By
 default, the ":FG" Vim command will be used, which respects any ignore
 files (e.g. ".gitignore").
 
-Requires whatever "$HOME/.vim/plugin/fuzzy-grep.vim" requires and that
-the EDITOR environment variable is set to some sort of Vim.
+Requires whatever "\$HOME/.vim/plugin/fuzzy-grep.vim" requires and that
+the EDITOR environment variable is set to some sort of Vim. If the GNU
+version of getopt is available it will be used to parse command-line
+arguments, adding support for grouped short options and other niceties.
 
 FLAGS:
 
@@ -30,6 +32,17 @@ HELP
 }
 
 FUZZY_GREP_COMMAND=":FG"
+
+# Using the GNU version of getopt to parse command-line arguments adds
+# support for grouped short options and other niceties.
+if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
+  if ! ARGS=$(getopt -l everything,help -n "$(basename "$0")" -o eh -- "$@"); then
+    printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+    exit 2
+  fi
+
+  eval set -- "$ARGS"
+fi
 
 # The following command-line argument and option parser is based on
 # <http://mywiki.wooledge.org/BashFAQ/035>.

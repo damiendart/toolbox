@@ -18,7 +18,9 @@ Opens up a fzf-powered snippet browser.
 
 Requires fzf, ripgrep, snippet-placeholder, and xsel, and that the
 SNIPPET_PATH environment variable is set to a colon-seperated list of
-directories containing files to use as snippets.
+directories containing files to use as snippets. If the GNU version of
+getopt is available it will be used to parse command-line arguments,
+adding support for grouped short options and other niceties.
 
 FLAGS:
 
@@ -41,6 +43,17 @@ HELP
 }
 
 LIST_FILES=0
+
+# Using the GNU version of getopt to parse command-line arguments adds
+# support for grouped short options and other niceties.
+if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
+  if ! ARGS=$(getopt -l help,list -n "$(basename "$0")" -o hl -- "$@"); then
+    printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+    exit 2
+  fi
+
+  eval set -- "$ARGS"
+fi
 
 if ! type 'fzf' 1>/dev/null 2>&1 || \
   ! type 'rg' 1>/dev/null 2>&1 || \

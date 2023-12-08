@@ -28,7 +28,7 @@ def fatal_error(message: str) -> None:
     raise SystemExit(1)
 
 
-def format_markdown(markdown: str) -> str:
+def format_markdown(markdown: str, wrap_text: bool) -> str:
     markdown = subprocess.check_output(
         [
             "pandoc",
@@ -51,7 +51,7 @@ def format_markdown(markdown: str) -> str:
             ),
             "--reference-links",
             "--reference-location=section",
-            "--columns=72",
+            "--columns=72" if wrap_text else "--wrap=none",
             "--tab-stop=4",
         ],
         input=markdown,
@@ -87,6 +87,8 @@ def format_markdown(markdown: str) -> str:
 
 
 def main(arguments: argparse.Namespace) -> None:
+    wrap_text = not arguments.no_wrap
+
     if arguments.outdir:
         os.makedirs(arguments.outdir, 0o700, True)
 
@@ -105,7 +107,7 @@ def main(arguments: argparse.Namespace) -> None:
                 "w",
             )
 
-            outfile.write(format_markdown(input) + "\n")
+            outfile.write(format_markdown(input, wrap_text) + "\n")
             outfile.close()
             print('[✔] Written "{}"'.format(os.path.abspath(outfile.name)))
     else:
@@ -118,7 +120,9 @@ def main(arguments: argparse.Namespace) -> None:
         if isinstance(arguments.outfile, pathlib.Path):
             arguments.outfile = arguments.outfile.open(mode="w")
 
-        arguments.outfile.write(format_markdown(input) + "\n")
+        arguments.outfile.write(
+            format_markdown(input, wrap_text) + "\n",
+        )
 
 
 def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
@@ -132,6 +136,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         nargs="*",
         type=argparse.FileType("r"),
         default=[sys.stdin],
+    )
+    parser.add_argument(
+        "--no-wrap",
+        action="store_true",
+        dest="no_wrap",
+        help="do not wrap text",
     )
 
     group = parser.add_mutually_exclusive_group()

@@ -12,5 +12,5 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[{git-hometime,install,rpncalc,*.py}]
+[{git-hometime,install,markdown-tidy,rpncalc,*.py}]
 indent_size = 4

@@ -38,8 +38,10 @@ let s:notesRoot = fnamemodify($NOTES_ROOT, ':p')
 let s:path = empty(expand('%:p')) ? getcwd() : expand('%:p')
 
 if s:path =~ '^' . s:notesRoot
-  " Add support for links to other notes when using "gf" and friends.
-  execute 'setlocal path+=' . fnameescape(s:notesRoot)
+  " The double-escaping is required so that directory paths containing
+  " spaces are handled correctly (for more information, search for
+  " "option-backslash" in Vim's help).
+  execute 'setlocal path+=' . fnameescape(fnameescape(s:notesRoot))
 
   setlocal completefunc=CompleteTags
   setlocal linebreak

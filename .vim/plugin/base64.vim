@@ -27,7 +27,7 @@ if !executable('base64')
   finish
 endif
 
-function! s:Base64DecodeSelection() abort
+function! s:Base64DecodeSelection(visualmode) abort
   function! s:decode(input) abort
     let l:output = system('base64 --decode --wrap=0', a:input)
 
@@ -38,6 +38,7 @@ function! s:Base64DecodeSelection() abort
     return l:output
   endfunction
 
+  let l:iskeyword = &iskeyword
   let l:paste = &paste
 
   " "getreginfo" is the preferred function to use when saving and
@@ -48,13 +49,22 @@ function! s:Base64DecodeSelection() abort
     \: ['"', getreg('"', 1, 1), getregtype('"')]
 
   set paste
-  normal! gvy
+
   try
-    execute 'normal! gv"_c' . s:decode(@") . "\<ESC>"
+    if a:visualmode == 'v'
+      normal! gvy
+      execute 'normal! gv"_c' . s:decode(@") . "\<ESC>"
+    else
+      set iskeyword+=+,/,=
+
+      call setreg('"', expand('<cword>'))
+      execute 'normal! viw"_c' . s:decode(@") . "\<ESC>"
+    endif
   catch
     echoerr 'Error: ' . v:exception
   finally
     normal! `[
+    let &iskeyword = l:iskeyword
     let &paste = l:paste
 
     if type(l:register) == type({})
@@ -65,7 +75,7 @@ function! s:Base64DecodeSelection() abort
   endtry
 endfunction
 
-function! s:Base64EncodeSelection()
+function! s:Base64EncodeSelection(visualmode)
   let l:paste = &paste
   let l:register = has('patch-8.2.0924')
     \? getreginfo('"')
@@ -73,10 +83,16 @@ function! s:Base64EncodeSelection()
 
   try
     set paste
-    normal! gv
-    execute "normal! c\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
-    normal! `[
+
+    if a:visualmode == 'v'
+      normal! gv
+      execute "normal! c\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
+    else
+      call setreg('"', expand('<cword>'))
+      execute "normal! viwc\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
+    endif
   finally
+    normal! `[
     let &paste = l:paste
 
     if type(l:register) == type({})
@@ -87,5 +103,7 @@ function! s:Base64EncodeSelection()
   endtry
 endfunction
 
-vnoremap <silent> <leader>be :<C-U>call <SID>Base64EncodeSelection()<CR>
-vnoremap <silent> <leader>bd :<C-U>call <SID>Base64DecodeSelection()<CR>
+nnoremap <silent> <leader>be :<C-U>call <SID>Base64EncodeSelection('n')<CR>
+vnoremap <silent> <leader>be :<C-U>call <SID>Base64EncodeSelection('v')<CR>
+nnoremap <silent> <leader>bd :<C-U>call <SID>Base64DecodeSelection('n')<CR>
+vnoremap <silent> <leader>bd :<C-U>call <SID>Base64DecodeSelection('v')<CR>

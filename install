@@ -26,6 +26,7 @@ files = [
     ".vim/after/ftplugin",
     ".vim/after/plugin",
     ".vim/after/syntax",
+    ".vim/doc",
     ".vim/pack",
     ".vim/plugin",
     ".vimrc",

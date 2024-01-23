@@ -14,3 +14,7 @@ trim_trailing_whitespace = true
 
 [{git-hometime,install,markdown-tidy,rpncalc,*.py}]
 indent_size = 4
+
+[toolbox.txt]
+indent_size = 8
+indent_style = tab

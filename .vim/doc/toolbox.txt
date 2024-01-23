@@ -1,0 +1,174 @@
+*toolbox.txt*	Damien Dart's custom Vim bits-and-pieces.
+
+  dP                     dP dP                                               ~
+  88                     88 88                                               ~
+d8888P .d8888b. .d8888b. 88 88d888b. .d8888b. dP.  .dP                       ~
+  88   88'  `88 88'  `88 88 88'  `88 88'  `88  `8bd8'                        ~
+  88   88.  .88 88.  .88 88 88.  .88 88.  .88  .d88b.                        ~
+  dP   `88888P' `88888P' dP 88Y8888' `88888P' dP'  `dP                       ~
+
+
+==============================================================================
+CONTENTS                                                      *toolbox-contents*
+
+    1. Introduction ............................................. |toolbox|
+    2. Fuzzy-finders ...................................... |toolbox-fuzzy|
+    3. Notetaking gubbins ................................. |toolbox-notes|
+    4. Miscellaneous ....................................... |toolbox-misc|
+
+
+==============================================================================
+INTRODUCTION                                                           *toolbox*
+
+The following a brief overview of the custom Vim functionality provided by
+Damien Dart's dotfiles.
+
+
+==============================================================================
+FUZZY-FINDERS                                                    *toolbox-fuzzy*
+
+The following fuzzy finders require `fzf` and `fzf.vim`.
+
+                                                                      *:FF* *:FF!*
+:FF[!] {query}		Opens a simple fzf-powered file browser and selector,
+			using {query} as the initial query if provided.
+			Requires `ripgrep`.
+
+			If the current working directory is within a Git
+			repository, the search will start from the repository
+			root. Otherwise the search will start from the current
+			working directory. Ignore files (e.g. ".gitignore") in
+			the search root directory are respected.
+
+			The bang modifier works in a similar fashion to when
+			using it with the |:edit| command: it forces the
+			editing of files regardless of whether there are
+			changes in the current buffer.
+
+			When in fzf, multiple files can be selected. The
+			following keyboard shortcuts are available:
+
+			<Enter>		Opens the selected files with |:edit|.
+			<C-T>		Opens the selected files with |:tabe|.
+			<C-V>		Opens the selected files with |:vsplit|.
+			<C-X>		Opens the selected files with |:split|.
+			<C-Y>		Yanks the selected filenames.
+			<C-Z>		Closes fzf without selecting anything.
+
+                                                                      *:FG* *:FG!*
+:FG[!] {query}		Opens a fzf-powered interactive ripgrep doohickey
+			using {query} as the initial query if provided.
+                        Requires `ripgrep`.
+
+			If the current working directory is within a Git
+			repository, ripgrep will run from the repository root.
+			Otherwise ripgrep will run from the current working
+			directory. Ignore files (.e.g. ".gitignore") in the
+			search root directory are respected.
+
+			The bang modifier works in a similar fashion to when
+			using it with the |:edit| command: it forces the
+			editing of files regardless of whether there are
+			changes in the current buffer.
+
+			Changing the query will rerun ripgrep using the new
+			query instead of filtering the initial input.
+
+			When in fzf, multiple files can be selected. The
+			following keyboard shortcuts are available:
+
+			<Enter>		Opens the first selected match with
+					|:edit| and adds the remaining matches
+					to the |quickfix| list.
+			<C-A>		Select all matches.
+			<C-D>		Deselects all matches.
+			<C-T>		Opens the first selected match with
+					|:tabe| and adds the remaining selected
+					matches to the |quickfix| list.
+			<C-V>		Opens the first selected match with
+					|:vsplit| and adds the remaining
+					selected to the |quickfix| list.
+			<C-X>		Opens the first selected match with
+					|:split| and adds the remaining selected
+					matches to the |quickfix| list.
+			<C-Z>		Closes fzf without selecting anything.
+
+                                                                    *:FGA* *:FGA!*
+:FGA[!] {query}		Same as above but ignore files will be ignored and all
+			files will be searched.
+
+                                                       *<Leader>fa* *v_<Leader>fa*
+<Leader>fa		Calls |:FGA| using the word under the cursor or any
+{Visual}<Leader>fa	highlighted characters as the initial input, depending
+			on whether in Normal or Visual mode, respectively.
+
+                                                        *<Leader>fg* *v<Leader>fg*
+<Leader>fg		Same as above but calls |:FG|.
+{Visual}<Leader>fg
+
+                                                                           *:FS*
+:FS {query}		Opens a fzf-powered snippets browser and selector,
+			using {query} as the initial query if provided.
+			Requires `fuzzy-snippet` and `snippet-placeholder`.
+
+			`fuzzy-snippet` is used to get a list of available
+			snippets. For more information, run
+			fuzzy-snippets --help` in the command-line.
+
+			`snippet-placeholder` is used to expand placeholder
+			content in snippets. For more information, run
+`			snippet-placeholder --help` in the command-line.
+
+			When in fzf, only a single snippet can be selected.
+			The following keyboard shortcuts are available:
+
+			<Enter>		Passes the selected snippet through
+					snippet-placeholder` and appends the
+					output after the cursor in the
+					previously active buffer.
+			<C-Y>		Passes the selected snippet through
+					`snippet-placeholder` and fills the
+					unnamed register (|quote_quote|) with
+					the output.
+			<C-Z>		Closes fzf without selecting anything.
+
+
+==============================================================================
+NOTETAKING GUBBINS                                               *toolbox-notes*
+
+When editing Markdown files in `$NOTES_ROOT`, the following tweaks are made
+to make the experience a little better:
+
+-	Following links to other Markdown files in `$NOTES_ROOT` using |gf| and
+	friends works even when the current directory is not `$NOTES_ROOT`
+	and/or the file extension has been omitted.
+-	The user-defined completion functionality (see |compl-function|) is used
+	to complete `#tags`. This functionality requires `nt`.
+-	`[[bare-wikilinks]]`, `[[standard|wikilinks]]`, and `#tags` are highlighted.
+-	Automatic formatting of Markdown lists is improved so big ol' lists
+	are easier to read.
+
+
+==============================================================================
+MISCELLANEOUS                                                     *toolbox-misc*
+
+                                                                         *<C-K>*
+<C-K>			In Normal mode, toggle coloured columns. The
+			'colorcolumn' setting is tweaked to include a couple
+			of preset text widths as well as including a column
+			set to 'textwidth'.
+
+                                                       *<Leader>bd* *v_<Leader>bd*
+<Leader>bd		In Normal mode, decodes the Base64 string under the
+{Visual}<Leader>bd	cursor (the 'iskeyword' setting is temporarily
+			adjusted to allow all of the Base64 alphabet). In
+			Visual mode, decodes the highlighted Base64 string.
+			Requires the `base64` command.
+
+                                                       *<Leader>be* *v_<Leader>be*
+<Leader>be		Encodes the text under the cursor or any highlighted
+{Visual}<Leader>be	text, depending on whether in Normal or Visual mode,
+			to a Base64 string. Requires the `base64` command.
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

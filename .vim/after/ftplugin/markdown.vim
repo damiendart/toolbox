@@ -13,7 +13,10 @@ function! CompleteTags(findStart, base) abort
     let l:currentLine = getline('.')
     let l:start = col('.') - 1
 
-    while l:start > 0 && l:currentLine[l:start - 1] =~ '[a-zA-Z0-9_\-\:]'
+    " If updating the following regular expression, the tag-matching
+    " regular expressions in "$HOME/.vim/after/syntax/markdown.vim" and
+    " <https://github.com/damiendart/nt> may also require updating.
+    while l:start > 0 && l:currentLine[l:start - 1] =~ '[a-zA-Z0-9/:_-]'
       let l:start -= 1
     endwhile
 

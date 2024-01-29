@@ -28,10 +28,10 @@ if exists('b:enable_wikilinks_syntax')
 endif
 
 if exists('b:enable_tags_highlighting')
-  " Note: if updating the following regular expressions, the regular
-  " expression used to match tags in <https://github.com/damiendart/nt>
-  " may also require updating.
-  syntax match markdownHashtag ![ '(]#[0-9/:-]*[a-zA-Z][a-zA-Z0-9/:-]*!hs=s+1
-  syntax match markdownHashtag !^#[0-9/:-]*[a-zA-Z][a-zA-Z0-9/:-]*!
+  " If updating the following regular expressions, the tag-matching
+  " regular expressions in "$HOME/.vim/after/ftplugin/markdown.vim" and
+  " <https://github.com/damiendart/nt> may also require updating.
+  syntax match markdownHashtag ![ '(]#[0-9/:_-]*[a-zA-Z][a-zA-Z0-9/:_-]*!hs=s+1
+  syntax match markdownHashtag !^#[0-9/:_-]*[a-zA-Z][a-zA-Z0-9/:_-]*!
   highlight link markdownHashtag Statement
 endif

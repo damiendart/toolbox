@@ -50,6 +50,7 @@ function! s:FuzzyFiles(abandon, ...) abort
         \ '--preview', g:fzf_preview_command,
         \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),
         \ '--query', l:query,
+        \ '--scheme', 'path',
       \ ],
       \ 'sink*': function('s:FuzzyFilesHandler', [a:abandon]),
       \ 'source': g:fuzzy_files_source_command,

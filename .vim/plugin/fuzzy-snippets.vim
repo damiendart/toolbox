@@ -31,6 +31,7 @@ function! s:FuzzySnippets() abort
         \ '--preview', g:fzf_preview_command,
         \ '--header', 'CTRL+Y: yank ╱ ENTER: append',
         \ '--prompt', '--8<-- ',
+        \ '--scheme', 'path',
         \ '--with-nth', '-1',
       \ ],
       \ 'sink*': function('s:FuzzySnippetsHandler'),

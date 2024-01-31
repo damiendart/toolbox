@@ -130,6 +130,7 @@ FZF_OUTPUT=$(\
     --preview='cat {} 2>/dev/null' \
     --prompt='--%<-- ' \
     --query="$1" \
+    --scheme='path' \
 )
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)

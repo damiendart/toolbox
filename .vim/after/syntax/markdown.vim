@@ -18,6 +18,8 @@ endif
 if exists('b:enable_wikilinks_syntax')
   syntax region markdownWikiLink start=+\[\[+ end=+\]\]+
     \ contains=markdownWikiLinkSeparator,markdownWikiLinkUrl,markdownWikiLinkText
+    \ keepend
+    \ oneline
 
   syntax match markdownWikiLinkSeparator !|! contained nextgroup=markdownWikiLinkText
   syntax match markdownWikiLinkText !\(\w\|[ -/#.]\)\+! contained

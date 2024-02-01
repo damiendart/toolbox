@@ -11,22 +11,22 @@ if !has('patch-9.0.0772')
   syntax region markdownCodeBlock start="^\n\( \{4,}\|\t\)" end="^\ze \{,3}\S.*$" keepend
 endif
 
-" The following WikiLinks syntax highlighting gubbins is based on
+" The following wikilink syntax highlighting gubbins is based on
 " <https://www.vim.org/scripts/script.php?script_id=3156>, with tweaks
 " to support both the "[[standard-wikilink|standard style]]" and
 " the "[[bare-wikilink]]" style.
 if exists('b:enable_wikilinks_syntax')
-  syntax region markdownWikiLink start=+\[\[+ end=+\]\]+
-    \ contains=markdownWikiLinkSeparator,markdownWikiLinkUrl,markdownWikiLinkText
+  syntax region markdownWikilink start=+\[\[+ end=+\]\]+
+    \ contains=markdownWikilinkSeparator,markdownWikilinkUrl,markdownWikilinkText
     \ keepend
     \ oneline
 
-  syntax match markdownWikiLinkSeparator !|! contained nextgroup=markdownWikiLinkText
-  syntax match markdownWikiLinkText !\(\w\|[ -/#.]\)\+! contained
-  syntax match markdownWikiLinkUrl !\[\[\zs\_[^\]|]\+\ze|\?! contained nextgroup=markdownWikiLinkSeparator
+  syntax match markdownWikilinkSeparator !|! contained nextgroup=markdownWikilinkText
+  syntax match markdownWikilinkText !\(\w\|[ -/#.]\)\+! contained
+  syntax match markdownWikilinkURL !\[\[\zs\_[^\]|]\+\ze|\?! contained nextgroup=markdownWikilinkSeparator
 
-  highlight def link markdownWikiLinkUrl Identifier
-  highlight def link markdownWikiLinkText htmlLink
+  highlight def link markdownWikilinkURL Identifier
+  highlight def link markdownWikilinkText htmlLink
 endif
 
 if exists('b:enable_tags_highlighting')

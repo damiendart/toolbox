@@ -55,7 +55,16 @@ function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
       \ 'source': printf(g:fuzzy_grep_source_command, a:options, shellescape(l:query)),
     \ }
   \ )
-  call fzf#run(l:spec)
+
+  try
+    call fzf#run(l:spec)
+  " Improve the appearance of some commonly-encountered errors.
+  catch /E11/
+    echohl ErrorMsg
+    echom join(split(v:exception, ':')[1:2], ':')
+    echohl None
+    return
+  endtry
 endfunction
 
 function! s:FuzzyGrepHandler(abandon, lines) abort

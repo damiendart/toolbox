@@ -56,7 +56,16 @@ function! s:FuzzyFiles(abandon, ...) abort
       \ 'source': g:fuzzy_files_source_command,
     \ },
   \ )
-  call fzf#run(l:spec)
+
+  try
+    call fzf#run(l:spec)
+  " Improve the appearance of some commonly-encountered errors.
+  catch /E11/
+    echohl ErrorMsg
+    echom join(split(v:exception, ':')[1:2], ':')
+    echohl None
+    return
+  endtry
 endfunction
 
 function! s:FuzzyFilesHandler(abandon, lines) abort

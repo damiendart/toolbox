@@ -70,6 +70,7 @@ while :; do
     -n|--namespace)
       if [ "$2" ]; then
         FZF_DEFAULT_COMMAND="${FZF_DEFAULT_COMMAND} --namespace='$2'"
+        SELECTED_NAMESPACE="$2"
         shift
       else
         echo 'ERROR: "-n/--namespace" requires a non-empy option argument' >&2
@@ -78,6 +79,7 @@ while :; do
       ;;
     -n=?*|--namespace=?*)
       FZF_DEFAULT_COMMAND="${FZF_DEFAULT_COMMAND} --namespace='${1#*=}'"
+      SELECTED_NAMESPACE="${1#*=}"
       ;;
     --n=|--namespace=)
       echo 'ERROR: "-n/--namespace" requires a non-empy option argument' >&2
@@ -130,8 +132,13 @@ FZF_OUTPUT=$(\
 )
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_ITEM=$(echo "$FZF_OUTPUT" | tail -1)
-SELECTED_NAMESPACE=$(echo "$SELECTED_ITEM" | awk -F' +' '{print $1}')
-SELECTED_POD=$(echo "$SELECTED_ITEM" | awk -F' +' '{print $2}')
+
+if [ -z "${SELECTED_NAMESPACE+x}" ]; then
+  SELECTED_NAMESPACE=$(echo "$SELECTED_ITEM" | awk -F' +' '{print $1}')
+  SELECTED_POD=$(echo "$SELECTED_ITEM" | awk -F' +' '{print $2}')
+else
+  SELECTED_POD=$(echo "$SELECTED_ITEM" | awk '{print $1}')
+fi
 
 case $SELECTED_ACTION in
   ctrl-d)

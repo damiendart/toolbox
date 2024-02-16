@@ -1,6 +1,8 @@
 " A Vim-orientated version of "$TOOLBOX_ROOT/bin/fuzzy-snippets".
 "
-" See the fzf prompt header for available actions.
+" For more information, see "$TOOLBOX_ROOT/.vim/doc/toolbox.txt" (or
+" search for "toolbox-fuzzy" using Vim's help functionality if the help
+" tags file for "toolbox.txt" has been generated).
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

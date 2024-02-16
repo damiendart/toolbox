@@ -1,14 +1,8 @@
 " A simple fzf-powered file browser and selector.
 "
-" - By default, the search will start from the current working
-"   directory. If the current working directory is within a Git
-"   repository, the search will instead start from the repository root.
-" - Ignore files (e.g. ".gitignore") in the search root directory are
-"   respected.
-" - The bang modifier works in a similar fashion to when using it with
-"   the ":edit" command: it forces the editing of files even when there
-"   are are changes to the current buffer.
-" - See the fzf prompt header for available actions.
+" For more information, see "$TOOLBOX_ROOT/.vim/doc/toolbox.txt" (or
+" search for "toolbox-fuzzy" using Vim's help functionality if the help
+" tags file for "toolbox.txt" has been generated).
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

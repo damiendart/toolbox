@@ -1,21 +1,32 @@
 toolbox
 =======
 
-My dotfiles and random scripts of varying quality.
+My dotfiles and utility scripts of varying quality. They’re reasonably
+well documented and organised, so spelunking is encouraged. Feel free to
+use whatever you find useful here for your own use.
 
-Once a copy of this repository has been downloaded with Git:
+To get set up:
 
-1.  Ensure that any [Git submodules][], currently used to manage
-    third-party Vim plugins, are initialised and updated.
-2.  Run the `install` script in the repository root to create the
-    relevant symlinks in your home directory.
+1.  Use Git to download a copy of the *toolbox* repository, ensuring
+    that any [Git submodules][] (currently used to manage third-party
+    Vim plugins) are also initialised and updated.
+2.  Run the `install` script located in the repository root to create
+    the relevant symlinks in your home directory.
+3.  In Vim, run `:helptags ~/.vim/doc` to generate the help tags file
+    for the *toolbox* Vim cheat sheet.
+
+The `install` script doesn’t install third-party dependencies, as I have
+[Ansible playbooks and stuff][] for that.
 
   [Git submodules]: <https://git-scm.com/book/en/v2/Git-Tools-Submodules>
+  [Ansible playbooks and stuff]: <https://www.robotinaponcho.net/git/#setup>
 
 
-## See also
+## Related projects
 
-- [setup][], stuff and things that I use to provision and maintain,
-  among other things, my personal and work development environments.
+-   [nt][]: a note-taking helper application for the command line.
+-   [snippets][]: a bunch of reusable snippets and a little doohickey to
+    replace placeholder content.
 
-  [setup]: <https://www.robotinaponcho.net/git/#setup>
+  [nt]: <https://www.robotinaponcho.net/git/#nt>
+  [snippets]: <https://www.robotinaponcho.net/git/#snippets>

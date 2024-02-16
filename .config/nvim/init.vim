@@ -1,6 +1,6 @@
 " Damien Dart's "init.vim" for Neovim.
 "
-" See also "$HOME/.vimrc".
+" See also "$TOOLBOX_ROOT/.vimrc".
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

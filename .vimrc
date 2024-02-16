@@ -1,6 +1,6 @@
 " Damien Dart's ".vimrc".
 "
-" This file should only contain simple configuration gubbins; anything
+" This file should only contain simple configuration stuff; anything
 " more complex should get shipped off to self-contained files in
 " "$TOOLBOX_ROOT/.vim/" (use "gf" to edit or view these files):
 "
@@ -15,10 +15,13 @@
 " - "$TOOLBOX_ROOT/.vim/plugin/fzf.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/plugins.vim"
 "
-" Everything here and in "$HOME/.vim/" should also work in Neovim.
+" (For more information about this organisation approach, please see
+" <https://vimways.org/2018/from-vimrc-to-vim/>.)
 "
-" For more information about this organisation approach, please see
-" <https://vimways.org/2018/from-vimrc-to-vim/>.
+" A cheat-sheet for some of the more frequently-used custom
+" functionality is available at "$TOOLBOX_ROOT/.vim/doc/toolbox.txt" (or
+" search for "toolbox" using Vim's help functionality if the help tags
+" file for "toolbox.txt" has been generated).
 "
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For

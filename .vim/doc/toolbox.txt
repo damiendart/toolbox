@@ -156,6 +156,12 @@ to make the experience a little better:
 ==============================================================================
 MISCELLANEOUS                                                     *toolbox-misc*
 
+                                                                            *:F*
+:F			Similar to |:file|, but instead prints the current file
+			name, whether EditorConfig rules have been applied to
+			the file, and the current Git repository branch if the
+			file is located within a Git repository.
+
                                                                          *<C-K>*
 <C-K>			In Normal mode, toggle coloured columns. The
 			'colorcolumn' setting is tweaked to include a couple

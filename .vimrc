@@ -7,6 +7,7 @@
 " - "$TOOLBOX_ROOT/.vim/after/plugin/plugins.vim"
 " - "$TOOLBOX_ROOT/.vim/after/syntax/markdown.vim"
 " - "$TOOLBOX_ROOT/.vim/ftplugin/markdown.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/additional-file-info.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/base64.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/colorcolumn.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-files.vim"

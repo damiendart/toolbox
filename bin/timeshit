@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+"""
+A little tool to parse and summarise plain-text timesheets.
+
+Inspired by <https://github.com/dantleech/pttlog>, but much smaller in
+scope. A timesheet file represents a day of tasks, and entries are lines
+that start with a timestamp followed by a description, eg:
+
+09:00 Morning routine and meeting
+09:30 A task that lasts an hour
+10:30-12:00 Another task with an optional end time
+
+If an entry does not include an end time the start time of the following
+task is used, unless it is the last entry in which case it is considered
+an ongoing task. There is very little error checking.
+"""
+
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+import argparse
+import collections
+import dataclasses
+import datetime
+import itertools
+import os
+import sys
+import typing
+
+
+@dataclasses.dataclass
+class Item:
+    description: str
+    time_begin: datetime.datetime
+    time_end: typing.Optional[datetime.datetime] = None
+
+
+def fatal_error(message: str) -> None:
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def main(arguments: argparse.Namespace) -> None:
+    entries = []
+    longest_task_name_length = 0
+    tasks = collections.defaultdict(datetime.timedelta)
+    total = datetime.timedelta()
+
+    for line in arguments.infile:
+        time, description = line.strip().split(maxsplit=1)
+
+        if "-" in time:
+            start, end = time.split("-")
+            entries.append(
+                Item(
+                    description,
+                    datetime.datetime.combine(
+                        datetime.date.today(),
+                        datetime.time.fromisoformat(start),
+                    ),
+                    datetime.datetime.combine(
+                        datetime.date.today(),
+                        datetime.time.fromisoformat(end),
+                    ),
+                )
+            )
+        else:
+            entries.append(
+                Item(
+                    description,
+                    datetime.datetime.combine(
+                        datetime.date.today(),
+                        datetime.time.fromisoformat(time),
+                    ),
+                )
+            )
+
+    arguments.infile.close()
+
+    a, b = itertools.tee(entries)
+    next(b, None)
+
+    for entry in a:
+        n = next(b, None)
+
+        if entry.time_end is None:
+            if n is None:
+                entry.time_end = datetime.datetime.now()
+            else:
+                entry.time_end = n.time_begin
+
+        if len(entry.description) > longest_task_name_length:
+            longest_task_name_length = len(entry.description)
+
+        duration = entry.time_end - entry.time_begin
+        tasks[entry.description] += duration
+        total += duration
+
+    for desc, dt in tasks.items():
+        print(
+            f"%-{longest_task_name_length}s   %2sh %2sm"
+            % (desc, dt.seconds // 3600, (dt.seconds // 60) % 60),
+        )
+
+    print()
+    print(
+        f"%-{longest_task_name_length}s   %2sh %2sm"
+        % ("Total", total.seconds // 3600, (total.seconds // 60) % 60),
+    )
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "infile",
+        help="timesheet file to parse and summarise",
+        type=argparse.FileType("r"),
+    )
+
+    return parser.parse_args(arguments)
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+
+    main(arguments)

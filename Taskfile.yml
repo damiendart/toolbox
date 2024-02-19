@@ -53,12 +53,12 @@ tasks:
 
   lint:python:black:
     cmds:
-      - '.venv/bin/black --check --diff install bin/git-hometime bin/markdown-tidy bin/rpncalc'
+      - '.venv/bin/black --check --diff install bin/git-hometime bin/markdown-tidy bin/rpncalc bin/timeshit'
     desc: 'Lint Python scripts with Black'
 
   lint:python:flake8:
     cmds:
-      - '.venv/bin/flake8 install bin/git-hometime bin/markdown-tidy bin/rpncalc'
+      - '.venv/bin/flake8 install bin/git-hometime bin/markdown-tidy bin/rpncalc bin/timeshit'
     desc: 'Lint Python scripts with Flake8'
 
   lint:python:mypy:

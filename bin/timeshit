@@ -25,8 +25,12 @@ import dataclasses
 import datetime
 import itertools
 import os
+import re
 import sys
 import typing
+
+
+parsable_line = re.compile(r"^\d\d:\d\d(-\d\d:\d\d)?\s+")
 
 
 @dataclasses.dataclass
@@ -52,6 +56,9 @@ def main(arguments: argparse.Namespace) -> None:
     total = datetime.timedelta()
 
     for line in arguments.infile:
+        if not re.match(parsable_line, line):
+            continue
+
         time, description = line.strip().split(maxsplit=1)
 
         if "-" in time:

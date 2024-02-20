@@ -12,7 +12,7 @@ that start with a timestamp followed by a description, eg:
 
 If an entry does not include an end time the start time of the following
 task is used, unless it is the last entry in which case it is considered
-an ongoing task. There is very little error checking.
+an ongoing task.
 """
 
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
@@ -36,6 +36,7 @@ parsable_line = re.compile(r"^\d\d:\d\d(-\d\d:\d\d)?\s+")
 @dataclasses.dataclass
 class Item:
     description: str
+    line_number: int
     time_begin: datetime.datetime
     time_end: typing.Optional[datetime.datetime] = None
 
@@ -55,17 +56,21 @@ def main(arguments: argparse.Namespace) -> None:
     tasks = collections.defaultdict(datetime.timedelta)
     total = datetime.timedelta()
 
-    for line in arguments.infile:
+    for i, line in enumerate(arguments.infile):
         if not re.match(parsable_line, line):
             continue
 
-        time, description = line.strip().split(maxsplit=1)
+        try:
+            time, description = line.strip().split(maxsplit=1)
+        except ValueError:
+            fatal_error("entry on line %s has no description" % (i + 1))
 
         if "-" in time:
             start, end = time.split("-")
             entries.append(
                 Item(
                     description,
+                    i + 1,
                     datetime.datetime.combine(
                         datetime.date.today(),
                         datetime.time.fromisoformat(start),
@@ -80,6 +85,7 @@ def main(arguments: argparse.Namespace) -> None:
             entries.append(
                 Item(
                     description,
+                    i + 1,
                     datetime.datetime.combine(
                         datetime.date.today(),
                         datetime.time.fromisoformat(time),
@@ -101,12 +107,19 @@ def main(arguments: argparse.Namespace) -> None:
             else:
                 entry.time_end = n.time_begin
 
-        if len(entry.description) > longest_task_name_length:
-            longest_task_name_length = len(entry.description)
-
         duration = entry.time_end - entry.time_begin
+
+        if duration < datetime.timedelta(0):
+            fatal_error(
+                'negative duration for "%s" entry on line %s'
+                % (entry.description, entry.line_number),
+            )
+
         tasks[entry.description] += duration
         total += duration
+
+        if len(entry.description) > longest_task_name_length:
+            longest_task_name_length = len(entry.description)
 
     for desc, dt in tasks.items():
         print(

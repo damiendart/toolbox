@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-A little tool to parse and summarise plain-text timesheets.
+A little tool to parse and summarise basic plain-text timesheets.
 
 Inspired by <https://github.com/dantleech/pttlog>, but much smaller in
 scope. A timesheet file represents a day of tasks, and entries are lines
@@ -10,9 +10,10 @@ that start with a timestamp followed by a description, eg:
 09:30 A task that lasts an hour
 10:30-12:00 Another task with an optional end time
 
-If an entry does not include an end time the start time of the following
-task is used, unless it is the last entry in which case it is considered
-an ongoing task.
+Entries must be in chronological order. If an entry does not include an
+end time the start time of the following task is used, unless it is the
+last entry in which case it is considered an ongoing task. Lines that do
+not start with a timestamp are ignored.
 """
 
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is

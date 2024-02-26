@@ -42,6 +42,13 @@ class Item:
     time_end: typing.Optional[datetime.datetime] = None
 
 
+class TimesheetParseError(Exception):
+    def __init__(self, message, line_number):
+        super().__init__(message)
+        self.line_number = line_number
+        self.message = message
+
+
 def fatal_error(message: str) -> None:
     print(
         "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
@@ -64,7 +71,7 @@ def main(arguments: argparse.Namespace) -> None:
         try:
             time, description = line.strip().split(maxsplit=1)
         except ValueError:
-            fatal_error("entry on line %s has no description" % (i + 1))
+            raise TimesheetParseError("entry has no description", i + 1)
 
         if "-" in time:
             start, end = time.split("-")
@@ -100,20 +107,28 @@ def main(arguments: argparse.Namespace) -> None:
     next(b, None)
 
     for entry in a:
+        peeking = False
         n = next(b, None)
 
         if entry.time_end is None:
             if n is None:
                 entry.time_end = datetime.datetime.now()
+
+                if entry.time_begin > entry.time_end:
+                    raise TimesheetParseError(
+                        "ongoing task cannot start in the future",
+                        entry.line_number,
+                    )
             else:
                 entry.time_end = n.time_begin
+                peeking = True
 
         duration = entry.time_end - entry.time_begin
 
         if duration < datetime.timedelta(0):
-            fatal_error(
-                'negative duration for "%s" entry on line %s'
-                % (entry.description, entry.line_number),
+            raise TimesheetParseError(
+                "entry contains non-chronological timestamp",
+                entry.line_number + 1 if peeking else entry.line_number,
             )
 
         tasks[entry.description] += duration
@@ -152,4 +167,11 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
 
-    main(arguments)
+    try:
+        main(arguments)
+    except TimesheetParseError as e:
+        print(
+            "%s:%s: %s" % (arguments.infile.name, e.line_number, e.message),
+            file=sys.stderr,
+        )
+        fatal_error("invalid timesheet")

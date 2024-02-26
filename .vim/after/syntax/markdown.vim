@@ -33,7 +33,7 @@ if exists('b:enable_tags_highlighting')
   " If updating the following regular expressions, the tag-matching
   " regular expressions in "$HOME/.vim/after/ftplugin/markdown.vim" and
   " <https://github.com/damiendart/nt> may also require updating.
-  syntax match markdownHashtag ![ '(]#[0-9/:_-]*[a-zA-Z][a-zA-Z0-9/:_-]*!hs=s+1
+  syntax match markdownHashtag ![ "'(]#[0-9/:_-]*[a-zA-Z][a-zA-Z0-9/:_-]*!hs=s+1
   syntax match markdownHashtag !^#[0-9/:_-]*[a-zA-Z][a-zA-Z0-9/:_-]*!
   highlight link markdownHashtag Statement
 endif

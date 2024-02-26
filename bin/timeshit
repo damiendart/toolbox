@@ -61,6 +61,7 @@ def fatal_error(message: str) -> None:
 def main(arguments: argparse.Namespace) -> None:
     entries = []
     longest_task_name_length = 0
+    ongoing_task = None
     tasks = collections.defaultdict(datetime.timedelta)
     total = datetime.timedelta()
 
@@ -113,6 +114,7 @@ def main(arguments: argparse.Namespace) -> None:
         if entry.time_end is None:
             if n is None:
                 entry.time_end = datetime.datetime.now()
+                ongoing_task = entry.description
 
                 if entry.time_begin > entry.time_end:
                     raise TimesheetParseError(
@@ -137,16 +139,25 @@ def main(arguments: argparse.Namespace) -> None:
         if len(entry.description) > longest_task_name_length:
             longest_task_name_length = len(entry.description)
 
-    for desc, dt in tasks.items():
+    for description, duration in tasks.items():
         print(
-            f"%-{longest_task_name_length}s   %2sh %2sm"
-            % (desc, dt.seconds // 3600, (dt.seconds // 60) % 60),
+            f"%-{longest_task_name_length}s   %2sh %2sm%s"
+            % (
+                description,
+                duration.seconds // 3600,
+                (duration.seconds // 60) % 60,
+                " (ONGOING)" if description == ongoing_task else "",
+            ),
         )
 
     print()
     print(
         f"%-{longest_task_name_length}s   %2sh %2sm"
-        % ("Total", total.seconds // 3600, (total.seconds // 60) % 60),
+        % (
+            "Total so far" if ongoing_task is not None else "Total",
+            total.seconds // 3600,
+            (total.seconds // 60) % 60,
+        ),
     )
 
 

@@ -42,7 +42,7 @@ function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
         \ '--multi',
         \ '--preview', g:fzf_preview_line_command,
         \ '--preview-window', '+{2}/3',
-        \ '--prompt', '(' . pathshorten(l:spec.dir) . ')' . a:prompt_embellishment . ' > ',
+        \ '--prompt', '(' . pathshorten(l:spec.dir) . ')' . a:prompt_embellishment . ' ',
         \ '--query', l:query,
       \ ],
       \ 'sink*': function('s:FuzzyGrepHandler', [a:abandon]),

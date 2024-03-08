@@ -64,8 +64,12 @@ if s:path =~ '^' . s:notesRoot
     setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\[[\ -x]\\]\\s\\+
     setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+
     setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\+
+
+    let b:undo_ftplugin .= '|setlocal breakindent< briopt< formatlistpat<'
   endif
 
   let b:enable_wikilinks_syntax = 1
   let b:enable_tags_highlighting = 1
+  let b:undo_ftplugin .= '|setlocal completefunc< linebreak< path< suffixesadd<'
+  let b:undo_ftplugin .= '|unlet! b:loaded b:enable_tags_highlighting b:enable_wikilinks_syntax'
 endif

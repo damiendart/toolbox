@@ -38,6 +38,7 @@ function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
         \ '--disabled',
         \ '--delimiter', ':',
         \ '--expect', 'ctrl-h,ctrl-t,ctrl-v,ctrl-x',
+        \ '--info=inline-right',
         \ '--multi',
         \ '--preview', g:fzf_preview_line_command,
         \ '--preview-window', '+{2}/3',

@@ -32,6 +32,7 @@ function! s:FuzzySnippets() abort
         \ '--border-label-pos', '-3:bottom',
         \ '--delimiter', '/',
         \ '--expect', 'ctrl-h,ctrl-y',
+        \ '--info=inline-right',
         \ '--preview', g:fzf_preview_command,
         \ '--prompt', '--8<-- ',
         \ '--scheme', 'path',

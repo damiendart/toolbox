@@ -41,6 +41,7 @@ function! s:FuzzyFiles(abandon, ...) abort
         \ '--border-label', 'Press CTRL+H for help',
         \ '--border-label-pos', '-3:bottom',
         \ '--expect', 'ctrl-h,ctrl-t,ctrl-v,ctrl-x,ctrl-y',
+        \ '--info=inline-right',
         \ '--multi',
         \ '--preview', g:fzf_preview_command,
         \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),

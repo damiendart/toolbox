@@ -61,7 +61,7 @@ if type 'fzf' 1>/dev/null 2>&1; then
   # shellcheck disable=SC2089,SC2090
   export FZF_CTRL_T_OPTS='--exit-0 --preview="cat {} 2>/dev/null | head -200" --select-1'
   export FZF_CTRL_T_OPTS_BASE="${FZF_CTRL_T_OPTS}"
-  export FZF_DEFAULT_OPTS='--border --info=inline --layout=reverse'
+  export FZF_DEFAULT_OPTS='--border --info=inline-right --layout=reverse'
 
   if type 'rg' 1>/dev/null 2>&1; then
     export FZF_CTRL_T_COMMAND='rg --files --hidden'

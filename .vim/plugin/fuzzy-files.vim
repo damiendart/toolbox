@@ -38,8 +38,9 @@ function! s:FuzzyFiles(abandon, ...) abort
     \ {
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
-        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x,ctrl-y',
-        \ '--header', 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ CTRL+Y: yank filenames ╱ ENTER: edit',
+        \ '--border-label', 'Press CTRL+H for help',
+        \ '--border-label-pos', '-3:bottom',
+        \ '--expect', 'ctrl-h,ctrl-t,ctrl-v,ctrl-x,ctrl-y',
         \ '--multi',
         \ '--preview', g:fzf_preview_command,
         \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),
@@ -64,6 +65,11 @@ endfunction
 
 function! s:FuzzyFilesHandler(abandon, lines) abort
   if len(a:lines) < 1
+    return
+  endif
+
+  if a:lines[0] ==? 'ctrl-h'
+    execute "h :FF"
     return
   endif
 

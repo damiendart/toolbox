@@ -33,10 +33,11 @@ function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
         \ '--ansi',
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
         \ '--bind', 'change:reload:sleep 0.05;' . printf(g:fuzzy_grep_source_command, a:options, '{q}'),
+        \ '--border-label', 'Press CTRL+H for help',
+        \ '--border-label-pos', '-3:bottom',
         \ '--disabled',
         \ '--delimiter', ':',
-        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x',
-        \ '--header', 'CTRL+T: tabe ╱ CTRL+V: vsplit ╱ CTRL+X: split ╱ ENTER: edit',
+        \ '--expect', 'ctrl-h,ctrl-t,ctrl-v,ctrl-x',
         \ '--multi',
         \ '--preview', g:fzf_preview_line_command,
         \ '--preview-window', '+{2}/3',
@@ -61,6 +62,11 @@ endfunction
 
 function! s:FuzzyGrepHandler(abandon, lines) abort
   if len(a:lines) < 2
+    return
+  endif
+
+  if a:lines[0] ==? 'ctrl-h'
+    execute "h :FG"
     return
   endif
 

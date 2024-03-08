@@ -28,10 +28,11 @@ function! s:FuzzySnippets() abort
     \ l:spec,
     \ {
       \ 'options': [
+        \ '--border-label', 'CTRL+H: help ╱ CTRL+Y: yank ╱ ENTER: append',
+        \ '--border-label-pos', '-3:bottom',
         \ '--delimiter', '/',
-        \ '--expect', 'ctrl-y',
+        \ '--expect', 'ctrl-h,ctrl-y',
         \ '--preview', g:fzf_preview_command,
-        \ '--header', 'CTRL+Y: yank ╱ ENTER: append',
         \ '--prompt', '--8<-- ',
         \ '--scheme', 'path',
         \ '--with-nth', '-1',
@@ -53,6 +54,11 @@ function! s:FuzzySnippets() abort
 endfunction
 
 function! s:FuzzySnippetsHandler(lines) abort
+  if a:lines[0] ==? 'ctrl-h'
+    execute "h :FS"
+    return
+  endif
+
   let l:output = system(
     \ 'snippet-placeholder',
     \ join(readfile(a:lines[1]), "\n")

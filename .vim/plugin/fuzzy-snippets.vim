@@ -72,7 +72,7 @@ function! s:FuzzySnippetsHandler(lines) abort
   endif
 
   if a:lines[0] ==? 'ctrl-y'
-    let @" = l:output
+    call setreg('"', l:output)
 
     return
   endif

@@ -82,7 +82,7 @@ function! s:FuzzyFilesHandler(abandon, lines) abort
 
   try
     if l:command ==? 'yank-filenames'
-      let @" = join(a:lines[1:], "\n")
+      call setreg('"', join(a:lines[1:], "\n"))
     else
       for line in a:lines[1:]
         execute l:command fnameescape(line)

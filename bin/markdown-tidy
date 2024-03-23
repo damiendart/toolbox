@@ -100,9 +100,14 @@ def main(arguments: argparse.Namespace) -> None:
             outfile = open(
                 os.path.join(
                     arguments.outdir,
+                    # Black gets a little confused here and keeps
+                    # wrapping this conditional expression with
+                    # parentheses.
+                    # fmt: off
                     "stdin.md"
                     if infile.name == "<stdin>"
                     else os.path.basename(infile.name),
+                    # fmt: on
                 ),
                 "w",
             )

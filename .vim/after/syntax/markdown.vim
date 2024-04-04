@@ -37,10 +37,10 @@ if exists('b:enable_tags_highlighting')
   " hashtag-related gubbins in "$HOME/.vim/after/ftplugin/markdown.vim"
   " and <https://github.com/damiendart/nt>.
 
-  syntax match markdownHashtag ~^#[0-9/:_-]*\a\%(\w\|[/:-]\)*\ze\%(\_s\|["')]\)~
-  syntax match markdownHashtag ~^#[0-9/:_-]*\a\%(\w\|[/:-]\)\{-}\ze:\+\%(\_s\|["')]\)~
-  syntax match markdownHashtag ~\%(\s\|["'(]\)#[0-9/:_-]*\a\%(\w\|[/:-]\)*\ze\%(\_s\|["')]\)~hs=s+1
-  syntax match markdownHashtag ~\%(\s\|["'(]\)#[0-9/:_-]*\a\%(\w\|[/:-]\)\{-}\ze:\+\%(\_s\|["')]\)~hs=s+1
+  syntax match markdownHashtag ~^#[0-9/:_-]*\a\%(\w\|[/:_-]\)*\ze\%(\_s\|["')]\)~
+  syntax match markdownHashtag ~^#[0-9/:_-]*\a\%(\w\|[/:_-]\)\{-}\ze:\+\%(\_s\|["')]\)~
+  syntax match markdownHashtag ~\%(\s\|["'(]\)#[0-9/:_-]*\a\%(\w\|[/:_-]\)*\ze\%(\_s\|["')]\)~hs=s+1
+  syntax match markdownHashtag ~\%(\s\|["'(]\)#[0-9/:_-]*\a\%(\w\|[/:_-]\)\{-}\ze:\+\%(\_s\|["')]\)~hs=s+1
 
   highlight link markdownHashtag Statement
 endif

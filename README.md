@@ -15,11 +15,13 @@ To get set up:
 3.  In Vim, run `:helptags ~/.vim/doc` to generate the help tags file
     for the *toolbox* Vim cheat sheet.
 
-The `install` script doesn’t install third-party dependencies, as I have
-[Ansible playbooks and stuff][] for that.
+The `install` script doesn’t install third-party dependencies as I have
+[Ansible playbooks][] for that. The Python dependencies listed in
+*requirements-dev.txt* are not required to run any of the included
+Python scripts.
 
   [Git submodules]: <https://git-scm.com/book/en/v2/Git-Tools-Submodules>
-  [Ansible playbooks and stuff]: <https://www.robotinaponcho.net/git/#setup>
+  [Ansible playbooks]: <https://www.robotinaponcho.net/git/#setup>
 
 
 ## Related projects

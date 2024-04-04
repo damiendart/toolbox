@@ -35,8 +35,8 @@ tasks:
 
   dependencies:python:
     cmds:
-      - '.venv/bin/python -m pip install -r requirements.txt'
-    desc: 'Install Python dependencies'
+      - '.venv/bin/python -m pip install -r requirements-dev.txt'
+    desc: 'Install Python dependencies for development'
 
   lint:
     cmds:

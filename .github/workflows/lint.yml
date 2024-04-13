@@ -22,6 +22,7 @@ jobs:
         uses: 'actions/setup-python@v4'
         with:
           cache: 'pip'
+          cache-dependency-path: '**/requirements*.txt'
           python-version: '${{ matrix.python-version }}'
 
       # The version of ShellCheck installed via APT is a little

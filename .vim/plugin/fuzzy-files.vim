@@ -94,6 +94,7 @@ function! s:FuzzyFilesHandler(abandon, lines) abort
     echom join(split(v:exception, ':')[1:], ':')
     echohl None
     return
+  catch /^Vim:Interrupt$/
   endtry
 endfunction
 

@@ -129,6 +129,7 @@ function! s:FuzzyGrepSelection(visualmode, command)
     " Vim's documentation) as it's more of an annoyance when using
     " a selection as the initial query.
     execute ":" . a:command fnameescape(join(getreg('"', 1, 1), ""))
+  catch /^Vim:Interrupt$/
   finally
     if type(l:register) == type({})
       call setreg('"', l:register)

@@ -30,12 +30,10 @@ if exists('b:enable_wikilinks_syntax')
 endif
 
 if exists('b:enable_tags_highlighting')
-  " Hashtags are words that start with a hash symbol, followed by
-  " alphanumeric, "/", ":", and "-" characters. Hashtags must contain at
-  " least one letter and any trailing colons are ignored. They can be
-  " surrounded with quotation marks and parentheses. See also
-  " hashtag-related gubbins in "$HOME/.vim/after/ftplugin/markdown.vim"
-  " and <https://github.com/damiendart/nt>.
+  " For more information and other hashtag-related gubbins, please see
+  " "$HOME/.vim/doc/toolbox.txt" (search for "toolbox-notes"),
+  " "$HOME/.vim/after/ftplugin/markdown.vim" and
+  " <https://github.com/damiendart/nt>.
 
   syntax match markdownHashtag ~^#[0-9/:_-]*\a\%(\w\|[/:_-]\)*\ze\%(\_s\|["')]\)~
   syntax match markdownHashtag ~^#[0-9/:_-]*\a\%(\w\|[/:_-]\)\{-}\ze:\+\%(\_s\|["')]\)~

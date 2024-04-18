@@ -8,13 +8,15 @@ if exists('b:loaded') || !exists('$NOTES_ROOT')
   finish
 endif
 
+" For more information and other hashtag-related gubbins, please see
+" "$HOME/.vim/doc/toolbox.txt" (search for "toolbox-notes"),
+" "$HOME/.vim/after/syntax/markdown.vim" and
+" <https://github.com/damiendart/nt>.
 function! CompleteTags(findStart, base) abort
   if a:findStart
     let l:currentLine = getline('.')
     let l:start = col('.') - 1
 
-    " See "$HOME/.vim/after/syntax/markdown.vim" and
-    " <https://github.com/damiendart/nt> for more hashtag fun.
     while l:start > 0 && l:currentLine[l:start - 1] =~ '[a-zA-Z0-9/:_-]'
       let l:start -= 1
     endwhile

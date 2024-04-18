@@ -146,9 +146,13 @@ to make the experience a little better:
 -	Following links to other Markdown files in `$NOTES_ROOT` using |gf| and
 	friends works even when the current directory is not `$NOTES_ROOT`
 	and/or the file extension has been omitted.
+-	`[[bare-wikilinks]]` and `[[standard|wikilinks]]`, and `#hashtags` are
+	highlighted. Hashtags are words that start with a hash symbol,
+	followed by alphanumeric, "/", ":", "_", and "-" characters. Hashtags
+	must contain at least one letter and any trailing colons are ignored.
+	They can be surrounded with quotation marks and parentheses.
 -	The user-defined completion functionality (see |compl-function|) is used
-	to complete `#tags`. This functionality requires `nt`.
--	`[[bare-wikilinks]]`, `[[standard|wikilinks]]`, and `#tags` are highlighted.
+	to complete `#hashtags`. This functionality requires `nt`.
 -	Automatic formatting of Markdown lists is improved so big ol' lists
 	are easier to read.
 

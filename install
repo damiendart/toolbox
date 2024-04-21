@@ -57,20 +57,20 @@ if __name__ == "__main__":
 
         if os.path.exists(destination):
             if os.path.samefile(destination.resolve(), source):
-                print('[✔] Link to "' + str(source) + '" already exists')
+                print('[-] Link to "{}" already exists'.format(source))
             else:
-                print('[✘] "' + str(destination) + '" already exists')
+                print('[✘] "{}" already exists'.format(destination))
                 errors = True
         else:
             if os.path.islink(destination):
-                print('[✘] "' + str(destination) + '" is a dangling symlink')
+                print('[✘] "{}" is a dangling symlink'.format(destination))
                 errors = True
             else:
                 if "/" in file:
                     os.makedirs(os.path.dirname(destination), 0o700, True)
 
                 os.symlink(source, destination)
-                print('[✔] Created link to "' + str(source) + '"')
+                print('[✔] Created link to "{}"'.format(source))
 
     for tag in vim_tags:
         tag_checksum = None
@@ -89,11 +89,11 @@ if __name__ == "__main__":
             )
 
             if tag_checksum == hashlib.sha256(tag_file.read_bytes()).digest():
-                print('[-] "{}" is already up-to-date'.format(str(tag_file)))
+                print('[-] "{}" is already up-to-date'.format(tag_file))
             else:
-                print('[✔] Generated "{}"'.format(str(tag_file)))
+                print('[✔] Generated "{}"'.format(tag_file))
         except subprocess.CalledProcessError as e:
-            print('[✘] Unable to generate "{}"'.format(str(tag_file)))
+            print('[✘] Unable to generate "{}"'.format(tag_file))
             print(textwrap.indent(e.output.decode().strip(), "    "))
 
             errors = True

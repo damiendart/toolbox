@@ -7,11 +7,14 @@ free and unencumbered software released into the public domain. For
 more information, please refer to the accompanying "UNLICENCE" file.
 """
 
+import hashlib
 import os
 import pathlib
+import subprocess
 import sys
+import textwrap
 
-errors = False
+
 files = [
     ".bash_aliases",
     ".bash_profile",
@@ -31,13 +34,23 @@ files = [
     ".vim/plugin",
     ".vimrc",
 ]
+
 notice = """
 If any shell-related dotfiles have changed, you may need to log out and
 log back in, or "source" any new dotfiles so that they take effect in
 the current interactive shell session.
 """.rstrip()
 
+vim_tags = [
+    ".vim/doc/tags",
+    ".vim/pack/plugins/start/editorconfig-vim/doc/tags",
+    ".vim/pack/plugins/start/fzf/doc/tags",
+]
+
+
 if __name__ == "__main__":
+    errors = False
+
     for file in files:
         destination = pathlib.Path(pathlib.Path.home(), file)
         source = pathlib.Path(sys.path[0], file).resolve()
@@ -58,6 +71,32 @@ if __name__ == "__main__":
 
                 os.symlink(source, destination)
                 print('[✔] Created link to "' + str(source) + '"')
+
+    for tag in vim_tags:
+        tag_checksum = None
+        tag_file = pathlib.Path(pathlib.Path.home(), tag)
+
+        if os.path.exists(tag_file):
+            tag_checksum = hashlib.sha256(tag_file.read_bytes()).digest()
+
+        try:
+            subprocess.check_output(
+                'vim --not-a-term "+helptags {} | q"'.format(
+                    os.path.dirname(tag_file),
+                ),
+                shell=True,
+                stderr=subprocess.STDOUT,
+            )
+
+            if tag_checksum == hashlib.sha256(tag_file.read_bytes()).digest():
+                print('[-] "{}" is already up-to-date'.format(str(tag_file)))
+            else:
+                print('[✔] Generated "{}"'.format(str(tag_file)))
+        except subprocess.CalledProcessError as e:
+            print('[✘] Unable to generate "{}"'.format(str(tag_file)))
+            print(textwrap.indent(e.output.decode().strip(), "    "))
+
+            errors = True
 
     print(notice)
 

@@ -10,10 +10,10 @@ To get set up:
 1.  Use Git to download a copy of the *toolbox* repository, ensuring
     that any [Git submodules][] (currently used to manage third-party
     Vim plugins) are also initialised and updated.
-2.  Run the `install` script located in the repository root to create
-    the relevant symlinks in your home directory.
-3.  In Vim, run `:helptags ~/.vim/doc` to generate the help tags file
-    for the *toolbox* Vim cheat sheet.
+2.  Run the `install` script in the repository root to create the
+    relevant symlinks in your home directory, and to generate Vim help
+    tags files for the *toolbox* cheat sheet and third-party plugin
+    documentation.
 
 The `install` script doesn’t install third-party dependencies as I have
 [Ansible playbooks][] for that. The Python dependencies listed in

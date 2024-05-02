@@ -1,8 +1,6 @@
 #!/bin/sh
 #
-# A simple fzf-powered snippet browser and selector script.
-#
-# See also "$HOME/.vim/plugin/fuzzy-snippets.vim".
+# A snippet browser and selector.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
 # free and unencumbered software released into the public domain. For
@@ -12,42 +10,53 @@ set -e
 
 help() {
   cat << HELP
-Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
+A snippet browser and selector.
 
-Opens up a fzf-powered snippet browser.
+Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
 Requires fzf, ripgrep, snippet-placeholder, and xsel, and that the
 SNIPPET_PATH environment variable is set to a colon-seperated list of
-directories containing files to use as snippets. If the GNU version of
-getopt is available it will be used to parse command-line arguments,
-adding support for grouped short options and other niceties.
+directories containing files to use as snippets.
+
+Placeholder content in snippets are expanded using snippet-placeholder.
+For more information, see <https://github.com/damiendart/snippets>.
+
+If the GNU version of getopt is available it will be used to preprocess
+command-line arguments, enabling support for grouped short options and
+other niceties.
 
 FLAGS:
 
   -h, --help
-    Displays this help text and exits.
+    Display this help text and exits.
 
   -l, --list
-    Prints out a list of available snippet files and exits.
+    Print out a list of available snippet files and exits.
 
-FZF COMMANDS:
+  --vim
+    Adjust the application's functionality for better Vim integration.
+    For more information, search for ":FS" in Vim's help.
+
+ACTIONS:
 
   ENTER
-    Pass the selected snippet through snippet-placeholder and copy the
-    output to the clipboard.
+    Copy the selected snippet to the clipboard.
+
+  CTRL-H
+    Display this help text and exits.
 
   CTRL-P
-    Pass the selected snippet through snippet-placeholder and print the
-    output to standard input.
+    Print the selected snippet to standard output.
 HELP
 }
 
 LIST_FILES=0
+VIM_MODE=0
 
 # Using the GNU version of getopt to parse command-line arguments adds
 # support for grouped short options and other niceties.
 if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
-  if ! ARGS=$(getopt -l help,list -n "$(basename "$0")" -o hl -- "$@"); then
+  if ! ARGS=$(getopt -l help,list,vim -n "$(basename "$0")" -o hl -- "$@"); then
     printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
     exit 2
   fi
@@ -57,9 +66,10 @@ fi
 
 if ! type 'fzf' 1>/dev/null 2>&1 || \
   ! type 'rg' 1>/dev/null 2>&1 || \
+  ! type 'snippet-placeholder' 1>/dev/null 2>&1 || \
   ! type 'xsel' 1>/dev/null 2>&1;
 then
-  printf 'ERROR: "%s" requires fzf, ripgrep, and xsel\n' "$(basename "$0")" >&2
+  printf 'ERROR: "%s" requires fzf, ripgrep, snippet-placeholder, and xsel\n' "$(basename "$0")" >&2
   exit 2
 fi
 
@@ -81,6 +91,10 @@ while :; do
       LIST_FILES=1
       shift
       break
+      ;;
+    --vim)
+      VIM_MODE=1
+      shift
       ;;
     --)
       shift
@@ -118,30 +132,52 @@ if [ "$LIST_FILES" = 1 ]; then
   exit
 fi
 
+FZF_EXPECT='ctrl-h,ctrl-p'
+FZF_LABEL='CTRL+H: Help ╱ CTRL+P: Print snippet ╱ ENTER: Copy snippet'
+
+if [ "$VIM_MODE" = 1 ]; then
+  FZF_EXPECT='ctrl-h,ctrl-y'
+  FZF_LABEL='CTRL+H: help ╱ CTRL+Y: yank ╱ ENTER: insert'
+fi
+
 # CTRL+Z process suspension is suppressed as it doesn't work properly
 # (see <https://github.com/junegunn/fzf/issues/2289>).
 FZF_OUTPUT=$(\
   echo "$SNIPPET_FILES" | sort | fzf \
     --bind='ctrl-z:ignore' \
+    --border-label="$FZF_LABEL" \
+    --border-label-pos='-3:bottom' \
     --delimiter='/' \
-    --expect='ctrl-p' \
-    --header='CTRL+P: Print snippet ╱ ENTER: Copy snippet' \
-    --with-nth='-1' \
+    --expect="$FZF_EXPECT" \
+    --info='inline-right' \
     --preview='cat {} 2>/dev/null' \
     --prompt='--%<-- ' \
     --query="$1" \
     --scheme='path' \
+    --with-nth='-1' \
 )
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 
 case $SELECTED_ACTION in
+  ctrl-h)
+    if [ "$VIM_MODE" = 1 ]; then
+      echo "$SELECTED_ACTION"
+    else
+      help
+    fi
+    ;;
   ctrl-p)
     snippet-placeholder "$SELECTED_FILE"
     ;;
   *)
     SNIPPET="$(snippet-placeholder "$SELECTED_FILE")"
-    printf "%s" "$SNIPPET" | xsel -i --clipboard
-    echo "[✔] Copied snippet \"$SELECTED_FILE\" to the clipboard!"
+
+    if [ "$VIM_MODE" = 1 ]; then
+      printf "%s\n%s" "$SELECTED_ACTION" "$SNIPPET"
+    else
+      printf "%s" "$SNIPPET" | xsel -i --clipboard
+      echo "[✔] Copied snippet \"$SELECTED_FILE\" to the clipboard!"
+    fi
     ;;
 esac

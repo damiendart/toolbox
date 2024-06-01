@@ -8,6 +8,7 @@ Checks Git repositories for dirty working directories and unpushed work.
 # more information, please refer to the accompanying "UNLICENCE" file.
 
 import argparse
+import concurrent.futures
 import os
 import pathlib
 import subprocess
@@ -70,23 +71,33 @@ def check_repository(
 def main(arguments: argparse.Namespace) -> None:
     errors_found = False
 
-    for directory in arguments.repositories:
-        errors, warnings = check_repository(
-            directory,
-            arguments.check_dirty_directories,
-            arguments.check_stashes,
-            arguments.check_unpushed_commits,
-            arguments.check_upstream_branches,
-        )
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        futures = []
 
-        if errors:
-            errors_found = True
+        for directory in arguments.repositories:
+            futures.append(
+                executor.submit(
+                    check_repository,
+                    directory,
+                    arguments.check_dirty_directories,
+                    arguments.check_stashes,
+                    arguments.check_unpushed_commits,
+                    arguments.check_upstream_branches,
+                )
+            )
 
-        for warning in warnings:
-            print(warning)
+        for future in concurrent.futures.as_completed(futures):
+            if future.result():
+                warnings, errors = future.result()
 
-        for error in errors:
-            print(error)
+                if errors:
+                    errors_found = True
+
+                for warning in warnings:
+                    print(warning)
+
+                for error in errors:
+                    print(error)
 
     if errors_found:
         sys.exit(1)

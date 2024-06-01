@@ -10,6 +10,7 @@ An opinionated Markdown-formatting script.
 # more information, please refer to the accompanying "UNLICENCE" file.
 
 import argparse
+import concurrent.futures
 import os
 import pathlib
 import re
@@ -92,7 +93,7 @@ def main(arguments: argparse.Namespace) -> None:
     if arguments.outdir:
         os.makedirs(arguments.outdir, 0o700, True)
 
-        for infile in arguments.infiles:
+        def process_file(infile):
             input = infile.read().strip()
 
             infile.close()
@@ -115,6 +116,11 @@ def main(arguments: argparse.Namespace) -> None:
             outfile.write(format_markdown(input, wrap_text) + "\n")
             outfile.close()
             print('[✔] Written "{}"'.format(os.path.abspath(outfile.name)))
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for infile in arguments.infiles:
+                executor.submit(process_file, infile)
+
     else:
         input = ""
 

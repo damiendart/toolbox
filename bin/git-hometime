@@ -15,74 +15,80 @@ import sys
 import typing
 
 
+def check_repository(
+    repository: str,
+    check_dirty_directories=True,
+    check_stashes=True,
+    check_unpushed_commits=True,
+    check_upstream_branches=True,
+) -> typing.Tuple[typing.List[str], typing.List[str]]:
+    repository = os.path.abspath(repository)
+
+    errors = []
+    warnings = []
+
+    def add_error(s: str):
+        errors.append('[✘] "{}": {}'.format(repository, s))
+
+    def add_warning(s: str):
+        warnings.append('[-] "{}": {}'.format(repository, s))
+
+    if not os.path.exists(os.path.join(repository, ".git")):
+        add_warning("Not a Git repository")
+
+        return errors, warnings
+
+    if check_dirty_directories:
+        if run_git_command("git status --porcelain", repository):
+            add_error("Working directory is dirty")
+
+    if check_stashes:
+        if run_git_command("git stash list", repository):
+            add_error("Repository has stashed modifications")
+
+    if check_unpushed_commits or check_upstream_branches:
+        branches = run_git_command(
+            'git for-each-ref --format="%(refname:short)\t%(upstream:short)\t%(upstream:trackshort)" refs/heads',  # noqa: E501
+            repository,
+        )
+
+        for branch in branches.splitlines():
+            [name, upstream_branch_name, status] = branch.split("\t")
+            error_base = 'Branch "{}" has '.format(name)
+
+            if not upstream_branch_name and check_upstream_branches:
+                add_error(error_base + "no corresponding upstream branch")
+
+                continue
+
+            if ">" in status and check_unpushed_commits:
+                add_error(error_base + "unpushed commits")
+
+    return errors, warnings
+
+
 def main(arguments: argparse.Namespace) -> None:
-    issues_found = False
+    errors_found = False
 
     for directory in arguments.repositories:
-        absolute_pathname = os.path.abspath(directory)
+        errors, warnings = check_repository(
+            directory,
+            arguments.check_dirty_directories,
+            arguments.check_stashes,
+            arguments.check_unpushed_commits,
+            arguments.check_upstream_branches,
+        )
 
-        if not os.path.exists(os.path.join(absolute_pathname, ".git")):
-            print('[-] "{}" is not a Git repository'.format(directory))
-            continue
+        if errors:
+            errors_found = True
 
-        if arguments.dirty_directories:
-            status = run_git_command(
-                "git status --porcelain",
-                absolute_pathname,
-            )
+        for warning in warnings:
+            print(warning)
 
-            if status:
-                print(
-                    '[✘] "{}": Working directory is dirty'.format(
-                        directory,
-                    ),
-                )
+        for error in errors:
+            print(error)
 
-                issues_found = True
-
-        if arguments.stashes:
-            status = run_git_command(
-                "git stash list",
-                absolute_pathname,
-            )
-
-            if status:
-                print(
-                    '[✘] "{}": Repository has stashed modifications'.format(
-                        directory,
-                    ),
-                )
-
-                issues_found = True
-
-        if arguments.unpushed_commits or arguments.upstream_branches:
-            branches = run_git_command(
-                'git for-each-ref --format="%(refname:short)\t%(upstream:short)\t%(upstream:trackshort)" refs/heads',  # noqa: E501
-                absolute_pathname,
-            )
-
-            for branch in branches.splitlines():
-                [name, upstream_branch_name, status] = branch.split("\t")
-
-                if not upstream_branch_name and arguments.upstream_branches:
-                    print(
-                        '[✘] "{}": Branch "{}" has no corresponding upstream branch'.format(  # noqa: E501
-                            directory,
-                            name,
-                        ),
-                    )
-                    issues_found = True
-                    continue
-
-                if ">" in status and arguments.unpushed_commits:
-                    print(
-                        '[✘] "{}": Branch "{}" has unpushed commits'.format(
-                            directory, name
-                        ),
-                    )
-                    issues_found = True
-
-    if issues_found:
+    if errors_found:
         sys.exit(1)
 
 
@@ -93,28 +99,28 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         "-c",
         "--no-unpushed-commits",
         action="store_false",
-        dest="unpushed_commits",
+        dest="check_unpushed_commits",
         help="do not show branches with unpushed commits",
     )
     parser.add_argument(
         "-d",
         "--no-dirty-directories",
         action="store_false",
-        dest="dirty_directories",
+        dest="check_dirty_directories",
         help="do not show repositories with dirty working directories",
     )
     parser.add_argument(
         "-s",
         "--no-stashes",
         action="store_false",
-        dest="stashes",
+        dest="check_stashes",
         help="do not show repositories with stashed modifications",
     )
     parser.add_argument(
         "-u",
         "--no-upstream-branches",
         action="store_false",
-        dest="upstream_branches",
+        dest="check_upstream_branches",
         help="do not show branches with no corresponding upstream branch",
     )
     parser.add_argument(

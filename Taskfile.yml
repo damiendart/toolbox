@@ -55,7 +55,7 @@ tasks:
 
   lint:python:mypy:
     cmds:
-      - '.venv/bin/mypy bin/rpncalc'
+      - '.venv/bin/mypy --scripts-are-modules bin/git-hometime bin/rpncalc'
     desc: 'Type check Python scripts with mypy'
 
   lint:shell:

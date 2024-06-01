@@ -18,10 +18,6 @@ import typing
 
 def check_repository(
     repository: str,
-    check_dirty_directories=True,
-    check_stashes=True,
-    check_unpushed_commits=True,
-    check_upstream_branches=True,
 ) -> typing.Tuple[typing.List[str], typing.List[str]]:
     repository = os.path.abspath(repository)
 
@@ -39,52 +35,37 @@ def check_repository(
 
         return errors, warnings
 
-    if check_dirty_directories:
-        if run_git_command("git status --porcelain", repository):
-            add_error("Working directory is dirty")
+    if run_git_command("git status --porcelain", repository):
+        add_error("Working directory is dirty")
 
-    if check_stashes:
-        if run_git_command("git stash list", repository):
-            add_error("Repository has stashed modifications")
+    if run_git_command("git stash list", repository):
+        add_error("Repository has stashed modifications")
 
-    if check_unpushed_commits or check_upstream_branches:
-        branches = run_git_command(
-            'git for-each-ref --format="%(refname:short)\t%(upstream:short)\t%(upstream:trackshort)" refs/heads',  # noqa: E501
-            repository,
-        )
+    branches = run_git_command(
+        'git for-each-ref --format="%(refname:short)\t%(upstream:short)\t%(upstream:trackshort)" refs/heads',  # noqa: E501
+        repository,
+    )
 
-        for branch in branches.splitlines():
-            [name, upstream_branch_name, status] = branch.split("\t")
-            error_base = 'Branch "{}" has '.format(name)
+    for branch in branches.splitlines():
+        [name, upstream_branch_name, status] = branch.split("\t")
+        error_base = 'Branch "{}" has '.format(name)
 
-            if not upstream_branch_name and check_upstream_branches:
-                add_error(error_base + "no corresponding upstream branch")
+        if not upstream_branch_name:
+            add_error(error_base + "no corresponding upstream branch")
 
-                continue
+            continue
 
-            if ">" in status and check_unpushed_commits:
-                add_error(error_base + "unpushed commits")
+        if ">" in status:
+            add_error(error_base + "unpushed commits")
 
     return errors, warnings
 
 
-def main(arguments: argparse.Namespace) -> None:
+def main(args: argparse.Namespace) -> None:
     errors_found = False
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        futures = []
-
-        for directory in arguments.repositories:
-            futures.append(
-                executor.submit(
-                    check_repository,
-                    directory,
-                    arguments.check_dirty_directories,
-                    arguments.check_stashes,
-                    arguments.check_unpushed_commits,
-                    arguments.check_upstream_branches,
-                )
-            )
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as e:
+        futures = {e.submit(check_repository, d) for d in args.repositories}
 
         for future in concurrent.futures.as_completed(futures):
             if future.result():
@@ -106,34 +87,6 @@ def main(arguments: argparse.Namespace) -> None:
 def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
 
-    parser.add_argument(
-        "-c",
-        "--no-unpushed-commits",
-        action="store_false",
-        dest="check_unpushed_commits",
-        help="do not show branches with unpushed commits",
-    )
-    parser.add_argument(
-        "-d",
-        "--no-dirty-directories",
-        action="store_false",
-        dest="check_dirty_directories",
-        help="do not show repositories with dirty working directories",
-    )
-    parser.add_argument(
-        "-s",
-        "--no-stashes",
-        action="store_false",
-        dest="check_stashes",
-        help="do not show repositories with stashed modifications",
-    )
-    parser.add_argument(
-        "-u",
-        "--no-upstream-branches",
-        action="store_false",
-        dest="check_upstream_branches",
-        help="do not show branches with no corresponding upstream branch",
-    )
     parser.add_argument(
         "repositories",
         default=["."],

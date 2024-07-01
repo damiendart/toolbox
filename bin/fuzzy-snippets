@@ -145,6 +145,7 @@ fi
 FZF_OUTPUT=$(\
   echo "$SNIPPET_FILES" | sort | fzf \
     --bind='ctrl-z:ignore' \
+    --bind='backward-eof:abort' \
     --border-label="$FZF_LABEL" \
     --border-label-pos='-3:bottom' \
     --delimiter='/' \

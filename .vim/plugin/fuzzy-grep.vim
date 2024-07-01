@@ -32,6 +32,7 @@ function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
       \ 'options': [
         \ '--ansi',
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
+        \ '--bind', 'backward-eof:abort',
         \ '--bind', 'change:reload:sleep 0.05;' . printf(g:fuzzy_grep_source_command, a:options, '{q}'),
         \ '--border-label', 'Press F1 for help',
         \ '--border-label-pos', '-3:bottom',

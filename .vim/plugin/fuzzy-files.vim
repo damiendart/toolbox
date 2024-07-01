@@ -38,6 +38,7 @@ function! s:FuzzyFiles(abandon, ...) abort
     \ {
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
+        \ '--bind', 'backward-eof:abort',
         \ '--border-label', 'Press F1 for help',
         \ '--border-label-pos', '-3:bottom',
         \ '--expect', 'ctrl-t,ctrl-v,ctrl-x,ctrl-y,f1',

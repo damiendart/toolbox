@@ -33,11 +33,11 @@ function! s:FuzzyGrep(abandon, options, prompt_embellishment, ...) abort
         \ '--ansi',
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
         \ '--bind', 'change:reload:sleep 0.05;' . printf(g:fuzzy_grep_source_command, a:options, '{q}'),
-        \ '--border-label', 'Press CTRL+H for help',
+        \ '--border-label', 'Press F1 for help',
         \ '--border-label-pos', '-3:bottom',
         \ '--disabled',
         \ '--delimiter', ':',
-        \ '--expect', 'ctrl-h,ctrl-t,ctrl-v,ctrl-x',
+        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x,f1',
         \ '--info=inline-right',
         \ '--multi',
         \ '--preview', g:fzf_preview_line_command,
@@ -66,7 +66,7 @@ function! s:FuzzyGrepHandler(abandon, lines) abort
     return
   endif
 
-  if a:lines[0] ==? 'ctrl-h'
+  if a:lines[0] ==? 'f1'
     execute "h :FG"
     return
   endif

@@ -55,7 +55,7 @@ endfunction
 
 function! s:FuzzySnippets() abort
   function! Handler(input) closure
-    if a:input[0] ==? 'ctrl-h'
+    if a:input[0] ==? 'f1'
       execute "h :FS"
 
       return

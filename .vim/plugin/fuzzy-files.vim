@@ -38,9 +38,9 @@ function! s:FuzzyFiles(abandon, ...) abort
     \ {
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
-        \ '--border-label', 'Press CTRL+H for help',
+        \ '--border-label', 'Press F1 for help',
         \ '--border-label-pos', '-3:bottom',
-        \ '--expect', 'ctrl-h,ctrl-t,ctrl-v,ctrl-x,ctrl-y',
+        \ '--expect', 'ctrl-t,ctrl-v,ctrl-x,ctrl-y,f1',
         \ '--info=inline-right',
         \ '--multi',
         \ '--preview', g:fzf_preview_command,
@@ -69,7 +69,7 @@ function! s:FuzzyFilesHandler(abandon, lines) abort
     return
   endif
 
-  if a:lines[0] ==? 'ctrl-h'
+  if a:lines[0] ==? 'f1'
     execute "h :FF"
     return
   endif

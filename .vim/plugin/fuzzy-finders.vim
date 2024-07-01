@@ -63,6 +63,10 @@ function! s:FuzzySnippets() abort
 
     let l:output = join(a:input[1:], "\n")
 
+    if len(l:output) == 0
+      return
+    endif
+
     if a:input[0] ==? 'ctrl-y'
       call setreg('"', l:output)
 

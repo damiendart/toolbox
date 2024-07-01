@@ -140,6 +140,8 @@ if [ "$VIM_MODE" = 1 ]; then
   FZF_LABEL='ENTER: insert ╱ CTRL+Y: yank ╱ F1: help'
 fi
 
+set +e
+
 # CTRL+Z process suspension is suppressed as it doesn't work properly
 # (see <https://github.com/junegunn/fzf/issues/2289>).
 FZF_OUTPUT=$(\
@@ -157,6 +159,20 @@ FZF_OUTPUT=$(\
     --scheme='path' \
     --with-nth='-1' \
 )
+FZF_STATUS="$?"
+
+if [ "$FZF_STATUS" != 0 ]; then
+  # Allow this script to exit cleanly if fzf exits with a return code of
+  # 130, signalling that it was aborted or interrupted by the user.
+  if [ "$FZF_STATUS" = 130 ]; then
+    exit
+  else
+    exit $FZF_STATUS
+  fi
+fi
+
+set -e
+
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 

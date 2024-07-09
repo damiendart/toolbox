@@ -121,6 +121,23 @@ def main(arguments: argparse.Namespace) -> None:
             for infile in arguments.infiles:
                 executor.submit(process_file, infile)
 
+    elif arguments.in_place:
+
+        def process_file(infile):
+            input = infile.read().strip()
+
+            infile.close()
+
+            outfile = open(infile.name, "w")
+
+            outfile.write(format_markdown(input, wrap_text) + "\n")
+            outfile.close()
+            print('[✔] Tidied up "{}"'.format(os.path.abspath(outfile.name)))
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for infile in arguments.infiles:
+                executor.submit(process_file, infile)
+
     else:
         input = ""
 
@@ -156,6 +173,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     )
 
     group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "-i",
+        "--in-place",
+        action="store_true",
+        help="edit files in place",
+    )
     group.add_argument(
         "--outdir",
         help="write output to individual files in OUTDIR",

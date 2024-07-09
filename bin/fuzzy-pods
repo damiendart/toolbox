@@ -21,7 +21,7 @@ short options and other niceties.
 FLAGS:
 
   -h, --help
-    Displays this help text and exits.
+    Display this help text and exit.
 
   -n NAMESPACE, --namespace=NAMESPACE
     Specify the namespace for "kubectl" to use.
@@ -42,6 +42,9 @@ FZF COMMANDS:
 
   CTRL-Y
     Copy the selected pod name to the clipboard.
+
+  F1
+    Display this help text and exit.
 HELP
 }
 

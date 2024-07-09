@@ -42,6 +42,9 @@ ACTIONS:
   ENTER
     Copy the selected snippet to the clipboard.
 
+  CTRL-C
+    Exit without any further action.
+
   CTRL-P
     Print the selected snippet to standard output.
 

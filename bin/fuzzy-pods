@@ -31,6 +31,9 @@ FZF COMMANDS:
   ENTER
     Get a Bash shell to the default container of the selected pod.
 
+  CTRL-C
+    Exit without any further action.
+
   CTRL-D
     Fetch details about the selected pod.
 

@@ -123,12 +123,14 @@ INITIAL_INPUT=$(eval "$FZF_DEFAULT_COMMAND")
 set +e
 
 # CTRL+Z process suspension is suppressed as it doesn't work properly
-# (see <https://github.com/junegunn/fzf/issues/2289>).
+# (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
+# ignored as spamming it to abort fzf occasionally adds garbage "[A"
+# entries to the Bash command history.
 FZF_OUTPUT=$(\
   # shellcheck disable=SC2016
   echo "$INITIAL_INPUT" | fzf \
     --bind="ctrl-r:reload:$FZF_DEFAULT_COMMAND" \
-    --bind='ctrl-z:ignore' \
+    --bind='ctrl-z:ignore,esc:ignore' \
     --expect="ctrl-d,ctrl-l,ctrl-y,f1" \
     --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Refresh ╱ CTRL+Y: Copy pod name ╱ ENTER: Shell' \
     --header-lines=1 \

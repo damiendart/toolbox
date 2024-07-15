@@ -169,16 +169,16 @@ case $SELECTED_ACTION in
     help
     ;;
   ctrl-d)
-    kubectl describe pod --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD"
+    exec kubectl describe pod --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD"
     ;;
   ctrl-l)
-    kubectl logs --all-containers --namespace="$SELECTED_NAMESPACE" --tail=500 "$SELECTED_POD"
+    exec kubectl logs --all-containers --namespace="$SELECTED_NAMESPACE" --tail=500 "$SELECTED_POD"
     ;;
   ctrl-y)
     printf "%s" "$SELECTED_POD" | xsel -i --clipboard
     echo "[✔] Copied \"$SELECTED_POD\" to the clipboard!"
     ;;
   *)
-    kubectl exec -it --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD" -- bash
+    exec kubectl exec -it --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD" -- bash
     ;;
 esac

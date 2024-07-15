@@ -161,6 +161,7 @@ FZF_OUTPUT=$(\
     --expect="$FZF_EXPECT" \
     --info='inline-right' \
     --preview='cat {} 2>/dev/null' \
+    --preview-window='<80(down)' \
     --prompt='--%<-- ' \
     --query="$INITIAL_QUERY" \
     --scheme='path' \

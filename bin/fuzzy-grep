@@ -109,14 +109,18 @@ INITIAL_QUERY="${*:-}"
 export INPUT_TRANSFORM='
   RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s -- \{q} || true"
 
-  case "$FZF_PROMPT" in
-    *★*)
-      printf "$RELOAD_BASE" "--no-ignore"
-      ;;
-    *)
-      printf "$RELOAD_BASE" "--glob=\"!.git/\""
-      ;;
-  esac
+  if [[ "$FZF_QUERY" == "" ]]; then
+    echo "reload:true"
+  else
+    case "$FZF_PROMPT" in
+      *★*)
+        printf "$RELOAD_BASE" "--no-ignore"
+        ;;
+      *)
+        printf "$RELOAD_BASE" "--glob=\"!.git/\""
+        ;;
+    esac
+  fi
 '
 
 # shellcheck disable=SC2016

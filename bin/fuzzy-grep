@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# A Vim fuzzy grep/ripgrep launcher.
+# A fuzzy ripgrep launcher.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
 # free and unencumbered software released into the public domain. For
@@ -10,38 +10,69 @@ set -e
 
 help() {
   cat << HELP
+A fuzzy ripgrep launcher.
+
 Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
 
-Launches Vim with the fuzzy grep/ripgrep doohickey already active. By
-default, the ":FG" Vim command will be used, which respects any ignore
-files (e.g. ".gitignore").
+If the current working directory is within a Git repository, the search
+will start from the repository root. Otherwise the search will start
+from the current working directory. Ignore files (e.g. ".gitignore") in
+the search root directory are respected.
 
-Requires whatever "\$HOME/.vim/plugin/fuzzy-grep.vim" requires and that
-the EDITOR environment variable is set to some sort of Vim. If the GNU
-version of getopt is available it will be used to parse command-line
-arguments, adding support for grouped short options and other niceties.
+If the GNU version of getopt is available it will be used to preprocess
+command-line arguments, enabling support for grouped short options and
+other niceties.
 
 FLAGS:
 
-  -e, --everything
-    Use the ":FGA" Vim command, which searches through everything.
-
   -h, --help
+    Display this help text and exit.
+
+  --vim
+    Adjust the application's functionality for better Vim integration.
+    For more information, search for ":FG" in Vim's help.
+
+ACTIONS:
+
+  ENTER
+    Open the first selected match in Vim and populate Vim's quickfix
+    list with all selected matches.
+
+  CTRL-A
+    Select all matches.
+
+  CTRL-D
+    Deselect all matches.
+
+  CTRL-C
+    Exit without any further action.
+
+  F1
     Display this help text and exit.
 HELP
 }
 
-FUZZY_GREP_COMMAND=":FG"
+VIM_MODE=0
 
 # Using the GNU version of getopt to parse command-line arguments adds
 # support for grouped short options and other niceties.
 if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
-  if ! ARGS=$(getopt -l everything,help -n "$(basename "$0")" -o eh -- "$@"); then
+  if ! ARGS=$(getopt -l help,vim -n "$(basename "$0")" -o h -- "$@"); then
     printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
     exit 2
   fi
 
   eval set -- "$ARGS"
+fi
+
+if ! type 'fzf' 1>/dev/null 2>&1 || \
+  ! type 'mktemp' 1>/dev/null 2>&1 || \
+  ! type 'pathshorten' 1>/dev/null 2>&1 || \
+  ! type 'rg' 1>/dev/null 2>&1 || \
+  ! type 'vim' 1>/dev/null 2>&1;
+then
+  printf 'ERROR: "%s" requires fzf, mktemp, pathshorten, rg, and vim\n' "$(basename "$0")" >&2
+  exit 2
 fi
 
 # The following command-line argument and option parser is based on
@@ -52,8 +83,9 @@ while :; do
       help
       exit
       ;;
-    -e|--everything)
-      FUZZY_GREP_COMMAND=":FGA"
+    --vim)
+      VIM_MODE=1
+      shift
       ;;
     --)
       shift
@@ -71,4 +103,105 @@ while :; do
   shift
 done
 
-$EDITOR -c "$FUZZY_GREP_COMMAND $1"
+FZF_EXPECT='f1'
+FZF_LABEL='Press F1 for help'
+INITIAL_QUERY="${*:-}"
+
+# shellcheck disable=SC2016
+export INPUT_TRANSFORM='
+  RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s \{q} || true"
+
+  case "$FZF_PROMPT" in
+    *★*)
+      printf "$RELOAD_BASE" "--no-ignore"
+      ;;
+    *)
+      printf "$RELOAD_BASE" "--glob=\"!.git/\""
+      ;;
+  esac
+'
+
+# shellcheck disable=SC2016
+PROMPT_TRANSFORM='
+  case "$FZF_PROMPT" in
+    *★*)
+      echo "change-prompt(($(pathshorten)) )+transform:$INPUT_TRANSFORM"
+      ;;
+    *)
+      echo "change-prompt(($(pathshorten))★ )+transform:$INPUT_TRANSFORM"
+      ;;
+  esac
+'
+
+case "$(git rev-parse --is-inside-work-tree 2>/dev/null)" in
+  true*)
+    cd "$(git rev-parse --show-toplevel 2>/dev/null)"
+    ;;
+esac
+
+set +e
+
+# CTRL+Z process suspension is suppressed as it doesn't work properly
+# (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
+# ignored as spamming it to abort fzf occasionally adds garbage "[A"
+# entries to the Bash command history.
+FZF_OUTPUT=$(\
+  # shellcheck disable=SC2016,SC2059
+  fzf \
+    --ansi \
+    --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
+    --bind="ctrl-t:transform:$PROMPT_TRANSFORM" \
+    --bind='ctrl-z:ignore,esc:ignore' \
+    --bind='backward-eof:abort' \
+    --bind="change:transform:$INPUT_TRANSFORM" \
+    --bind="start:transform:$INPUT_TRANSFORM" \
+    --border-label="$FZF_LABEL" \
+    --border-label-pos='-3:bottom' \
+    --disabled \
+    --delimiter=':' \
+    --expect="$FZF_EXPECT" \
+    --info='inline-right' \
+    --multi \
+    --no-clear \
+    --preview='(nl -ba {1} | grep --color=always -E "$(printf "|^\s*%s\s.*" {2})") 2>/dev/null' \
+    --preview-window='+{2}/3,<80(down)' \
+    --prompt="($(pathshorten)) " \
+    --query="$INITIAL_QUERY" \
+)
+FZF_STATUS="$?"
+
+if [ "$FZF_STATUS" != 0 ]; then
+  # Allow this script to exit cleanly if fzf exits with a return code of
+  # 130, signalling that it was aborted or interrupted by the user.
+  if [ "$FZF_STATUS" = 130 ]; then
+    tput rmcup
+    exit
+  else
+    exit $FZF_STATUS
+  fi
+fi
+
+set -e
+
+SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
+SELECTED_OUTPUT=$(echo "$FZF_OUTPUT" | tail -n +2)
+
+case $SELECTED_ACTION in
+  f1)
+    if [ "$VIM_MODE" = 1 ]; then
+      echo "$SELECTED_ACTION"
+    else
+      help
+    fi
+    ;;
+  *)
+    if [ "$VIM_MODE" = 1 ]; then
+      echo "$FZF_OUTPUT"
+    else
+      TEMP_FILE=$(mktemp)
+
+      echo "$SELECTED_OUTPUT" > "$TEMP_FILE"
+      exec vim +cw -q "$TEMP_FILE"
+    fi
+    ;;
+esac

@@ -140,10 +140,10 @@ function! s:FuzzyGrepSelection(visualmode, command)
   endtry
 endfunction
 
-command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', '', <f-args>)
-command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', '*', <f-args>)
+" command! -nargs=* -complete=dir -bang FG call s:FuzzyGrep(<bang>0, '--glob="!.git/"', '', <f-args>)
+" command! -nargs=* -complete=dir -bang FGA call s:FuzzyGrep(<bang>0, '--no-ignore', '*', <f-args>)
 
-nnoremap <silent> <leader>fa :<C-U>call <SID>FuzzyGrepSelection('n', 'FGA')<CR>
-vnoremap <silent> <leader>fa :<C-U>call <SID>FuzzyGrepSelection('v', 'FGA')<CR>
-nnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('n', 'FG')<CR>
-vnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('v', 'FG')<CR>
+" nnoremap <silent> <leader>fa :<C-U>call <SID>FuzzyGrepSelection('n', 'FGA')<CR>
+" vnoremap <silent> <leader>fa :<C-U>call <SID>FuzzyGrepSelection('v', 'FGA')<CR>
+" nnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('n', 'FG')<CR>
+" vnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('v', 'FG')<CR>

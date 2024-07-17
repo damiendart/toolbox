@@ -85,7 +85,6 @@ while :; do
       ;;
     --vim)
       VIM_MODE=1
-      shift
       ;;
     --)
       shift
@@ -104,12 +103,11 @@ while :; do
 done
 
 FZF_EXPECT='f1'
-FZF_LABEL='Press F1 for help'
 INITIAL_QUERY="${*:-}"
 
 # shellcheck disable=SC2016
 export INPUT_TRANSFORM='
-  RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s \{q} || true"
+  RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s -- \{q} || true"
 
   case "$FZF_PROMPT" in
     *★*)
@@ -133,6 +131,10 @@ PROMPT_TRANSFORM='
   esac
 '
 
+if [ "$VIM_MODE" = 1 ]; then
+  FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x,f1'
+fi
+
 case "$(git rev-parse --is-inside-work-tree 2>/dev/null)" in
   true*)
     cd "$(git rev-parse --show-toplevel 2>/dev/null)"
@@ -150,12 +152,12 @@ FZF_OUTPUT=$(\
   fzf \
     --ansi \
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
-    --bind="ctrl-t:transform:$PROMPT_TRANSFORM" \
+    --bind="ctrl-e:transform:$PROMPT_TRANSFORM" \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
     --bind="change:transform:$INPUT_TRANSFORM" \
     --bind="start:transform:$INPUT_TRANSFORM" \
-    --border-label="$FZF_LABEL" \
+    --border-label="Press F1 for help" \
     --border-label-pos='-3:bottom' \
     --disabled \
     --delimiter=':' \

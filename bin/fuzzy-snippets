@@ -97,7 +97,6 @@ while :; do
       ;;
     --vim)
       VIM_MODE=1
-      shift
       ;;
     --)
       shift
@@ -138,7 +137,7 @@ fi
 FZF_EXPECT='ctrl-p,f1'
 FZF_LABEL='ENTER: Copy snippet ╱ CTRL+P: Print snippet ╱ F1: Help'
 IFS=' '
-INITIAL_QUERY="$*"
+INITIAL_QUERY="${*:-}"
 
 if [ "$VIM_MODE" = 1 ]; then
   FZF_EXPECT='ctrl-y,f1'

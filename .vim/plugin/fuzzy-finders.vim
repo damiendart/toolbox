@@ -133,7 +133,7 @@ function! s:FuzzyGrepSelection(visualmode)
   endtry
 endfunction
 
-function! s:FuzzySnippets() abort
+function! s:FuzzySnippets(...) abort
   function! Handler(input) closure
     if a:input[0] ==? 'f1'
       execute 'h :FS'
@@ -163,7 +163,10 @@ function! s:FuzzySnippets() abort
     endtry
   endfunction
 
-  call s:Fuzzy('fuzzy-snippets --vim', funcref('Handler'))
+  let l:arguments = copy(a:000)
+  let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
+
+  call s:Fuzzy('fuzzy-snippets --vim -- ' . shellescape(l:query), funcref('Handler'))
 endfunction
 
 function! s:ToQuickfix(line)
@@ -184,7 +187,7 @@ autocmd FileType fuzzyfinder let b:laststatus = &laststatus
   \| autocmd WinLeave <buffer> close!
 
 command! -bang -nargs=* FG call s:FuzzyGrep(<bang>0, <f-args>)
-command! FS call s:FuzzySnippets()
+command! -nargs=* FS call s:FuzzySnippets(<f-args>)
 
 nnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('n')<CR>
 vnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('v')<CR>

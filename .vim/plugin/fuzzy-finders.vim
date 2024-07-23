@@ -24,12 +24,18 @@ function! s:Fuzzy(command, select_cb) abort
       try
         call l:self.select_cb(readfile(l:self.filename))
       catch /^Vim:Interrupt$/
-      catch /E684/
+      " Improve the appearance of some commonly-encountered errors.
       catch /E11/
         echohl ErrorMsg
         echom join(split(v:exception, ':')[1:2], ':')
         echohl None
         return
+      catch /E37/
+        echohl ErrorMsg
+        echom join(split(v:exception, ':')[1:], ':')
+        echohl None
+        return
+      catch /E684/
       finally
         call delete(l:self.filename)
       endtry
@@ -78,16 +84,7 @@ function! s:FuzzyGrep(abandon, ...) abort
 
     let l:results = map(a:input[1:], 's:ToQuickfix(v:val)')
 
-    try
-      execute l:command fnameescape(l:results[0].filename)
-    " Improve the appearance of some commonly-encountered errors.
-    catch /E37/
-      echohl ErrorMsg
-      echom join(split(v:exception, ':')[1:], ':')
-      echohl None
-      return
-    endtry
-
+    execute l:command fnameescape(l:results[0].filename)
     execute l:results[0].lnum
     execute 'normal!' l:results[0].col . '|zz'
 
@@ -123,7 +120,6 @@ function! s:FuzzyGrepSelection(visualmode)
     " Vim's documentation) as it's more of an annoyance when using
     " a selection as the initial query.
     execute ":FG" fnameescape(join(getreg('"', 1, 1), ""))
-  catch /^Vim:Interrupt$/
   finally
     if type(l:register) == type({})
       call setreg('"', l:register)

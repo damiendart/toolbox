@@ -147,18 +147,26 @@ esac
 
 set +e
 
-# CTRL+Z process suspension is suppressed as it doesn't work properly
-# (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
-# ignored as spamming it to abort fzf occasionally adds garbage "[A"
-# entries to the Bash command history.
+# - CTRL+Z process suspension is suppressed as it doesn't work properly
+#   (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
+#   ignored as spamming it to abort fzf occasionally adds garbage "[A"
+#   entries to the Bash command history.
+#
+# - Giving fzf some initial empty input seems to speed up the "first
+#   paint" a touch (it's so slight, but it's one of those things that I
+#   can't unsee once I'm aware of it).
+#
+# - The `sleep 0.1` acts as a poor-man's debouncer, reducing the number
+#   of ripgrep processes running while typing a query.
 FZF_OUTPUT=$(\
   # shellcheck disable=SC2016,SC2059
-  fzf \
+  true | fzf \
     --ansi \
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
     --bind="ctrl-e:transform:$PROMPT_TRANSFORM" \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
+    --bind="change:reload:sleep 0.1" \
     --bind="change:transform:$INPUT_TRANSFORM" \
     --bind="start:transform:$INPUT_TRANSFORM" \
     --border-label="Press F1 for help" \

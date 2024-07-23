@@ -178,8 +178,9 @@ FZF_STATUS="$?"
 
 if [ "$FZF_STATUS" != 0 ]; then
   # Allow this script to exit cleanly if fzf exits with a return code of
-  # 130, signalling that it was aborted or interrupted by the user.
-  if [ "$FZF_STATUS" = 130 ]; then
+  # 1, signalling that no matches were made, or 130, signalling that it
+  # was aborted or interrupted by the user.
+  if [ "$FZF_STATUS" = 1 ] || [ "$FZF_STATUS" = 130 ]; then
     tput rmcup
     exit
   else

@@ -135,12 +135,14 @@ if [ "$LIST_FILES" = 1 ]; then
 fi
 
 FZF_EXPECT='ctrl-p,f1'
+FZF_HEIGHT='20'
 FZF_LABEL='ENTER: Copy snippet ╱ CTRL+P: Print snippet ╱ F1: Help'
 IFS=' '
 INITIAL_QUERY="${*:-}"
 
 if [ "$VIM_MODE" = 1 ]; then
   FZF_EXPECT='ctrl-y,f1'
+  FZF_HEIGHT='100%'
   FZF_LABEL='ENTER: insert ╱ CTRL+Y: yank ╱ F1: help'
 fi
 
@@ -158,6 +160,7 @@ FZF_OUTPUT=$(\
     --border-label-pos='-3:bottom' \
     --delimiter='/' \
     --expect="$FZF_EXPECT" \
+    --height="$FZF_HEIGHT" \
     --info='inline-right' \
     --preview='cat {} 2>/dev/null' \
     --preview-window='<80(down)' \

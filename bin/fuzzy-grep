@@ -103,6 +103,7 @@ while :; do
 done
 
 FZF_EXPECT='f1'
+FZF_HEIGHT='20'
 INITIAL_QUERY="${*:-}"
 
 # shellcheck disable=SC2016
@@ -137,6 +138,7 @@ PROMPT_TRANSFORM='
 
 if [ "$VIM_MODE" = 1 ]; then
   FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x,f1'
+  FZF_HEIGHT='100%'
 fi
 
 case "$(git rev-parse --is-inside-work-tree 2>/dev/null)" in
@@ -174,9 +176,9 @@ FZF_OUTPUT=$(\
     --disabled \
     --delimiter=':' \
     --expect="$FZF_EXPECT" \
+    --height="$FZF_HEIGHT" \
     --info='inline-right' \
     --multi \
-    --no-clear \
     --preview='(nl -ba {1} | grep --color=always -E "$(printf "|^\s*%s\s.*" {2})") 2>/dev/null' \
     --preview-window='+{2}/3,<80(down)' \
     --prompt="($(pathshorten)) " \
@@ -191,7 +193,6 @@ case $SELECTED_ACTION in
     if [ "$VIM_MODE" = 1 ]; then
       echo "$SELECTED_ACTION"
     else
-      tput rmcup
       help
     fi
 
@@ -204,7 +205,6 @@ if [ "$FZF_STATUS" != 0 ]; then
   # 1, signalling that no matches were made, or 130, signalling that it
   # was aborted or interrupted by the user.
   if [ "$FZF_STATUS" = 1 ] || [ "$FZF_STATUS" = 130 ]; then
-    tput rmcup
     exit
   else
     exit $FZF_STATUS

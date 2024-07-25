@@ -183,6 +183,21 @@ FZF_OUTPUT=$(\
     --query="$INITIAL_QUERY" \
 )
 FZF_STATUS="$?"
+SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
+SELECTED_OUTPUT=$(echo "$FZF_OUTPUT" | tail -n +2)
+
+case $SELECTED_ACTION in
+  f1*)
+    if [ "$VIM_MODE" = 1 ]; then
+      echo "$SELECTED_ACTION"
+    else
+      tput rmcup
+      help
+    fi
+
+    exit
+    ;;
+esac
 
 if [ "$FZF_STATUS" != 0 ]; then
   # Allow this script to exit cleanly if fzf exits with a return code of
@@ -198,17 +213,7 @@ fi
 
 set -e
 
-SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
-SELECTED_OUTPUT=$(echo "$FZF_OUTPUT" | tail -n +2)
-
 case $SELECTED_ACTION in
-  f1)
-    if [ "$VIM_MODE" = 1 ]; then
-      echo "$SELECTED_ACTION"
-    else
-      help
-    fi
-    ;;
   *)
     if [ "$VIM_MODE" = 1 ]; then
       echo "$FZF_OUTPUT"

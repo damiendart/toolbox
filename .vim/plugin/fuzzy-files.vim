@@ -16,26 +16,17 @@ let g:fuzzy_files_source_command = 'rg --files --hidden --glob="!.git/"'
 let g:loaded_fuzzy_files = 1
 
 function! s:FuzzyFiles(abandon, ...) abort
-  if !executable('fzf') || !executable('rg') || !executable('git') || !exists('g:loaded_fzf')
-    throw 'FuzzyFiles requires fzf, fzf.vim, Git, and ripgrep'
+  if !executable('fzf') || !executable('rg') || !exists('g:loaded_fzf')
+    throw 'FuzzyFiles requires fzf, fzf.vim, and ripgrep'
   endif
 
-  let l:arguments = copy(a:000)
-  let l:query = ''
+  let l:query = len(a:000) > 0 ? join(a:000, ' ') : ''
   let l:spec = copy(g:fzf_base_spec)
-
-  if len(l:arguments) > 0 && isdirectory(expand(l:arguments[-1]))
-    call extend(l:spec, { 'dir': fnamemodify(remove(l:arguments, -1), ':p')[:-2] })
-  else
-    let l:gitRoot = system('git rev-parse --show-toplevel 2>/dev/null')[:-2]
-    let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
-
-    call extend(l:spec, { 'dir': strlen(l:gitRoot) > 1 ? l:gitRoot : getcwd() })
-  endif
 
   call extend(
     \ l:spec,
     \ {
+      \ 'dir': getcwd(),
       \ 'options': [
         \ '--bind', 'ctrl-a:select-all,ctrl-d:deselect-all,ctrl-z:abort',
         \ '--bind', 'backward-eof:abort',
@@ -45,7 +36,7 @@ function! s:FuzzyFiles(abandon, ...) abort
         \ '--info=inline-right',
         \ '--multi',
         \ '--preview', g:fzf_preview_command,
-        \ '--prompt', pathshorten(l:spec.dir) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),
+        \ '--prompt', pathshorten(getcwd()) . (((has('win32') || has('win64')) && !&shellslash) ? '\' : '/'),
         \ '--query', l:query,
         \ '--scheme', 'path',
       \ ],

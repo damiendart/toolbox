@@ -5,6 +5,7 @@
 " more information, please refer to the accompanying "UNLICENCE" file.
 
 set visualbell
+set NERDTree
 
 sethandler <C-A> a:ide
 sethandler <C-B> a:ide
@@ -27,3 +28,6 @@ sethandler <C-X> a:vim
 sethandler <C-Y> a:vim
 sethandler <C-[> a:vim
 sethandler <C-]> a:vim
+
+let mapleader = "\\"
+map <leader><leader> :NERDTreeFocus<CR>

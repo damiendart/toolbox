@@ -39,7 +39,17 @@ endfun
 let b:loaded = 1
 
 let s:notesRoot = fnamemodify($NOTES_ROOT, ':p')
-let s:path = empty(expand('%:p')) ? getcwd() : expand('%:p')
+let s:path = expand('%:p')
+
+" Handle instances when the current or alternative file name is not
+" defined, or when "expand('%:p')" does not provide an absolute path
+" due to an non-existent directory (for more information, please see
+" <https://groups.google.com/g/vim_use/c/WLsWD7Qz1Ig/m/e5UgfuopYoIJ>).
+if empty(s:path)
+  let s:path = getcwd()
+elseif s:path !~ '/.*' || s:path !~ '.:.*'
+  let s:path = resolve(fnamemodify(getcwd(), ':p') . s:path)
+endif
 
 if s:path =~ '^' . s:notesRoot
   " The double-escaping is required so that directory paths containing

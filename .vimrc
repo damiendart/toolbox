@@ -4,16 +4,15 @@
 " more complex should get shipped off to self-contained files in
 " "$TOOLBOX_ROOT/.vim/" (use "gf" to edit or view these files):
 "
+" - "$TOOLBOX_ROOT/.vim/after/ftplugin/markdown.vim"
 " - "$TOOLBOX_ROOT/.vim/after/plugin/plugins.vim"
 " - "$TOOLBOX_ROOT/.vim/after/syntax/markdown.vim"
-" - "$TOOLBOX_ROOT/.vim/ftplugin/markdown.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/additional-file-info.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/base64.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/colorcolumn.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/editorconfig.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-files.vim"
-" - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-grep.vim"
-" - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-snippets.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-finders.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/fzf.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/plugins.vim"
 "

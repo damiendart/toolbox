@@ -10,6 +10,7 @@
 " - "$TOOLBOX_ROOT/.vim/plugin/additional-file-info.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/base64.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/colorcolumn.vim"
+" - "$TOOLBOX_ROOT/.vim/plugin/editorconfig.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-files.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-grep.vim"
 " - "$TOOLBOX_ROOT/.vim/plugin/fuzzy-snippets.vim"

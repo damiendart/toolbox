@@ -11,11 +11,11 @@ IPS="\n"
 
 export EDITOR='vim'
 export GOPATH="$HOME/.go"
-export NPM_CONFIG_PREFIX="$HOME/.npm"
 export NOTES_ROOT="$HOME/Syncthing/notes"
-export SNIPPET_PATH="$HOME/Shed/snippets/snippets:$NOTES_ROOT/templates"
+export NPM_CONFIG_PREFIX="$HOME/.npm"
 # shellcheck disable=SC2155
 export TOOLBOX_ROOT="$(dirname "$(readlink "$HOME/.profile")")"
+export SNIPPET_PATH="./snippets:$TOOLBOX_ROOT/snippets"
 
 while read -r ITEM; do
   if [ -d "$ITEM" ]; then

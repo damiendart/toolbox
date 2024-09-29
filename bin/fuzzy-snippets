@@ -14,12 +14,11 @@ A snippet browser and selector.
 
 Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY...]
 
-Requires fzf, ripgrep, snippet-placeholder, and xsel, and that the
-SNIPPET_PATH environment variable is set to a colon-seperated list of
-directories containing files to use as snippets.
+Requires fzf, ripgrep, and xsel, and that the SNIPPET_PATH environment
+variable is set to a colon-seperated list of directories containing
+files to use as snippets.
 
-Placeholder content in snippets are expanded using snippet-placeholder.
-For more information, see <https://github.com/damiendart/snippets>.
+Snippets are passed through envsubst to allow for placeholder content.
 
 If the GNU version of getopt is available it will be used to preprocess
 command-line arguments, enabling support for grouped short options and
@@ -69,10 +68,9 @@ fi
 
 if ! type 'fzf' 1>/dev/null 2>&1 || \
   ! type 'rg' 1>/dev/null 2>&1 || \
-  ! type 'snippet-placeholder' 1>/dev/null 2>&1 || \
   ! type 'xsel' 1>/dev/null 2>&1;
 then
-  printf 'ERROR: "%s" requires fzf, ripgrep, snippet-placeholder, and xsel\n' "$(basename "$0")" >&2
+  printf 'ERROR: "%s" requires fzf, ripgrep, and xsel\n' "$(basename "$0")" >&2
   exit 2
 fi
 
@@ -128,6 +126,8 @@ for DIRECTORY in $SNIPPET_PATH; do
     SNIPPET_FILES="$(rg --files --sort=path "$DIRECTORY")"
   fi
 done
+
+SNIPPET_FILES=$(echo "$SNIPPET_FILES" | xargs realpath | sort | uniq)
 
 if [ "$LIST_FILES" = 1 ]; then
   echo "$SNIPPET_FILES"
@@ -186,6 +186,14 @@ set -e
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 
+SNIPPET=$(\
+  CURRENT_DATE_TIME=$(date +%Y-%m-%d\ %_H:%M) \
+  CURRENT_YEAR=$(date +%Y) \
+  GIT_USER_NAME=$(git config --global user.name) \
+  GIT_USER_EMAIL=$(git config --global user.email) \
+  envsubst < "$SELECTED_FILE" \
+)
+
 case $SELECTED_ACTION in
   f1)
     if [ "$VIM_MODE" = 1 ]; then
@@ -195,11 +203,9 @@ case $SELECTED_ACTION in
     fi
     ;;
   ctrl-p)
-    snippet-placeholder "$SELECTED_FILE"
+    echo "$SNIPPET"
     ;;
   *)
-    SNIPPET="$(snippet-placeholder "$SELECTED_FILE")"
-
     if [ "$VIM_MODE" = 1 ]; then
       printf "%s\n%s" "$SELECTED_ACTION" "$SNIPPET"
     else

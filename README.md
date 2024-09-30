@@ -27,8 +27,5 @@ Python scripts.
 ## Related projects
 
 -   [nt][]: a note-taking helper application for the command line.
--   [snippets][]: a bunch of reusable snippets and a little doohickey to
-    replace placeholder content.
 
   [nt]: <https://www.robotinaponcho.net/git/#nt>
-  [snippets]: <https://www.robotinaponcho.net/git/#snippets>

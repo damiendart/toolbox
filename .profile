@@ -24,7 +24,7 @@ while read -r ITEM; do
     # snippet from <https://unix.stackexchange.com/a/32054>.
     case ":$PATH:" in
       *:$ITEM:*) ;;
-      *) export PATH="$PATH:$ITEM" ;;
+      *) export PATH="$PATH:$PATH" ;;
     esac
   fi
 done <<PATHS
@@ -32,7 +32,6 @@ $GOPATH/bin
 $HOME/.cargo/bin
 $HOME/.local/bin
 $HOME/.local/share/JetBrains/Toolbox/scripts
-$HOME/Library/Python/3.7/bin
 $NPM_CONFIG_PREFIX/bin
 $TOOLBOX_ROOT/bin
 /usr/local/go/bin

@@ -44,25 +44,36 @@ function! s:Fuzzy(command, select_cb) abort
     redraw!
   endfunction
 
-  execute 'botright' 20 'new'
+  if exists('+splitkeep')
+    let l:splitkeep = &splitkeep
+    set splitkeep=screen
+  endif
 
-  call term_start(
-    \ [
-      \ &shell,
-      \ &shellcmdflag,
-      \ 'TERM=xterm-color256 ' . a:command . '>' . l:callback.filename
-    \ ],
-    \ {
-      \ 'curwin': 1,
-      \ 'cwd': getcwd(),
-      \ 'exit_cb': l:callback.exit_cb,
-      \ 'term_kill': 'term',
-    \ }
-  \ )
+  try
+    execute 'botright' 20 'new'
 
-  setlocal nospell bufhidden=wipe nobuflisted nonumber
-  setfiletype fuzzyfinder
-  startinsert
+    call term_start(
+      \ [
+        \ &shell,
+        \ &shellcmdflag,
+        \ 'TERM=xterm-color256 ' . a:command . '>' . l:callback.filename
+      \ ],
+      \ {
+        \ 'curwin': 1,
+        \ 'cwd': getcwd(),
+        \ 'exit_cb': l:callback.exit_cb,
+        \ 'term_kill': 'term',
+      \ }
+    \ )
+
+    setlocal nospell bufhidden=wipe nobuflisted nonumber
+    setfiletype fuzzyfinder
+    startinsert
+  finally
+    if exists('+splitkeep')
+      let &splitkeep = l:splitkeep
+    endif
+  endtry
 endfunction
 
 function! s:FuzzyGrep(abandon, ...) abort

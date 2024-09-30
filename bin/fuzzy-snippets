@@ -121,11 +121,16 @@ for DIRECTORY in $SNIPPET_PATH; do
   fi
 
   if [ "$SNIPPET_FILES" ]; then
-    SNIPPET_FILES="$SNIPPET_FILES\n$(rg --files --sort=path "$DIRECTORY")"
+    SNIPPET_FILES="$SNIPPET_FILES\n$(rg --files --sort=path "$DIRECTORY" || printf "")"
   else
-    SNIPPET_FILES="$(rg --files --sort=path "$DIRECTORY")"
+    SNIPPET_FILES="$(rg --files --sort=path "$DIRECTORY" || printf "")"
   fi
 done
+
+if [ "$SNIPPET_FILES" = "" ]; then
+  echo 'ERROR: no snippets found' >&2
+  exit 2
+fi
 
 SNIPPET_FILES=$(echo "$SNIPPET_FILES" | xargs realpath | sort | uniq)
 

@@ -68,13 +68,13 @@ if s:path =~ '^' . s:notesRoot
     " <https://vimways.org/2018/formatting-lists-with-vim/>, with
     " additions and tweaks to support blockquotes, GitHub Flavoured
     " Markdown task list items, and quoted lists.
-    setlocal formatlistpat=^>\\s\\+
-    setlocal formatlistpat+=\\\|^\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
-    setlocal formatlistpat+=\\\|^>\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
-    setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\[[\ -x]\\]\\s\\+
-    setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\[[\ -x]\\]\\s\\+
-    setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+
+    setlocal formatlistpat=^>\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
+    setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s*\\[[\ -x]\\]\\s\\+
     setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\+
+    setlocal formatlistpat+=\\\|^>\\s\\+
+    setlocal formatlistpat+=\\\|^\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
+    setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s*\\[[\ -x]\\]\\s\\+
+    setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+
 
     let b:undo_ftplugin .= '|setlocal breakindent< briopt< formatlistpat<'
   endif

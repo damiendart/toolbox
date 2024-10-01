@@ -24,7 +24,7 @@ while read -r ITEM; do
     # snippet from <https://unix.stackexchange.com/a/32054>.
     case ":$PATH:" in
       *:$ITEM:*) ;;
-      *) export PATH="$PATH:$PATH" ;;
+      *) export PATH="$ITEM:$PATH" ;;
     esac
   fi
 done <<PATHS

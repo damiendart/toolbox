@@ -132,6 +132,8 @@ def main(arguments: argparse.Namespace) -> None:
                 executor.submit(process_file, infile)
 
     elif arguments.in_place:
+        if sys.stdin in arguments.infiles:
+            fatal_error("in-place editing cannot be used with standard input")
 
         def process_file(infile):
             input = infile.read().strip()

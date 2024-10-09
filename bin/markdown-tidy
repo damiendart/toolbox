@@ -29,7 +29,11 @@ def fatal_error(message: str) -> None:
     raise SystemExit(1)
 
 
-def format_markdown(markdown: str, wrap_text: bool) -> str:
+def format_markdown(
+    markdown: str,
+    wrap_text: bool,
+    remove_private_notes: bool,
+) -> str:
     markdown = subprocess.check_output(
         [
             "pandoc",
@@ -58,6 +62,9 @@ def format_markdown(markdown: str, wrap_text: bool) -> str:
         input=markdown,
         text=True,
     )
+
+    if remove_private_notes:
+        markdown = markdown.split("---")[0].strip()
 
     # Surround the URL portion of reference links with angle brackets
     # to match the syntax of automatic links.
@@ -88,6 +95,7 @@ def format_markdown(markdown: str, wrap_text: bool) -> str:
 
 
 def main(arguments: argparse.Namespace) -> None:
+    remove_private_notes = not arguments.keep_private_notes
     wrap_text = not arguments.no_wrap
 
     if arguments.outdir:
@@ -113,7 +121,9 @@ def main(arguments: argparse.Namespace) -> None:
                 "w",
             )
 
-            outfile.write(format_markdown(input, wrap_text) + "\n")
+            outfile.write(
+                format_markdown(input, wrap_text, remove_private_notes) + "\n",
+            )
             outfile.close()
             print('[✔] Written "{}"'.format(os.path.abspath(outfile.name)))
 
@@ -130,7 +140,9 @@ def main(arguments: argparse.Namespace) -> None:
 
             outfile = open(infile.name, "w")
 
-            outfile.write(format_markdown(input, wrap_text) + "\n")
+            outfile.write(
+                format_markdown(input, wrap_text, remove_private_notes) + "\n",
+            )
             outfile.close()
             print('[✔] Tidied up "{}"'.format(os.path.abspath(outfile.name)))
 
@@ -149,7 +161,7 @@ def main(arguments: argparse.Namespace) -> None:
             arguments.outfile = arguments.outfile.open(mode="w")
 
         arguments.outfile.write(
-            format_markdown(input, wrap_text) + "\n",
+            format_markdown(input, wrap_text, remove_private_notes) + "\n",
         )
 
 
@@ -170,6 +182,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         action="store_true",
         dest="no_wrap",
         help="do not wrap text",
+    )
+    parser.add_argument(
+        "--keep-private-notes",
+        action="store_true",
+        dest="keep_private_notes",
+        help='keep content after the first "---"',
     )
 
     group = parser.add_mutually_exclusive_group()

@@ -19,6 +19,8 @@ variable is set to a colon-seperated list of directories containing
 files to use as snippets.
 
 Snippets are passed through envsubst to allow for placeholder content.
+The following additional environment variables are available:
+CURRENT_DATE_TIME, CURRENT_YEAR, GIT_USER_NAME, and GIT_USER_EMAIL.
 
 If the GNU version of getopt is available it will be used to preprocess
 command-line arguments, enabling support for grouped short options and
@@ -191,8 +193,9 @@ set -e
 SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
 SELECTED_FILE=$(echo "$FZF_OUTPUT" | tail -1)
 
+# Additional environment variable are listed in the help text.
 SNIPPET=$(\
-  CURRENT_DATE_TIME=$(date +%Y-%m-%d\ %_H:%M) \
+  CURRENT_DATE_TIME=$(date +%Y-%m-%d\ %0H:%M) \
   CURRENT_YEAR=$(date +%Y) \
   GIT_USER_NAME=$(git config --global user.name) \
   GIT_USER_EMAIL=$(git config --global user.email) \

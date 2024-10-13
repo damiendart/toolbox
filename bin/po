@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""
+A simple notification sender, using Pushover.
+
+A configuration file at "$HOME/.config/toolbox/po.ini" is used to
+provide Pushover API tokens:
+
+    [pushover]
+    application_key=APPLICATION_KEY_GOES_HERE
+    user_key=USER_KEY_GOES_HERE
+"""
+
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+import argparse
+import configparser
+import http.client
+import os
+import pathlib
+import sys
+import typing
+import urllib.parse
+
+
+CONFIG_DEFAULT = "{}/.config/toolbox/po.ini".format(pathlib.Path.home())
+
+
+def fatal_error(message: str) -> None:
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def main(arguments: argparse.Namespace, config: typing.List) -> None:
+    connection = http.client.HTTPSConnection("api.pushover.net:443")
+    connection.request(
+        "POST",
+        "/1/messages.json",
+        urllib.parse.urlencode(
+            {
+                "message": " ".join(arguments.message),
+                "title": arguments.title,
+                "token": config["application_key"],
+                "user": config["user_key"],
+            },
+        ),
+        {"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    response = connection.getresponse()
+    if response.status == 200:
+        return
+    else:
+        fatal_error('Pushover API responded with "{}"'.format(response.reason))
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "message",
+        help="notification body",
+        nargs="*",
+        type=str,
+        default=sys.stdin,
+    )
+    parser.add_argument(
+        "--title",
+        help="notification title",
+        nargs="?",
+        type=str,
+        default="Wild notification appeared!",
+    )
+
+    return parser.parse_args(arguments)
+
+
+def parse_config(config_file: str):
+    if not (os.path.isfile(config_file) and os.access(config_file, os.R_OK)):
+        fatal_error('unable to read config file "{}"'.format(config_file))
+
+    with open(config_file, "r") as f:
+        config_file = f.read()
+
+    config = configparser.ConfigParser()
+    config.read_string(config_file)
+
+    if not config.has_option("pushover", "application_key"):
+        fatal_error('missing "pushover.application_key" option in config file')
+
+    if not config.has_option("pushover", "user_key"):
+        fatal_error('missing "pushover.user_key" option in config file')
+
+    return {
+        "application_key": config.get("pushover", "application_key"),
+        "user_key": config.get("pushover", "user_key"),
+    }
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+    config = parse_config(CONFIG_DEFAULT)
+
+    main(arguments, config)

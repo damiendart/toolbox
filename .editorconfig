@@ -12,7 +12,7 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[{git-hometime,install,markdown-tidy,rpncalc,timeshit,*.py}]
+[{git-hometime,install,markdown-tidy,po,rpncalc,timeshit,*.py}]
 indent_size = 4
 
 [toolbox.txt]

@@ -21,7 +21,9 @@ if !executable('base64')
     throw 'Base64-related gubbins requires base64'
   endfunction
 
+  nnoremap <silent> <leader>be :<C-U>call <SID>Base64Required()<CR>
   vnoremap <silent> <leader>be :<C-U>call <SID>Base64Required()<CR>
+  nnoremap <silent> <leader>bd :<C-U>call <SID>Base64Required()<CR>
   vnoremap <silent> <leader>bd :<C-U>call <SID>Base64Required()<CR>
 
   finish
@@ -29,7 +31,7 @@ endif
 
 function! s:Base64DecodeSelection(visualmode) abort
   function! s:decode(input) abort
-    let l:output = system('base64 --decode --wrap=0', a:input)
+    let l:output = system('base64 --decode --ignore-garbage --wrap=0', a:input)
 
     if v:shell_error
       throw 'Invalid Base64 input'
@@ -76,6 +78,16 @@ function! s:Base64DecodeSelection(visualmode) abort
 endfunction
 
 function! s:Base64EncodeSelection(visualmode)
+  function! s:encode(input) abort
+    let l:output = system('base64 --wrap=0', a:input)
+
+    if v:shell_error
+      throw 'Invalid input'
+    endif
+
+    return l:output
+  endfunction
+
   let l:paste = &paste
   let l:register = has('patch-8.2.0924')
     \? getreginfo('"')
@@ -85,11 +97,11 @@ function! s:Base64EncodeSelection(visualmode)
     set paste
 
     if a:visualmode == 'v'
-      normal! gv
-      execute "normal! c\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
+      normal! gvy
+      execute 'normal! gv"_c' . s:encode(@") . "\<ESC>"
     else
       call setreg('"', expand('<cword>'))
-      execute "normal! viwc\<C-R>=system('base64 --wrap=0', @\")\<CR>\<ESC>"
+      execute "normal! viwc" . s:encode(@") . "\<ESC>"
     endif
   finally
     normal! `[

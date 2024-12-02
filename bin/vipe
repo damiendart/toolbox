@@ -1,0 +1,112 @@
+#!/bin/sh
+#
+# Pipe stuff in and out of a text editor.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+set -e
+
+help() {
+  cat << HELP
+Pipe stuff in and out of an text editor.
+
+This is a shell script implementation of the vipe utility originally
+available at <https://joeyh.name/code/moreutils/>.
+
+Usage: $(basename "$0") [FLAGS]
+
+FLAGS:
+
+  -h, --help
+    Display this help text and exit.
+
+  -s SUFFIX, --suffix=SUFFIX
+    Add a file extension to the temporary file used by vipe, allowing
+    editors to provide syntax highlighting and other niceties.
+HELP
+}
+
+# Using the GNU version of getopt to parse command-line arguments adds
+# support for grouped short options and other niceties.
+if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
+  if ! ARGS=$(getopt -l help,suffix: -n "$(basename "$0")" -o hs: -- "$@"); then
+    printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+    exit 2
+  fi
+
+  eval set -- "$ARGS"
+fi
+
+SUFFIX=""
+
+# The following command-line argument and option parser is based on
+# <http://mywiki.wooledge.org/BashFAQ/035>.
+while :; do
+  case $1 in
+    -h|-\?|--help)
+      help
+      exit
+      ;;
+    -s|--suffix)
+      if [ "$2" ]; then
+        SUFFIX="$2"
+        shift
+      else
+        echo 'ERROR: "-n/--namespace" requires a non-empy option argument' >&2
+        exit 2
+      fi
+      ;;
+    -s=?*|--suffix=?*)
+      SUFFIX="${1#*=}"
+      ;;
+    --s=|--suffix=)
+      echo 'ERROR: "-s/--suffix" requires a non-empy option argument' >&2
+      exit 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -?*)
+      printf 'ERROR: Unknown option: "%s"\n' "$1" >&2
+      printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+      exit 2
+      ;;
+    *)
+      break
+  esac
+
+  shift
+done
+
+if [ -n "$SUFFIX" ]; then
+  case $SUFFIX in
+    .*)
+      ;;
+    *)
+      SUFFIX=".$SUFFIX"
+  esac
+fi
+
+TMP=$(mktemp --suffix="$SUFFIX")
+trap 'rm "$TMP"' EXIT
+
+if [ ! -t 0 ]; then
+  cat > "$TMP"
+fi
+
+set +e
+
+"$EDITOR" "$TMP" </dev/tty >/dev/tty
+EXIT_CODE="$?"
+
+set -e
+
+if [ $EXIT_CODE != "0" ]; then
+  printf '%s: %s exited with a non-zero code, aborting\n' "$(basename "$0")" "$EDITOR" >&2
+  exit "$EXIT_CODE"
+fi
+
+cat "$TMP"

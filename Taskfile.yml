@@ -67,6 +67,7 @@ tasks:
         .profile
         .shellrc
         bin/fuzzy-*
+        bin/vipe
     desc: 'Lint shell configuration files and scripts with ShellCheck'
 
   start:

@@ -66,8 +66,8 @@ if s:path =~ '^' . s:notesRoot
     setlocal briopt+=list:-1
     " The following formatting regular expressions are based on those at
     " <https://vimways.org/2018/formatting-lists-with-vim/>, with
-    " additions and tweaks to support blockquotes, GitHub Flavoured
-    " Markdown task list items, and quoted lists.
+    " additions and tweaks to support blockquotes, footnotes, GitHub
+    " Flavoured Markdown task list items, and quoted lists.
     setlocal formatlistpat=^>\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
     setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s*\\[[\ -x]\\]\\s\\+
     setlocal formatlistpat+=\\\|^>\\s*[-–+o*]\\s\\+
@@ -75,6 +75,7 @@ if s:path =~ '^' . s:notesRoot
     setlocal formatlistpat+=\\\|^\\s*[\\[({]\\?\\([0-9]\\+\\\|[a-zA-Z]\\+\\)[\\]:.)}]\\s\\+
     setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s*\\[[\ -x]\\]\\s\\+
     setlocal formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+
+    setlocal formatlistpat+=\\\|^\\s*\\[^[0-9]\\+\\]:\\s\\+
 
     let b:undo_ftplugin .= '|setlocal breakindent< briopt< formatlistpat<'
   endif

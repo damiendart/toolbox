@@ -40,8 +40,6 @@ function! s:Fuzzy(command, select_cb) abort
         call delete(l:self.filename)
       endtry
     endif
-
-    redraw!
   endfunction
 
   if exists('+splitkeep')

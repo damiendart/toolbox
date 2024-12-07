@@ -198,8 +198,8 @@ FZF_OUTPUT=$(\
     --query="$INITIAL_QUERY" \
 )
 FZF_STATUS="$?"
-SELECTED_ACTION=$(echo "$FZF_OUTPUT" | head -1)
-SELECTED_OUTPUT=$(echo "$FZF_OUTPUT" | tail -n +2)
+SELECTED_ACTION=$(printf "%s" "$FZF_OUTPUT" | head -1)
+SELECTED_OUTPUT=$(printf "%s" "$FZF_OUTPUT" | tail -n +2)
 
 case $SELECTED_ACTION in
   f1*)
@@ -229,11 +229,11 @@ set -e
 case $SELECTED_ACTION in
   *)
     if [ "$VIM_MODE" = 1 ]; then
-      echo "$FZF_OUTPUT"
+      printf "%s" "$FZF_OUTPUT"
     else
       TEMP_FILE=$(mktemp)
 
-      echo "$SELECTED_OUTPUT" > "$TEMP_FILE"
+      printf "%s" "$SELECTED_OUTPUT" > "$TEMP_FILE"
       exec vim +cw -q "$TEMP_FILE"
     fi
     ;;

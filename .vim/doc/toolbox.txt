@@ -1,4 +1,4 @@
-*toolbox.txt*	Damien Dart's custom Vim bits-and-pieces.
+*toolbox.txt*	Damien Dart's custom Vim gubbins cheat-sheet.
 
   dP                     dP dP                                               ~
   88                     88 88                                               ~
@@ -20,38 +20,35 @@ CONTENTS                                                      *toolbox-contents*
 ==============================================================================
 INTRODUCTION                                                           *toolbox*
 
-The following is a little cheat-sheet for some of the more frequently-used
-Vim gubbins provided by my dotfiles. For more information about anything else,
-please have a look at the individual dotfiles.
+This is a little cheat-sheet for some of the more frequently-used custom Vim
+functionality provided by my dotfiles. For a deeper dive, the best place to
+start is with "$TOOLBOX_ROOT/.vimrc".
 
 
 ==============================================================================
 FUZZY-FINDERS                                                    *toolbox-fuzzy*
 
-The following fuzzy-finders require `fzf` and `fzf.vim` (for more information, see
-<https://github.com/junegunn/fzf>).
+All fuzzy finders support the <C-H> shortcut, which will open this help file
+in read-only mode and jump to the relevant section.
 
                                                                       *:FF* *:FF!*
-:FF[!] {query}		Opens a simple fzf-powered file browser and selector,
-			using {query} as the initial query if provided.
-			Requires `ripgrep` (for more information see
-			<https://github.com/BurntSushi/ripgrep>).
+:FF[!] {query}		Opens a simple file browser and selector, using
+			{query} as the initial query if provided.
 
-			If the current working directory is within a Git
-			repository, the search will start from the repository
-			root. Otherwise the search will start from the current
-			working directory. Ignore files (e.g. ".gitignore") in
-			the search root directory are respected.
+			Ignore files (e.g. ".gitignore") in the current
+			working directory are respected.
 
 			The bang modifier works in a similar fashion to when
-			using it with the |:edit| command: it forces the
-			editing of files regardless of whether there are
-			changes in the current buffer.
+			using it with the |:edit| command, it forces the editing
+			of files regardless of whether there are changes in
+			the current buffer.
 
-			When in fzf, multiple files can be selected. The
-			following keyboard shortcuts are available:
+			Multiple files can be selected. The following keyboard
+			shortcuts are available:
 
 			<Enter>		Opens the selected files with |:edit|.
+			<C-A>		Select all matches.
+			<C-D>		Deselects all matches.
 			<C-T>		Opens the selected files with |:tabe|.
 			<C-V>		Opens the selected files with |:vsplit|.
 			<C-X>		Opens the selected files with |:split|.
@@ -59,115 +56,55 @@ The following fuzzy-finders require `fzf` and `fzf.vim` (for more information, s
 			<C-Z>		Closes fzf without selecting anything.
 
                                                                       *:FG* *:FG!*
-:FG[!] {query}		Opens a fzf-powered interactive ripgrep doohickey
-			using {query} as the initial query if provided.
-			Requires `ripgrep` (for more information see
-			<https://github.com/BurntSushi/ripgrep>).
-
-			If the current working directory is within a Git
-			repository, ripgrep will run from the repository root.
-			Otherwise ripgrep will run from the current working
-			directory. Ignore files (.e.g. ".gitignore") in the
-			search root directory are respected.
+:FG[!] {query}		Opens `fuzzy-grep`, using {query} as the initial query
+			if provided.
 
 			The bang modifier works in a similar fashion to when
-			using it with the |:edit| command: it forces the
-			editing of files regardless of whether there are
-			changes in the current buffer.
+			using it with the |:edit| command, it forces the editing
+			of files regardless of whether there are changes in
+			the current buffer.
 
-			Changing the query will rerun ripgrep using the new
-			query instead of filtering the initial input.
-
-			When in fzf, multiple files can be selected. The
-			following keyboard shortcuts are available:
-
-			<Enter>		Opens the first selected match with
-					|:edit| and adds the remaining matches
-					to the |quickfix| list.
-			<C-A>		Select all matches.
-			<C-D>		Deselects all matches.
-			<C-T>		Opens the first selected match with
-					|:tabe| and adds the remaining selected
-					matches to the |quickfix| list.
-			<C-V>		Opens the first selected match with
-					|:vsplit| and adds the remaining
-					selected to the |quickfix| list.
-			<C-X>		Opens the first selected match with
-					|:split| and adds the remaining selected
-					matches to the |quickfix| list.
-			<C-Z>		Closes fzf without selecting anything.
-
-                                                                    *:FGA* *:FGA!*
-:FGA[!] {query}		Same as above but ignore files will be ignored and all
-			files will be searched.
+			See `fuzzy-grep --help` for more information.
 
                                                        *<Leader>fa* *v_<Leader>fa*
-<Leader>fa		Calls |:FGA| using the word under the cursor or any
-{Visual}<Leader>fa	highlighted characters as the initial input, depending
+<Leader>fg		Calls |:FG| using the word under the cursor or any
+{Visual}<Leader>fg	highlighted characters as the initial query, depending
 			on whether in Normal or Visual mode, respectively.
 
-                                                        *<Leader>fg* *v<Leader>fg*
-<Leader>fg		Same as above but calls |:FG|.
-{Visual}<Leader>fg
-
                                                                            *:FS*
-:FS {query}		Opens a fzf-powered snippets browser and selector,
-			using {query} as the initial query if provided.
-			Requires `fuzzy-snippet` from `toolbox`, and
-			`snippet-placeholder` (for more information, see
-			<https://github.com/damiendart/snippets>).
+:FS {query}		Opens `fuzzy-snippets`, using {query} as the initial
+			query if provided.
 
-			Snippets are passed through `snippet-placeholder` to
-			expand placeholder content in snippets. For more
-			information on available placeholder content, see
-			`snippet-placeholder`'s help text by running
-			`snippet-placeholder --help` in the command-line.
-
-			When in fzf, only a single snippet can be selected.
-			The following keyboard shortcuts are available:
-
-			<Enter>		Passes the selected snippet through
-					snippet-placeholder` and appends the
-					output after the cursor in the
-					previously active buffer.
-			<C-Y>		Passes the selected snippet through
-					`snippet-placeholder` and fills the
-					unnamed register (|quote_quote|) with
-					the output.
-			<C-Z>		Closes fzf without selecting anything.
+			See `fuzzy-snippets --help` for more information.
 
 
 ==============================================================================
 NOTETAKING GUBBINS                                               *toolbox-notes*
 
-When editing Markdown files in `$NOTES_ROOT`, the following tweaks are made
-to make the experience a little better:
+When editing and reading Markdown files in `$NOTES_ROOT`:
 
 -	Following links to other Markdown files in `$NOTES_ROOT` using |gf| and
 	friends works even when the current directory is not `$NOTES_ROOT`
 	and/or the file extension has been omitted.
--	`[[bare-wikilinks]]` and `[[standard|wikilinks]]`, and `#hashtags` are
-	highlighted. Hashtags are words that start with a hash symbol,
-	followed by alphanumeric, "/", ":", "_", and "-" characters. Hashtags
-	must contain at least one letter and any trailing colons are ignored.
-	They can be surrounded with quotation marks and parentheses.
--	The user-defined completion functionality (see |compl-function|) is used
-	to complete `#hashtags`. This functionality requires `nt`.
--	Automatic formatting of Markdown lists is improved so big ol' lists
-	are easier to read.
+-	The user-defined completion functionality (see |compl-function|) is
+	used for `#hashtags` completion. Hashtags are words that start with a
+	hash symbol, followed by alphanumeric, "/", ":", "_", and "-"
+	characters. Hashtags must contain at least one letter and any trailing
+	colons are ignored. Hashtags can be surrounded with quotation marks
+	and/or parentheses.
 
 
 ==============================================================================
 MISCELLANEOUS                                                     *toolbox-misc*
 
                                                                             *:F*
-:F			Similar to |:file|, but instead prints the current file
-			name, whether EditorConfig rules have been applied to
-			the file, and the current Git repository branch if the
-			file is located within a Git repository.
+:F			Prints the current file name (similar to how |:file|
+			does it), whether EditorConfig rules have been applied
+			to the buffer, and the current Git repository branch
+			(if applicable).
 
                                                                          *<C-K>*
-<C-K>			In Normal mode, toggle coloured columns. The
+<C-K>			In Normal mode, toggles coloured columns. The
 			'colorcolumn' setting is tweaked to include a couple
 			of preset text widths as well as including a column
 			set to 'textwidth'.
@@ -176,14 +113,12 @@ MISCELLANEOUS                                                     *toolbox-misc*
 <Leader>bd		In Normal mode, decodes the Base64 string under the
 {Visual}<Leader>bd	cursor (the 'iskeyword' setting is temporarily
 			adjusted to allow all of the Base64 alphabet). In
-			Visual mode, decodes the highlighted Base64 string.
-			Requires the `base64` command, provided by the GNU Core
-			Utilities (and others).
+			Visual mode, decode the highlighted Base64 string.
 
                                                        *<Leader>be* *v_<Leader>be*
 <Leader>be		Encodes the text under the cursor or any highlighted
 {Visual}<Leader>be	text, depending on whether in Normal or Visual mode,
-			to a Base64 string. Requires the `base64` command.
+			to a Base64 string.
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:

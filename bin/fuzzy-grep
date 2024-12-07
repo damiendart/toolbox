@@ -18,36 +18,56 @@ If the GNU version of getopt is available it will be used to preprocess
 command-line arguments, enabling support for grouped short options and
 other niceties.
 
+By default, ignore files (e.g. ".gitignore") in the current working
+directory are respected.
+
 FLAGS:
 
   -h, --help
     Display this help text and exit.
 
   --vim
-    Adjust the application's functionality for better Vim integration.
-    For more information, search for ":FG" in Vim's help.
+    Enable "Vim mode", which adjusts the application's functionality for
+    better Vim and "fuzzy-finders.vim" integration.
 
 ACTIONS:
 
   ENTER
-    Open the first selected match in Vim and populate Vim's quickfix
-    list with all selected matches.
+    Opens the first selected match in Vim and creates a quickfix list
+    with all selected matches if multiple matches are selected. In Vim
+    mode, the first selected match is opened with ":edit".
 
   CTRL-A
-    Select all matches.
-
-  CTRL-D
-    Deselect all matches.
-
-  CTRL-E
-    Toggle between respecting ignore files such as ".gitignore" in the
-    search root directory (the default) or searching every file.
+    Selects all matches.
 
   CTRL-C
-    Exit without any further action.
+    Exits without any further action.
+
+  CTRL-D
+    Deselects all matches.
+
+  CTRL-E
+    Toggles between respecting ignore files in the current working
+    directory (the default) or searching every file.
+
+  CTRL-T
+    (Vim mode only.) Opens the first selected match using ":tabe" and
+    creates a quickfix list with all selected matches if there are
+    multiple selected matches.
+
+  CTRL-V
+    (Vim mode only.) Opens the first selected match using ":vsplit" and
+    creates a quickfix list with all selected matches if there are
+    multiple selected matches.
+
+  CTRL-X
+    (Vim mode only.) Opens the first selected match using ":split" and
+    creates a quickfix list with all selected matches if there are
+    multiple selected matches.
 
   F1
-    Display this help text and exit.
+    Displays this help text and exits. In Vim mode, the "toolbox.txt"
+    help file will be opened to the relavant section.
 HELP
 }
 

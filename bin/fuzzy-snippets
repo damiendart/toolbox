@@ -35,19 +35,24 @@ FLAGS:
     Print out a list of available snippet files and exits.
 
   --vim
-    Adjust the application's functionality for better Vim integration.
-    For more information, search for ":FS" in Vim's help.
+    Enable "Vim mode", which adjusts the application's functionality for
+    better Vim and "fuzzy-finders.vim" integration.
 
 ACTIONS:
 
   ENTER
-    Copy the selected snippet to the clipboard.
+    Copies the selected snippet to the clipboard. In Vim mode, the
+    selected snippet is inserted at the cursor position in the
+    previously active buffer.
 
   CTRL-C
     Exit without any further action.
 
   CTRL-P
-    Print the selected snippet to standard output.
+    (Command-line only.) Prints the selected snippet to standard output.
+
+  CTRL-Y
+    (Vim mode only.) Yanks the selected snippet to Vim's "" register.
 
   F1
     Display this help text and exit.

@@ -34,6 +34,13 @@ def format_markdown(
     wrap_text: bool,
     remove_private_notes: bool,
 ) -> str:
+    # The "- - -" thematic break is used for separating private notes to
+    # prevent conflicts with front matter delimiters.
+    if remove_private_notes:
+        markdown = re.split(r"^- - -", markdown, flags=re.MULTILINE)[0].strip()
+    else:
+        markdown = re.sub(r"^- - -", "", markdown, flags=re.MULTILINE)
+
     markdown = subprocess.check_output(
         [
             "pandoc",
@@ -62,9 +69,6 @@ def format_markdown(
         input=markdown,
         text=True,
     )
-
-    if remove_private_notes:
-        markdown = markdown.split("---")[0].strip()
 
     # Surround the URL portion of reference links with angle brackets
     # to match the syntax of automatic links.
@@ -189,7 +193,7 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         "--keep-private-notes",
         action="store_true",
         dest="keep_private_notes",
-        help='keep content after the first "---"',
+        help='keep content after the first "- - -"',
     )
 
     group = parser.add_mutually_exclusive_group()

@@ -1,3 +1,7 @@
+" Fuzzy finder wrappers.
+"
+" See the "fuzzy-*" scripts in "$TOOLBOX_ROOT/bin" for more information.
+"
 " This file was written by Damien Dart, <damiendart@pobox.com>. This is
 " free and unencumbered software released into the public domain. For
 " more information, please refer to the accompanying "UNLICENCE" file.
@@ -185,6 +189,9 @@ function! s:ToQuickfix(line)
   \ }
 endfunction
 
+" Hide unneccesary Vim chrome when displaying fuzzy finders in a split
+" window to make it look a little tidier. This is based on 
+" <https://github.com/junegunn/fzf/blob/master/README-VIM.md#hide-statusline>.
 autocmd FileType fuzzyfinder let b:laststatus = &laststatus
   \| set laststatus=0 noshowmode noruler
   \| autocmd BufLeave <buffer> set showmode ruler

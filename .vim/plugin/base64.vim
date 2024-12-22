@@ -1,6 +1,6 @@
-" A couple of visual mode mappings for decoding/encoding Base64 strings.
+" Doohickeys for decoding and encoding Base64 strings.
 "
-" Requires "base64" and has only been tested on Ubuntu. Based on:
+" Requires "base64" and has only been tested on Ubuntu. Inspired by:
 "
 " - <https://github.com/equal-l2/vim-base64>,
 " - <https://github.com/christianrondeau/vim-base64>, and
@@ -37,7 +37,7 @@ function! s:Base64DecodeSelection(visualmode) abort
       throw 'Invalid Base64 input'
     endif
 
-    return l:output
+    return substitute(l:output, '\n$', '', 'g')
   endfunction
 
   let l:iskeyword = &iskeyword
@@ -55,17 +55,22 @@ function! s:Base64DecodeSelection(visualmode) abort
   try
     if a:visualmode == 'v'
       normal! gvy
-      execute 'normal! gv"_c' . s:decode(@") . "\<ESC>"
+      let l:decoded = s:decode(@")
+      execute "silent normal! gv\"=l:decoded\<CR>p`>\<ESC>"
     else
       set iskeyword+=+,/,=
-
-      call setreg('"', expand('<cword>'))
-      execute 'normal! viw"_c' . s:decode(@") . "\<ESC>"
+      let l:decoded = s:decode(expand('<cword>'))
+      execute "silent normal! viw\"=l:decoded\<CR>phe\<ESC>"
     endif
   catch
-    echoerr 'Error: ' . v:exception
+    " Prevent a previous command from clearing the error message; search
+    " for "echo-redraw" in Vim's help for more information.
+    redraw
+
+    echohl ErrorMsg
+    echom v:exception
+    echohl None
   finally
-    normal! `[
     let &iskeyword = l:iskeyword
     let &paste = l:paste
 
@@ -85,7 +90,7 @@ function! s:Base64EncodeSelection(visualmode)
       throw 'Invalid input'
     endif
 
-    return l:output
+    return substitute(l:output, '\n$', '', 'g')
   endfunction
 
   let l:paste = &paste
@@ -97,14 +102,11 @@ function! s:Base64EncodeSelection(visualmode)
     set paste
 
     if a:visualmode == 'v'
-      normal! gvy
-      execute 'normal! gv"_c' . s:encode(@") . "\<ESC>"
+      execute "silent normal! gvygv\"=\<SID>encode(@\")\<CR>p`>\<ESC>"
     else
-      call setreg('"', expand('<cword>'))
-      execute "normal! viwc" . s:encode(@") . "\<ESC>"
+      execute "silent normal! viw\"=\<SID>encode(@\")\<CR>phe\<ESC>"
     endif
   finally
-    normal! `[
     let &paste = l:paste
 
     if type(l:register) == type({})

@@ -1,5 +1,5 @@
-[submodule ".vim/pack/plugins/start/editorconfig-vim"]
-	path = .vim/pack/plugins/start/editorconfig-vim
+[submodule ".vim/pack/plugins/opt/editorconfig-fork"]
+	path = .vim/pack/plugins/opt/editorconfig-fork
 	url = https://github.com/damiendart/editorconfig-vim.git
 	branch = feature/damiendart
 [submodule ".vim/pack/plugins/start/fzf"]

@@ -43,7 +43,7 @@ the current interactive shell session.
 
 vim_tags = [
     ".vim/doc/tags",
-    ".vim/pack/plugins/start/editorconfig-vim/doc/tags",
+    ".vim/pack/plugins/opt/editorconfig-fork/doc/tags",
     ".vim/pack/plugins/start/fzf/doc/tags",
 ]
 

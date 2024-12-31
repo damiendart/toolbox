@@ -78,6 +78,15 @@ endif
 
 packadd! matchit
 
+" Neovim 0.9.0 (and later) has its own implementation of EditorConfig
+" support which is enabled by default.
+if !has('nvim-0.9.0')
+  " For more information about the differences between the original
+  " EditorConfig plugin and the fork used here, please see
+  " <https://github.com/damiendart/editorconfig-vim/commits/feature/damiendart/?author=damiendart>.
+  packadd! editorconfig-fork
+endif
+
 if filereadable($HOME . '/.machine.vimrc')
   source ~/.machine.vimrc
 endif

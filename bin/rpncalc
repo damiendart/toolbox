@@ -9,11 +9,16 @@ Inspired by <https://johnlekberg.com/blog/2020-05-22-cli-rpn.html>.
 # free and unencumbered software released into the public domain. For
 # more information, please refer to the accompanying "UNLICENCE" file.
 
+import atexit
 import decimal
 import inspect
 import math
+import os
 import readline
 import typing
+
+
+HISTORY_FILE = os.path.join(os.path.expanduser("~"), ".rpncalc-history")
 
 
 class RPNCalculator:
@@ -149,18 +154,21 @@ if __name__ == "__main__":
     calculator = make_calculator()
     interpreter = RPNInterpreter(calculator)
 
+    atexit.register(readline.write_history_file, HISTORY_FILE)
     readline.parse_and_bind("tab: complete")
     readline.set_completer(make_completer(interpreter))
+    readline.set_history_length(1000)
+
+    if os.path.exists(HISTORY_FILE):
+        readline.read_history_file(HISTORY_FILE)
 
     while True:
         try:
             line = input("> ").strip()
+            result = interpreter.execute(line)
         except (EOFError, KeyboardInterrupt):
             print()
             break
-
-        try:
-            result = interpreter.execute(line)
         except decimal.DivisionByZero:
             print("ERROR: division by zero")
             continue

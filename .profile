@@ -20,11 +20,16 @@ export SNIPPET_PATH="./snippets:$TOOLBOX_ROOT/snippets"
 while read -r ITEM; do
   if [ -d "$ITEM" ]; then
     # The following is a POSIX-compatible method of preventing duplicate
-    # entries in the PATH environmental variable; it is based on a
-    # snippet from <https://unix.stackexchange.com/a/32054>.
+    # entries in the PATH environment variable. It is based on a snippet
+    # from <https://unix.stackexchange.com/a/32054>.
     case ":$PATH:" in
-      *:$ITEM:*) ;;
-      *) export PATH="$ITEM:$PATH" ;;
+      *:$ITEM:*)
+        ;;
+      *)
+        # Append directories to the PATH environment variable to prevent
+        # shenanigans arising from overriding previously defined paths.
+        export PATH="$PATH:$ITEM"
+        ;;
     esac
   fi
 done <<PATHS

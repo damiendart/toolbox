@@ -90,7 +90,7 @@ class RPNInterpreter:
 
     @property
     def keywords(self):
-        return self._calculator.keywords + ("exit", "stack",)
+        return self._calculator.keywords + ("exit", "stack")
 
 
 def make_calculator() -> RPNCalculator:

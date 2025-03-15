@@ -193,7 +193,7 @@ function! s:ToQuickfix(line)
 endfunction
 
 " Hide unneccesary Vim chrome when displaying fuzzy finders in a split
-" window to make it look a little tidier. This is based on 
+" window to make it look a little tidier. This is based on
 " <https://github.com/junegunn/fzf/blob/master/README-VIM.md#hide-statusline>.
 autocmd FileType fuzzyfinder let b:laststatus = &laststatus
   \| set laststatus=0 noshowmode noruler

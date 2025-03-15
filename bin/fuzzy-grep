@@ -133,7 +133,7 @@ export INPUT_TRANSFORM='
     echo "reload:true"
   else
     case "$FZF_PROMPT" in
-      *★*)
+      [*)
         printf "$RELOAD_BASE" "--no-ignore"
         ;;
       *)
@@ -146,11 +146,11 @@ export INPUT_TRANSFORM='
 # shellcheck disable=SC2016
 PROMPT_TRANSFORM='
   case "$FZF_PROMPT" in
-    *★*)
+    [*)
       echo "change-prompt(($(pathshorten)) )+transform:$INPUT_TRANSFORM"
       ;;
     *)
-      echo "change-prompt(($(pathshorten))★ )+transform:$INPUT_TRANSFORM"
+      echo "change-prompt([$(pathshorten)] )+transform:$INPUT_TRANSFORM"
       ;;
   esac
 '

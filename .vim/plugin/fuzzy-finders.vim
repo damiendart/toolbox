@@ -54,11 +54,14 @@ function! s:Fuzzy(command, select_cb) abort
   try
     execute 'botright' 20 'new'
 
+    " "tput civis" reduces cursor flickering when the terminal window
+    " is first shown, and overriding the "TERM" environment variable
+    " fixes any colour-related shenanigans.
     call term_start(
       \ [
         \ &shell,
         \ &shellcmdflag,
-        \ 'TERM=xterm-color256 ' . a:command . '>' . l:callback.filename
+        \ "tput civis; TERM=xterm-color256 " . a:command . '>' . l:callback.filename
       \ ],
       \ {
         \ 'curwin': 1,

@@ -76,6 +76,7 @@ if has('syntax')
   syntax enable
 endif
 
+packadd! cfilter
 packadd! matchit
 
 " Neovim 0.9.0 (and later) has its own implementation of EditorConfig

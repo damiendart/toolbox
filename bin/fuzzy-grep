@@ -76,7 +76,7 @@ VIM_MODE=0
 # Using the GNU version of getopt to parse command-line arguments adds
 # support for grouped short options and other niceties.
 if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
-  if ! ARGS=$(getopt -l help,vim -n "$(basename "$0")" -o h -- "$@"); then
+  if ! ARGS=$(getopt -l fzf-transform-input,fzf-transform-prompt,help,vim -n "$(basename "$0")" -o h -- "$@"); then
     printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
     exit 2
   fi
@@ -102,6 +102,36 @@ while :; do
       help
       exit
       ;;
+    --fzf-transform-input)
+      RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s -- {q} || true"
+
+      if [ -z "$FZF_QUERY" ]; then
+        echo "reload:true"
+      else
+        case "$FZF_PROMPT" in
+          \[*)
+            # shellcheck disable=SC2059
+            printf "$RELOAD_BASE" "--no-ignore"
+            ;;
+          *)
+            # shellcheck disable=SC2059
+            printf "$RELOAD_BASE" "--glob=\"!.git/\""
+            ;;
+        esac
+      fi
+      exit
+      ;;
+    --fzf-transform-prompt)
+      case "$FZF_PROMPT" in
+        \[*)
+          echo "change-prompt(($(pathshorten)) )+transform($0 --fzf-transform-input)"
+          ;;
+        *)
+          echo "change-prompt([$(pathshorten)] )+transform($0 --fzf-transform-input)"
+          ;;
+      esac
+      exit
+      ;;
     --vim)
       VIM_MODE=1
       ;;
@@ -124,36 +154,6 @@ done
 FZF_EXPECT='f1'
 FZF_HEIGHT='20'
 INITIAL_QUERY="${*:-}"
-
-# shellcheck disable=SC2016
-export INPUT_TRANSFORM='
-  RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s -- \{q} || true"
-
-  if [[ "$FZF_QUERY" == "" ]]; then
-    echo "reload:true"
-  else
-    case "$FZF_PROMPT" in
-      [*)
-        printf "$RELOAD_BASE" "--no-ignore"
-        ;;
-      *)
-        printf "$RELOAD_BASE" "--glob=\"!.git/\""
-        ;;
-    esac
-  fi
-'
-
-# shellcheck disable=SC2016
-PROMPT_TRANSFORM='
-  case "$FZF_PROMPT" in
-    [*)
-      echo "change-prompt(($(pathshorten)) )+transform:$INPUT_TRANSFORM"
-      ;;
-    *)
-      echo "change-prompt([$(pathshorten)] )+transform:$INPUT_TRANSFORM"
-      ;;
-  esac
-'
 
 if [ "$VIM_MODE" = 1 ]; then
   FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x,f1'
@@ -178,12 +178,11 @@ FZF_OUTPUT=$(\
   true | fzf \
     --ansi \
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
-    --bind="ctrl-e:transform:$PROMPT_TRANSFORM" \
+    --bind="ctrl-e:transform($0 --fzf-transform-prompt)" \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
     --bind="change:reload:sleep 0.1" \
-    --bind="change:transform:$INPUT_TRANSFORM" \
-    --bind="start:transform:$INPUT_TRANSFORM" \
+    --bind="change,start:transform($0 --fzf-transform-input)" \
     --border-label="Press F1 for help" \
     --border-label-pos='-3:bottom' \
     --disabled \

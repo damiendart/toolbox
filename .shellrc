@@ -57,7 +57,7 @@ PROMPT_COMMAND='shellrc__prompt_command'
 export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
 
 if type 'fzf' 1>/dev/null 2>&1; then
-  export FZF_CTRL_R_OPTS="--prompt=';; '"
+  export FZF_CTRL_R_OPTS="--prompt=':; '"
   # shellcheck disable=SC2089,SC2090
   export FZF_CTRL_T_OPTS='--exit-0 --preview="cat {} 2>/dev/null | head -200" --select-1'
   export FZF_CTRL_T_OPTS_BASE="${FZF_CTRL_T_OPTS}"

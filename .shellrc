@@ -56,6 +56,8 @@ PROMPT_COMMAND='shellrc__prompt_command'
 # information, see <https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html#backspace-key-doesn-t-work-in-python-repl>.
 export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
 
+export VIRTUAL_ENV_DISABLE_PROMPT='1'
+
 if type 'fzf' 1>/dev/null 2>&1; then
   export FZF_CTRL_R_OPTS="--prompt=':; '"
   # shellcheck disable=SC2089,SC2090

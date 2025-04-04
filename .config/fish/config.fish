@@ -15,14 +15,6 @@ if status is-interactive
     end
   end
 
-  function scrub_command
-    echo
-    set -l COMMAND (commandline | string collect)
-    history delete --case-sensitive -- $COMMAND
-    commandline ""
-    commandline --function repaint
-  end
-
   alias egrep='egrep --color=auto'
   alias f-grep='fuzzy-grep'
   alias f-pods='fuzzy-pods'
@@ -31,8 +23,6 @@ if status is-interactive
   alias grep='grep --color=auto'
   alias ls='ls --color=auto'
   alias tree='tree -C'
-
-  bind \cg accept-autosuggestion scrub_command
 
   set fish_greeting
 end

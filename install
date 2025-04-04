@@ -20,6 +20,7 @@ files = [
     ".bash_profile",
     ".bashrc",
     ".config/fish/config.fish",
+    ".config/fish/functions/",
     ".config/git/config",
     ".config/git/ignore",
     ".config/nvim/init.vim",

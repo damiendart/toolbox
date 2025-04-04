@@ -15,7 +15,7 @@ import sys
 import textwrap
 
 
-files = [
+PATHS_TO_INSTALL = [
     ".bash_aliases",
     ".bash_profile",
     ".bashrc",
@@ -28,12 +28,12 @@ files = [
     ".profile",
     ".shellrc",
     ".tmux.conf",
-    ".vim/after/ftplugin",
-    ".vim/after/plugin",
-    ".vim/after/syntax",
-    ".vim/doc",
-    ".vim/pack",
-    ".vim/plugin",
+    ".vim/after/ftplugin/",
+    ".vim/after/plugin/",
+    ".vim/after/syntax/",
+    ".vim/doc/",
+    ".vim/pack/",
+    ".vim/plugin/",
     ".vimrc",
 ]
 
@@ -53,9 +53,9 @@ vim_tags = [
 if __name__ == "__main__":
     errors = False
 
-    for file in files:
-        destination = pathlib.Path(pathlib.Path.home(), file)
-        source = pathlib.Path(sys.path[0], file).resolve()
+    for path in PATHS_TO_INSTALL:
+        destination = pathlib.Path(pathlib.Path.home(), path)
+        source = pathlib.Path(sys.path[0], path).resolve()
 
         if os.path.exists(destination):
             if os.path.samefile(destination.resolve(), source):
@@ -68,7 +68,7 @@ if __name__ == "__main__":
                 print('[✘] "{}" is a dangling symlink'.format(destination))
                 errors = True
             else:
-                if "/" in file:
+                if "/" in path:
                     os.makedirs(os.path.dirname(destination), 0o700, True)
 
                 os.symlink(source, destination)

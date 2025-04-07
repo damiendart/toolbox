@@ -5,7 +5,7 @@
 # For more information on this interactive shell prompt, see the
 # "shellrc__prompt_command" function in "$TOOLBOX_ROOT/.shellrc".
 function fish_prompt
-  if test $status -eq 0; or test $status -eq 148
+  if test $status -eq 0;
     echo ':; '
   else
     set_color --bold red

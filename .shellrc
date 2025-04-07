@@ -35,7 +35,7 @@ shellrc__prompt_command ()
   # <https://twitter.com/thingskatedid/status/1316081732467081217>, and
   # <https://unix.stackexchange.com/questions/62173/exit-status-of-148-upon-ctrlz>.
   if [ $LAST_COMMAND_EXIT_STATUS = "0" ] || [ $LAST_COMMAND_EXIT_STATUS = "148" ]; then
-    PS1=":; "
+    PS1="\[\e[1;33m\]:; \[\e[0m\]"
   else
     PS1="\[\e[1;31m\]:; \[\e[0m\]"
   fi

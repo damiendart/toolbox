@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# A snippet browser and selector.
+# A text snippet browser and selector.
 #
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
 # free and unencumbered software released into the public domain. For
@@ -10,7 +10,7 @@ set -e
 
 help() {
   cat << HELP
-A snippet browser and selector.
+A text snippet browser and selector.
 
 Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY...]
 

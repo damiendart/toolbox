@@ -183,6 +183,7 @@ FZF_OUTPUT=$(\
     --bind='backward-eof:abort' \
     --bind="change:reload:sleep 0.1" \
     --bind="change,start:transform($0 --fzf-transform-input)" \
+    --border \
     --border-label="Press F1 for help" \
     --border-label-pos='-3:bottom' \
     --disabled \
@@ -190,6 +191,7 @@ FZF_OUTPUT=$(\
     --expect="$FZF_EXPECT" \
     --height="$FZF_HEIGHT" \
     --info='inline-right' \
+    --layout=reverse \
     --multi \
     --preview='/bin/sh -c "(nl -ba {1} | grep --color=always -E \"$(printf "|^\s*%s\s.*" {2})\") 2>/dev/null"' \
     --preview-window='+{2}/3,<80(down)' \

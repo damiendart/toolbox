@@ -134,9 +134,12 @@ FZF_OUTPUT=$(\
   echo "$INITIAL_INPUT" | fzf \
     --bind="ctrl-r:reload:$FZF_DEFAULT_COMMAND" \
     --bind='ctrl-z:ignore,esc:ignore' \
-    --expect="ctrl-d,ctrl-l,ctrl-y,f1" \
+    --border \
+    --expect='ctrl-d,ctrl-l,ctrl-y,f1' \
     --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Refresh ╱ CTRL+Y: Copy pod name ╱ ENTER: Shell' \
     --header-lines=1 \
+    --info='inline-right' \
+    --layout=reverse \
     --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
     --query="$1" \
 )

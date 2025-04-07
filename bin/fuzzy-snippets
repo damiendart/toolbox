@@ -168,12 +168,14 @@ FZF_OUTPUT=$(\
   echo "$SNIPPET_FILES" | sort | fzf \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
+    --border \
     --border-label="$FZF_LABEL" \
     --border-label-pos='-3:bottom' \
     --delimiter='/' \
     --expect="$FZF_EXPECT" \
     --height="$FZF_HEIGHT" \
     --info='inline-right' \
+    --layout=reverse \
     --preview='cat {} 2>/dev/null' \
     --preview-window='<80(down)' \
     --prompt='--%<-- ' \

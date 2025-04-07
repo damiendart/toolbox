@@ -31,17 +31,6 @@ shellrc__source_one "bash-completion" <<BASH_COMPLETION
 /etc/bash_completion
 BASH_COMPLETION
 
-# fzf's command-line completion gubbins includes the fuzzy completion
-# functionality, which is why it is loaded here and not lazy-loaded. For
-# more information, see <https://github.com/junegunn/fzf/issues/3033>.
-shellrc__source_one "fzf-completion" <<FZF_COMPLETION
-${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/completion.bash
-FZF_COMPLETION
-
-shellrc__source_one "fzf-key-bindings" <<FZF_KEY_BINDINGS
-${TOOLBOX_ROOT}/.vim/pack/plugins/start/fzf/shell/key-bindings.bash
-FZF_KEY_BINDINGS
-
 if [[ -f ~/.machine.bashrc ]]; then
   # shellcheck disable=SC1090
   source ~/.machine.bashrc

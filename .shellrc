@@ -39,14 +39,6 @@ shellrc__prompt_command ()
   else
     PS1="\[\e[1;31m\]:; \[\e[0m\]"
   fi
-
-  # "pathshorten" is a standalone implementation of Vim's "pathshorten"
-  # function written in Go. For more information, see
-  # <https://github.com/damiendart/pathshorten>.
-  if command -v pathshorten 1>/dev/null 2>&1; then
-    # shellcheck disable=SC2089
-    FZF_CTRL_T_OPTS="${FZF_CTRL_T_OPTS_BASE} --prompt='$(pathshorten -n)/'"
-  fi
 }
 
 PROMPT_COMMAND='shellrc__prompt_command'
@@ -57,27 +49,6 @@ PROMPT_COMMAND='shellrc__prompt_command'
 export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
 
 export VIRTUAL_ENV_DISABLE_PROMPT='1'
-
-if type 'fzf' 1>/dev/null 2>&1; then
-  export FZF_CTRL_R_OPTS="--prompt=':; '"
-  # shellcheck disable=SC2089,SC2090
-  export FZF_CTRL_T_OPTS='--exit-0 --preview="cat {} 2>/dev/null | head -200" --select-1'
-  export FZF_CTRL_T_OPTS_BASE="${FZF_CTRL_T_OPTS}"
-  export FZF_DEFAULT_OPTS='--border --info=inline-right --layout=reverse'
-
-  if type 'rg' 1>/dev/null 2>&1; then
-    export FZF_CTRL_T_COMMAND='rg --files --hidden'
-    export FZF_DEFAULT_COMMAND="$FZF_CTRL_T_COMMAND"
-  fi
-
-  if type 'tree' 1>/dev/null 2>&1; then
-    export FZF_ALT_C_OPTS="--preview='tree {} | head -200' --prompt=';; cd '"
-    # shellcheck disable=SC2090
-    export FZF_CTRL_T_OPTS='--exit-0 --preview="(cat {} || tree -C {}) 2>/dev/null | head -200" --select-1'
-    # shellcheck disable=SC2090
-    export FZF_CTRL_T_OPTS_BASE="${FZF_CTRL_T_OPTS}"
-  fi
-fi
 
 # Improve the viewing of some non-text input in "less" with "lesspipe".
 if type 'lesspipe' 1>/dev/null 2>&1; then

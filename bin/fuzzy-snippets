@@ -139,7 +139,7 @@ if [ "$SNIPPET_FILES" = "" ]; then
   exit 2
 fi
 
-SNIPPET_FILES=$(echo "$SNIPPET_FILES" | xargs realpath | sort | uniq)
+SNIPPET_FILES=$(echo "$SNIPPET_FILES" | xargs realpath | sort -u)
 
 if [ "$LIST_FILES" = 1 ]; then
   echo "$SNIPPET_FILES"
@@ -165,7 +165,7 @@ set +e
 # ignored as spamming it to abort fzf occasionally adds garbage "[A"
 # entries to the Bash command history.
 FZF_OUTPUT=$(\
-  echo "$SNIPPET_FILES" | sort | fzf \
+  echo "$SNIPPET_FILES" | fzf \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
     --border \

@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""
+A Pandoc JSON filter for processing/running the contents of code blocks.
+
+Inspired by <https://johnlekberg.com/blog/2020-11-27-cli-pandoc.html>.
+"""
+
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+import argparse
+import functools
+import json
+import os
+import subprocess
+import sys
+import typing
+
+
+TOOLS = {
+    "python": ["python"],
+    "sh": ["sh"],
+    "pygmentize": ["pygmentize", "-fhtml", "-g"],
+    "pygmentize-python": ["pygmentize", "-fhtml", "-lpython"],
+}
+
+
+def fatal_error(message: str) -> None:
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def main(arguments: argparse.Namespace) -> None:
+    try:
+        data = json.load(arguments.infile)
+    except json.decoder.JSONDecodeError as e:
+        fatal_error("unable to decode JSON: " + str(e))
+
+    if "blocks" not in data:
+        fatal_error('invalid input: missing "blocks" field')
+
+    if not isinstance(data["blocks"], list):
+        fatal_error('invalid input: "blocks" field value is not an array')
+
+    data["blocks"] = [process_block(block) for block in data["blocks"]]
+
+    json.dump(data, sys.stdout)
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "target-format",
+        choices=["markdown"],
+        default="markdown",
+        help="target Pandoc format",
+    )
+    parser.add_argument(
+        "--infile",
+        help="input Pandoc JSON document to be processed",
+        nargs="?",
+        type=argparse.FileType("r"),
+        default=sys.stdin,
+    )
+
+    return parser.parse_args(arguments)
+
+
+def process_code_block(x: typing.Dict) -> typing.Dict:
+    if not x["t"] == "CodeBlock":
+        return x
+
+    attributes = x["c"][0][2]
+
+    if len(attributes) < 1:
+        return x
+
+    run_attribute = functools.reduce(
+        lambda a: a[0] == "run",
+        attributes,
+    )
+
+    if not len(run_attribute) == 2 or run_attribute[1] not in TOOLS:
+        return x
+
+    try:
+        output = subprocess.check_output(
+            TOOLS[run_attribute[1]],
+            input=x["c"][1],
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+    except subprocess.CalledProcessError:
+        fatal_error("tool returned a non-zero status")
+
+    return {
+        "t": "RawBlock",
+        "c": ["markdown", output.strip()],
+    }
+
+
+def process_block(block: typing.List[typing.Dict]):
+    block = process_code_block(block)
+
+    if (
+        "c" in block
+        and isinstance(block["c"], list)
+        and all(isinstance(child, dict) for child in block["c"])
+    ):
+        block["c"] = [process_block(child) for child in block["c"]]
+
+    return block
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+
+    main(arguments)

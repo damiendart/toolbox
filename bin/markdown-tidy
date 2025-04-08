@@ -65,6 +65,7 @@ def format_markdown(
             "--reference-location=section",
             "--columns=72" if wrap_text else "--wrap=none",
             "--tab-stop=4",
+            "--filter=pandoc-run-code",
         ],
         input=markdown,
         text=True,

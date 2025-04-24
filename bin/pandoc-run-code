@@ -15,6 +15,7 @@ import json
 import os
 import subprocess
 import sys
+import textwrap
 import typing
 
 
@@ -98,8 +99,13 @@ def process_code_block(x: typing.Dict) -> typing.Dict:
             stderr=subprocess.STDOUT,
             text=True,
         )
-    except subprocess.CalledProcessError:
-        fatal_error("tool returned a non-zero status")
+    except subprocess.CalledProcessError as e:
+        fatal_error(
+            'tool "{}" returned a non-zero status\n{}'.format(
+                " ".join(TOOLS[run_attribute[1]]),
+                textwrap.indent(e.output.strip(), "   "),
+            ),
+        )
 
     return {
         "t": "RawBlock",

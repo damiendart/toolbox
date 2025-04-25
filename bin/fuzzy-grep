@@ -64,10 +64,6 @@ ACTIONS:
     (Vim mode only.) Opens the first selected match using ":split" and
     creates a quickfix list with all selected matches if there are
     multiple selected matches.
-
-  F1
-    Displays this help text and exits. In Vim mode, the "toolbox.txt"
-    help file will be opened to the relavant section.
 HELP
 }
 
@@ -151,16 +147,14 @@ while :; do
   shift
 done
 
-FZF_EXPECT='f1'
+FZF_EXPECT=''
 FZF_HEIGHT='20'
 INITIAL_QUERY="${*:-}"
 
 if [ "$VIM_MODE" = 1 ]; then
-  FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x,f1'
+  FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x'
   FZF_HEIGHT='100%'
 fi
-
-set +e
 
 # - CTRL+Z process suspension is suppressed as it doesn't work properly
 #   (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
@@ -184,11 +178,9 @@ FZF_OUTPUT=$(\
     --bind="change:reload:sleep 0.1" \
     --bind="change,start:transform($0 --fzf-transform-input)" \
     --border \
-    --border-label="Press F1 for help" \
-    --border-label-pos='-3:bottom' \
     --disabled \
     --delimiter=':' \
-    --expect="$FZF_EXPECT" \
+    ${FZF_EXPECT:+--expect="$FZF_EXPECT"} \
     --height="$FZF_HEIGHT" \
     --info='inline-right' \
     --layout=reverse \
@@ -198,44 +190,12 @@ FZF_OUTPUT=$(\
     --prompt="($(pathshorten)) " \
     --query="$INITIAL_QUERY" \
 )
-FZF_STATUS="$?"
-SELECTED_ACTION=$(printf "%s" "$FZF_OUTPUT" | head -1)
-SELECTED_OUTPUT=$(printf "%s" "$FZF_OUTPUT" | tail -n +2)
 
-case $SELECTED_ACTION in
-  f1*)
-    if [ "$VIM_MODE" = 1 ]; then
-      echo "$SELECTED_ACTION"
-    else
-      help
-    fi
+if [ "$VIM_MODE" = 1 ]; then
+  printf "%s" "$FZF_OUTPUT"
+else
+  TEMP_FILE=$(mktemp)
 
-    exit
-    ;;
-esac
-
-if [ "$FZF_STATUS" != 0 ]; then
-  # Allow this script to exit cleanly if fzf exits with a return code of
-  # 1, signalling that no matches were made, or 130, signalling that it
-  # was aborted or interrupted by the user.
-  if [ "$FZF_STATUS" = 1 ] || [ "$FZF_STATUS" = 130 ]; then
-    exit
-  else
-    exit $FZF_STATUS
-  fi
+  printf "%s" "$FZF_OUTPUT" > "$TEMP_FILE"
+  exec vim +cw -q "$TEMP_FILE"
 fi
-
-set -e
-
-case $SELECTED_ACTION in
-  *)
-    if [ "$VIM_MODE" = 1 ]; then
-      printf "%s" "$FZF_OUTPUT"
-    else
-      TEMP_FILE=$(mktemp)
-
-      printf "%s" "$SELECTED_OUTPUT" > "$TEMP_FILE"
-      exec vim +cw -q "$TEMP_FILE"
-    fi
-    ;;
-esac

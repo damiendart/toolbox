@@ -110,11 +110,6 @@ endfunction
 
 function! s:FuzzyGrep(abandon, ...) abort
   function! Handler(abandon, input) closure
-    if len(a:input) == 1 && a:input[0] ==? 'f1'
-      execute 'h :FG'
-      return
-    endif
-
     if len(a:input) < 2
       return
     endif

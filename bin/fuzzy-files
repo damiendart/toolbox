@@ -1,0 +1,131 @@
+#!/bin/sh
+#
+# A fuzzy file picker.
+#
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+set -e
+
+help() {
+  cat << HELP
+A fuzzy file picker.
+
+Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
+
+If the GNU version of getopt is available it will be used to preprocess
+command-line arguments, enabling support for grouped short options and
+other niceties.
+
+FLAGS:
+
+  -h, --help
+    Display this help text and exit.
+
+  --vim
+    Enable "Vim mode", which adjusts the application's functionality for
+    better Vim and "fuzzy-finders.vim" integration.
+
+ACTIONS:
+
+  ENTER
+    Prints selected matches as a newline-seperated list. In Vim mode,
+    the selected matches are opened with ":edit".
+
+  CTRL-A
+    Selects all matches.
+
+  CTRL-C
+    Exits without any further action.
+
+  CTRL-D
+    Deselects all matches.
+
+  CTRL-T
+    Vim mode only. Opens selected matches using ":tabe".
+
+  CTRL-V
+    Vim mode only. Opens selected matches using ":vsplit".
+
+  CTRL-X
+    Vim mode only. Opens selected matches using ":split".
+HELP
+}
+
+VIM_MODE=0
+
+# Using the GNU version of getopt to parse command-line arguments adds
+# support for grouped short options and other niceties.
+if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
+  if ! ARGS=$(getopt -l help,vim -n "$(basename "$0")" -o h -- "$@"); then
+    printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+    exit 2
+  fi
+
+  eval set -- "$ARGS"
+fi
+
+if ! type 'fzf' 1>/dev/null 2>&1 || \
+  ! type 'pathshorten' 1>/dev/null 2>&1 || \
+  ! type 'rg' 1>/dev/null 2>&1;
+then
+  printf 'ERROR: "%s" requires fzf, pathshorten, and rg\n' "$(basename "$0")" >&2
+  exit 2
+fi
+
+# The following command-line argument and option parser is based on
+# <http://mywiki.wooledge.org/BashFAQ/035>.
+while :; do
+  case $1 in
+    -h|-\?|--help)
+      help
+      exit
+      ;;
+    --vim)
+      VIM_MODE=1
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -?*)
+      printf 'ERROR: Unknown option: "%s"\n' "$1" >&2
+      printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
+      exit 2
+      ;;
+    *)
+      break
+  esac
+
+  shift
+done
+
+FZF_EXPECT=''
+FZF_HEIGHT='20'
+INITIAL_QUERY="${*:-}"
+
+if [ "$VIM_MODE" = 1 ]; then
+  FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x,ctrl-y'
+  FZF_HEIGHT='100%'
+fi
+
+# CTRL+Z process suspension is suppressed as it doesn't work properly
+# (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
+# ignored as spamming it to abort fzf occasionally adds garbage "[A"
+# entries to the Bash command history.
+rg --files --hidden --glob="!.git/" | fzf \
+  --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
+  --bind='ctrl-z:ignore,esc:ignore' \
+  --bind='backward-eof:abort' \
+  --border \
+  ${FZF_EXPECT:+--expect="$FZF_EXPECT"} \
+  --height="$FZF_HEIGHT" \
+  --info='inline-right' \
+  --layout=reverse \
+  --multi \
+  --preview='cat {} 2>/dev/null' \
+  --preview-window='+{2}/3,<80(down)' \
+  --prompt="$(pathshorten)/" \
+  --query="$INITIAL_QUERY" \
+  --scheme='path' \

@@ -81,6 +81,33 @@ function! s:Fuzzy(command, select_cb) abort
   endtry
 endfunction
 
+function! s:FuzzyFiles(abandon, ...) abort
+  function! Handler(abandon, lines) closure
+    if len(a:lines) < 1
+      return
+    endif
+
+    let l:command = get(
+      \ { 'ctrl-t': 'tabe', 'ctrl-v': 'vsplit', 'ctrl-x': 'split', 'ctrl-y': 'yank-filenames' },
+      \ a:lines[0],
+      \ 'e' . (a:abandon ? '!' : '')
+    \ )
+
+    if l:command ==? 'yank-filenames'
+      call setreg('"', join(a:lines[1:], "\n"))
+    else
+      for line in a:lines[1:]
+        execute l:command fnameescape(line)
+      endfor
+    endif
+  endfunction
+
+  let l:arguments = copy(a:000)
+  let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
+
+  call s:Fuzzy('fuzzy-files --vim -- ' . shellescape(l:query), funcref('Handler', [a:abandon]))
+endfunction
+
 function! s:FuzzyGrep(abandon, ...) abort
   function! Handler(abandon, input) closure
     if len(a:input) == 1 && a:input[0] ==? 'f1'
@@ -201,6 +228,7 @@ autocmd FileType fuzzyfinder let b:laststatus = &laststatus
   \| let &laststatus = b:laststatus
   \| autocmd WinLeave <buffer> close!
 
+command! -nargs=* -complete=dir -bang FF call s:FuzzyFiles(<bang>0, <f-args>)
 command! -bang -nargs=* FG call s:FuzzyGrep(<bang>0, <f-args>)
 command! -nargs=* FS call s:FuzzySnippets(<f-args>)
 

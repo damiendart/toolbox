@@ -5,6 +5,7 @@
 # more information, please refer to the accompanying "UNLICENCE file.
 
 alias egrep='egrep --color=auto'
+alias f-files='fuzzy-files'
 alias f-grep='fuzzy-grep'
 alias f-pods='fuzzy-pods'
 alias f-snippets='fuzzy-snippets'

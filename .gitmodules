@@ -2,6 +2,3 @@
 	path = .vim/pack/plugins/opt/editorconfig-fork
 	url = https://github.com/damiendart/editorconfig-vim.git
 	branch = feature/damiendart
-[submodule ".vim/pack/plugins/start/fzf"]
-	path = .vim/pack/plugins/start/fzf
-	url = https://github.com/junegunn/fzf.git

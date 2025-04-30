@@ -12,7 +12,6 @@ import os
 import pathlib
 import subprocess
 import sys
-import textwrap
 
 
 PATHS_TO_INSTALL = [
@@ -46,7 +45,6 @@ the current interactive shell session.
 vim_tags = [
     ".vim/doc/tags",
     ".vim/pack/plugins/opt/editorconfig-fork/doc/tags",
-    ".vim/pack/plugins/start/fzf/doc/tags",
 ]
 
 
@@ -83,7 +81,7 @@ if __name__ == "__main__":
 
         try:
             subprocess.check_output(
-                'vim --not-a-term "+helptags {} | q"'.format(
+                'vim --not-a-term "+try | helptags {} | catch | cq | endtry | q"'.format(  # noqa: E501
                     os.path.dirname(tag_file),
                 ),
                 shell=True,
@@ -91,12 +89,15 @@ if __name__ == "__main__":
             )
 
             if tag_checksum == hashlib.sha256(tag_file.read_bytes()).digest():
-                print('[-] "{}" is already up-to-date'.format(tag_file))
+                print('[-] "{}" is up-to-date'.format(tag_file))
             else:
                 print('[✔] Generated "{}"'.format(tag_file))
-        except subprocess.CalledProcessError as e:
-            print('[✘] Unable to generate "{}"'.format(tag_file))
-            print(textwrap.indent(e.output.decode().strip(), "    "))
+        except subprocess.CalledProcessError:
+            print(
+                '[✘] Vim returned a non-zero status when generating "{}"'.format(  # noqa: E501
+                    tag_file,
+                ),
+            )
 
             errors = True
 

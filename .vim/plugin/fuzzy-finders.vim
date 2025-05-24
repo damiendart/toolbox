@@ -52,7 +52,7 @@ function! s:Fuzzy(command, select_cb) abort
   endif
 
   try
-    execute 'botright' 20 'new'
+    execute 'botright' 15 'new'
 
     " "tput civis" reduces cursor flickering when the terminal window
     " is first shown, and overriding the "TERM" environment variable
@@ -118,35 +118,21 @@ function! s:FuzzyFiles(abandon, ...) abort
   call s:Fuzzy('fuzzy-files --vim -- ' . shellescape(l:query), funcref('Handler', [a:abandon]))
 endfunction
 
-function! s:FuzzyGrep(abandon, ...) abort
-  function! Handler(abandon, input) closure
-    if len(a:input) < 2
+function! s:FuzzyGrep(...) abort
+  function! Handler(input) closure
+    if len(a:input) < 1
       return
     endif
 
-    let l:command = get(
-      \ { 'ctrl-t': 'tabe', 'ctrl-v': 'vsplit', 'ctrl-x': 'split' },
-      \ a:input[0],
-      \ 'e' . (a:abandon ? '!' : '')
-    \ )
-
-    let l:results = map(a:input[1:], 's:ToQuickfix(v:val)')
-
-    execute l:command fnameescape(l:results[0].filename)
-    execute l:results[0].lnum
-    execute 'normal!' l:results[0].col . '|zz'
-
-    if len(l:results) > 1
-      call setqflist(l:results)
-      copen
-      wincmd p
-    endif
+    call setqflist(map(a:input, 's:ToQuickfix(v:val)'))
+    copen
+    resize 15
   endfunction
 
   let l:arguments = copy(a:000)
   let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
 
-  call s:Fuzzy('fuzzy-grep --vim -- ' . shellescape(l:query), funcref('Handler', [a:abandon]))
+  call s:Fuzzy('fuzzy-grep --vim -- ' . shellescape(l:query), funcref('Handler'))
 endfunction
 
 function! s:FuzzyGrepSelection(visualmode)
@@ -234,7 +220,7 @@ autocmd FileType fuzzyfinder let b:laststatus = &laststatus
   \| autocmd WinLeave <buffer> close!
 
 command! -nargs=* -complete=dir -bang FF call s:FuzzyFiles(<bang>0, <f-args>)
-command! -bang -nargs=* FG call s:FuzzyGrep(<bang>0, <f-args>)
+command! -nargs=* FG call s:FuzzyGrep(<f-args>)
 command! -nargs=* FS call s:FuzzySnippets(<f-args>)
 
 nnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('n')<CR>

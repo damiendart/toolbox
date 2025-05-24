@@ -18,9 +18,6 @@ If the GNU version of getopt is available it will be used to preprocess
 command-line arguments, enabling support for grouped short options and
 other niceties.
 
-By default, ignore files (e.g. ".gitignore") in the current working
-directory are respected.
-
 FLAGS:
 
   -h, --help
@@ -34,8 +31,7 @@ ACTIONS:
 
   ENTER
     Opens the first selected match in Vim and creates a quickfix list
-    with all selected matches if multiple matches are selected. In Vim
-    mode, the first selected match is opened with ":edit".
+    with all selected matches.
 
   CTRL-A
     Selects all matches.
@@ -47,23 +43,8 @@ ACTIONS:
     Deselects all matches.
 
   CTRL-E
-    Toggles between respecting ignore files in the current working
-    directory (the default) or searching every file.
-
-  CTRL-T
-    (Vim mode only.) Opens the first selected match using ":tabe" and
-    creates a quickfix list with all selected matches if there are
-    multiple selected matches.
-
-  CTRL-V
-    (Vim mode only.) Opens the first selected match using ":vsplit" and
-    creates a quickfix list with all selected matches if there are
-    multiple selected matches.
-
-  CTRL-X
-    (Vim mode only.) Opens the first selected match using ":split" and
-    creates a quickfix list with all selected matches if there are
-    multiple selected matches.
+    Toggles between respecting ignore files (e.g. ".gitignore") in the
+    current working directory (the default) or searching every file.
 HELP
 }
 
@@ -147,12 +128,10 @@ while :; do
   shift
 done
 
-FZF_EXPECT=''
-FZF_HEIGHT='20'
+FZF_HEIGHT='15'
 INITIAL_QUERY="${*:-}"
 
 if [ "$VIM_MODE" = 1 ]; then
-  FZF_EXPECT='ctrl-t,ctrl-v,ctrl-x'
   FZF_HEIGHT='100%'
 fi
 
@@ -180,7 +159,6 @@ FZF_OUTPUT=$(\
     --border \
     --disabled \
     --delimiter=':' \
-    ${FZF_EXPECT:+--expect="$FZF_EXPECT"} \
     --height="$FZF_HEIGHT" \
     --info='inline-right' \
     --layout=reverse \
@@ -197,5 +175,5 @@ else
   TEMP_FILE=$(mktemp)
 
   printf "%s" "$FZF_OUTPUT" > "$TEMP_FILE"
-  exec vim +cw -q "$TEMP_FILE"
+  exec vim +'cw 15' -q "$TEMP_FILE"
 fi

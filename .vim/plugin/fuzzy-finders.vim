@@ -96,9 +96,19 @@ function! s:FuzzyFiles(abandon, ...) abort
     if l:command ==? 'yank-filenames'
       call setreg('"', join(a:lines[1:], "\n"))
     else
-      for line in a:lines[1:]
-        execute l:command fnameescape(line)
-      endfor
+      if len(a:lines) > 2
+        augroup fuzzy_files_swap
+          autocmd SwapExists * let v:swapchoice='o'
+        augroup END
+      endif
+
+      try
+        for line in a:lines[1:]
+          execute l:command fnameescape(line)
+        endfor
+      finally
+        silent! autocmd! fuzzy_files_swap
+      endtry
     endif
   endfunction
 

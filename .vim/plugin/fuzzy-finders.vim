@@ -96,19 +96,12 @@ function! s:FuzzyFiles(abandon, ...) abort
     if l:command ==? 'yank-filenames'
       call setreg('"', join(a:lines[1:], "\n"))
     else
-      if len(a:lines) > 2
-        augroup fuzzy_files_swap
-          autocmd SwapExists * let v:swapchoice='o'
-        augroup END
-      endif
-
-      try
-        for line in a:lines[1:]
+      for line in a:lines[1:]
+        try
           execute l:command fnameescape(line)
-        endfor
-      finally
-        silent! autocmd! fuzzy_files_swap
-      endtry
+        catch /E325/
+        endtry
+      endfor
     endif
   endfunction
 
@@ -125,8 +118,11 @@ function! s:FuzzyGrep(...) abort
     endif
 
     call setqflist(map(a:input, 's:ToQuickfix(v:val)'))
-    copen
-    resize 15
+    copen 15
+    try
+      cc
+    catch /E325/
+    endtry
   endfunction
 
   let l:arguments = copy(a:000)

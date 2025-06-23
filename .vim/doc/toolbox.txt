@@ -28,32 +28,16 @@ start is with "$TOOLBOX_ROOT/.vimrc".
 ==============================================================================
 FUZZY-FINDERS                                                    *toolbox-fuzzy*
 
-All fuzzy finders support the <C-H> shortcut, which will open this help file
-in read-only mode and jump to the relevant section.
-
                                                                       *:FF* *:FF!*
-:FF[!] {query}		Opens a simple file browser and selector, using
-			{query} as the initial query if provided.
-
-			Ignore files (e.g. ".gitignore") in the current
-			working directory are respected.
+:FF[!] {query}		Opens `fuzzy-files`, using {query} as the initial query
+			if provided.
 
 			The bang modifier works in a similar fashion to when
 			using it with the |:edit| command, it forces the editing
 			of files regardless of whether there are changes in
 			the current buffer.
 
-			Multiple files can be selected. The following keyboard
-			shortcuts are available:
-
-			<Enter>		Opens the selected files with |:edit|.
-			<C-A>		Select all matches.
-			<C-D>		Deselects all matches.
-			<C-T>		Opens the selected files with |:tabe|.
-			<C-V>		Opens the selected files with |:vsplit|.
-			<C-X>		Opens the selected files with |:split|.
-			<C-Y>		Yanks the selected filenames.
-			<C-Z>		Closes fzf without selecting anything.
+			See `fuzzy-files --help` for more information.
 
                                                                       *:FG* *:FG!*
 :FG[!] {query}		Opens `fuzzy-grep`, using {query} as the initial query
@@ -86,12 +70,8 @@ When editing and reading Markdown files in `$NOTES_ROOT`:
 -	Following links to other Markdown files in `$NOTES_ROOT` using |gf| and
 	friends works even when the current directory is not `$NOTES_ROOT`
 	and/or the file extension has been omitted.
--	The user-defined completion functionality (see |compl-function|) is
-	used for `#hashtags` completion. Hashtags are words that start with a
-	hash symbol, followed by alphanumeric, "/", ":", "_", and "-"
-	characters. Hashtags must contain at least one letter and any trailing
-	colons are ignored. Hashtags can be surrounded with quotation marks
-	and/or parentheses.
+-	The user-defined completion functionality (see |compl-function|) is used
+	for completing `#hashtags`. See `nt tags --help` for more information.
 
 
 ==============================================================================

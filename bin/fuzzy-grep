@@ -48,12 +48,16 @@ ACTIONS:
 HELP
 }
 
+# The "sleep" command acts as a debouncer, reducing the number of
+# ripgrep processes running while typing a query.
+RG_BASE='test -n {q} && (sleep %s; rg --color=always --column --hidden --line-number --smart-case %s -- {q}) || true'
+
 VIM_MODE=0
 
 # Using the GNU version of getopt to parse command-line arguments adds
 # support for grouped short options and other niceties.
 if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
-  if ! ARGS=$(getopt -l fzf-transform-input,fzf-transform-prompt,help,vim -n "$(basename "$0")" -o h -- "$@"); then
+  if ! ARGS=$(getopt -l fzf-transform-input:,fzf-transform-prompt,help,vim -n "$(basename "$0")" -o h -- "$@"); then
     printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
     exit 2
   fi
@@ -80,31 +84,25 @@ while :; do
       exit
       ;;
     --fzf-transform-input)
-      RELOAD_BASE="reload:rg --color=always --column --hidden --line-number --smart-case %s -- {q} || true"
-
-      if [ -z "$FZF_QUERY" ]; then
-        echo "reload:true"
-      else
-        case "$FZF_PROMPT" in
-          \[*)
-            # shellcheck disable=SC2059
-            printf "$RELOAD_BASE" "--no-ignore"
-            ;;
-          *)
-            # shellcheck disable=SC2059
-            printf "$RELOAD_BASE" "--glob=\"!.git/\""
-            ;;
-        esac
-      fi
+      case "$FZF_PROMPT" in
+        \[*)
+          # shellcheck disable=SC2059
+          printf "reload:$RG_BASE" "$2" "--no-ignore"
+          ;;
+        *)
+          # shellcheck disable=SC2059
+          printf "reload:$RG_BASE" "$2" ""
+          ;;
+      esac
       exit
       ;;
     --fzf-transform-prompt)
       case "$FZF_PROMPT" in
         \[*)
-          echo "change-prompt(($(pathshorten)) )+transform($0 --fzf-transform-input)"
+          echo "change-prompt(($(pathshorten)) )+transform($0 --fzf-transform-input 0)"
           ;;
         *)
-          echo "change-prompt([$(pathshorten)] )+transform($0 --fzf-transform-input)"
+          echo "change-prompt([$(pathshorten)] )+transform($0 --fzf-transform-input 0)"
           ;;
       esac
       exit
@@ -135,27 +133,23 @@ if [ "$VIM_MODE" = 1 ]; then
   FZF_HEIGHT='100%'
 fi
 
-# - CTRL+Z process suspension is suppressed as it doesn't work properly
-#   (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
-#   ignored as spamming it to abort fzf occasionally adds garbage "[A"
-#   entries to the Bash command history.
+# CTRL+Z process suspension is suppressed as it doesn't work properly
+# (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
+# ignored as spamming it to abort fzf occasionally adds garbage "[A"
+# entries to the Bash command history.
 #
-# - Giving fzf some initial empty input seems to speed up the "first
-#   paint" a touch (it's so slight, but it's one of those things that I
-#   can't unsee once I'm aware of it).
-#
-# - The `sleep 0.1` acts as a poor-man's debouncer, reducing the number
-#   of ripgrep processes running while typing a query.
+# Dash is a little bit faster at executing shell commands; see
+# <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
 FZF_OUTPUT=$(\
   # shellcheck disable=SC2016,SC2059
-  true | fzf \
+  fzf \
     --ansi \
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
     --bind="ctrl-e:transform($0 --fzf-transform-prompt)" \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
-    --bind="change:reload:sleep 0.1" \
-    --bind="change,start:transform($0 --fzf-transform-input)" \
+    --bind="change:transform($0 --fzf-transform-input 0.2)" \
+    --bind="start:reload:$(printf "$RG_BASE" "0" "")" \
     --border \
     --disabled \
     --delimiter=':' \
@@ -163,10 +157,11 @@ FZF_OUTPUT=$(\
     --info='inline-right' \
     --layout=reverse \
     --multi \
-    --preview='/bin/sh -c "(nl -ba {1} | grep --color=always -E \"$(printf "|^\s*%s\s.*" {2})\") 2>/dev/null"' \
+    --preview='/usr/bin/dash -c "(nl -ba {1} | grep --color=always -E \"$(printf "|^\s*%s\s.*" {2})\") 2>/dev/null"' \
     --preview-window='+{2}/3,<80(down)' \
     --prompt="($(pathshorten)) " \
     --query="$INITIAL_QUERY" \
+    --with-shell='/usr/bin/dash -c' \
 )
 
 if [ "$VIM_MODE" = 1 ]; then

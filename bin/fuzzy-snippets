@@ -164,6 +164,9 @@ set +e
 # (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
 # ignored as spamming it to abort fzf occasionally adds garbage "[A"
 # entries to the Bash command history.
+#
+# Dash is a little bit faster at executing shell commands; see
+# <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
 FZF_OUTPUT=$(\
   echo "$SNIPPET_FILES" | fzf \
     --bind='ctrl-z:ignore,esc:ignore' \
@@ -182,6 +185,7 @@ FZF_OUTPUT=$(\
     --query="$INITIAL_QUERY" \
     --scheme='path' \
     --with-nth='-1' \
+    --with-shell='/usr/bin/dash -c' \
 )
 FZF_STATUS="$?"
 

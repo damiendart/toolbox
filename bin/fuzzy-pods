@@ -129,6 +129,9 @@ set +e
 # (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
 # ignored as spamming it to abort fzf occasionally adds garbage "[A"
 # entries to the Bash command history.
+#
+# Dash is a little bit faster at executing shell commands; see
+# <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
 FZF_OUTPUT=$(\
   # shellcheck disable=SC2016
   echo "$INITIAL_INPUT" | fzf \
@@ -142,6 +145,7 @@ FZF_OUTPUT=$(\
     --layout=reverse \
     --prompt "$(kubectl config current-context | sed 's/-context$//')> " \
     --query="$1" \
+    --with-shell='/usr/bin/dash -c' \
 )
 FZF_STATUS="$?"
 

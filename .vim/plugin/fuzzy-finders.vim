@@ -122,6 +122,9 @@ function! s:FuzzyGrep(...) abort
     try
       cc
     catch /E325/
+      " Rerun the "cc" command after handling swap file shenanigans to
+      " ensure the cursor is in the correct position.
+      cc
     endtry
   endfunction
 

@@ -2,12 +2,16 @@
 """
 A simple notification sender, using Pushover.
 
-A configuration file at "$HOME/.config/toolbox/po.ini" is used to
+A configuration file at "$HOME/.config/toolbox/po.ini" is required to
 provide Pushover API tokens:
 
     [pushover]
     application_key=APPLICATION_KEY_GOES_HERE
     user_key=USER_KEY_GOES_HERE
+
+If you forget to include "po" after a command, suspend the running
+command with CTRL-Z and resume it with "fg; po", adjusting the "po"
+command as required.
 """
 
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is

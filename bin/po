@@ -19,6 +19,7 @@ import configparser
 import http.client
 import os
 import pathlib
+import random
 import sys
 import typing
 import urllib.parse
@@ -69,7 +70,6 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         help="notification body",
         nargs="*",
         type=str,
-        default=sys.stdin,
     )
     parser.add_argument(
         "--title",
@@ -107,5 +107,16 @@ def parse_config(config_file: str):
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
     config = parse_config(CONFIG_DEFAULT)
+
+    if not arguments.message:
+        if not sys.stdin.isatty():
+            arguments.message = [sys.stdin.read().strip()]
+        else:
+            arguments.message = [
+                '{} says "{}".'.format(
+                    os.path.basename(sys.argv[0]),
+                    random.choice(["Hello", "Hiya", "Yo"]),
+                ),
+            ]
 
     main(arguments, config)

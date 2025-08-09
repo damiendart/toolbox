@@ -107,9 +107,13 @@ def process_code_block(x: typing.Dict) -> typing.Dict:
             ),
         )
 
+    # The "verbatim" class is used as a bodge to stop Pandoc from
+    # converting attribute-less fenced code blocks into indented code
+    # blocks, and will be removed by "markdown-tidy". To find out more,
+    # search for "verbatim" in "$TOOLBOX_ROOT/bin/markdown-tidy".
     return {
-        "t": "RawBlock",
-        "c": ["markdown", output.strip()],
+        "t": "CodeBlock",
+        "c": [["", ["verbatim"], []], output.strip()],
     }
 
 

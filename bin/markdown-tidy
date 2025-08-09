@@ -80,6 +80,12 @@ def format_markdown(
             ),
         )
 
+    # Remove redundant language specifiers from fenced code blocks,
+    # which are currently used as a bodge to stop Pandoc from converting
+    # attribute-less fenced code blocks into indented code blocks (see
+    # <https://github.com/jgm/pandoc/issues/10290>).
+    markdown = re.sub(r"```\s?(literal|raw|text|verbatim)", r"```", markdown)
+
     # Surround the URL portion of reference links with angle brackets
     # to match the syntax of automatic links.
     markdown = re.sub(

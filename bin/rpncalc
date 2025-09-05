@@ -30,10 +30,10 @@ class RPNCalculator:
 
     def operation(self, code: str):
         def decorator(func):
-            spec = inspect.getfullargspec(func)
+            spec = inspect.signature(func)
 
             def op(*args):
-                arity = len(spec.args)
+                arity = len(spec.parameters)
 
                 if len(self._stack) < arity:
                     raise IndexError(
@@ -55,16 +55,15 @@ class RPNCalculator:
     def keywords(self):
         return tuple(self._operations.keys())
 
-    def execute(self, command: str) -> typing.Optional[decimal.Decimal]:
-        for token in command.split():
-            if token in self._operations:
-                self._operations[token]()
-            else:
-                try:
-                    number = decimal.Decimal(token)
-                    self._stack.append(number)
-                except decimal.InvalidOperation:
-                    raise ValueError(f"unrecognised command: {token}")
+    def execute(self, token: str) -> typing.Optional[decimal.Decimal]:
+        if token in self._operations:
+            self._operations[token]()
+        else:
+            try:
+                number = decimal.Decimal(token)
+                self._stack.append(number)
+            except decimal.InvalidOperation:
+                raise ValueError(f"unrecognised command: {token}")
 
         try:
             return self._stack[-1]
@@ -80,15 +79,19 @@ class RPNInterpreter:
     def __init__(self, calculator):
         self._calculator = calculator
 
-    def execute(self, line) -> typing.Union[decimal.Decimal, str]:
+    def execute(self, line) -> typing.Union[decimal.Decimal, None, str]:
         line = line.lower().strip()
+        retval = None
 
-        if line == "stack":
-            return f"[{', '.join([str(i) for i in self._calculator.stack])}]"
-        elif line == "exit":
-            raise SystemExit(0)
+        for token in line.split():
+            if token == "exit":
+                raise SystemExit(0)
+            elif token == "stack":
+                retval = f"[{', '.join([str(i) for i in self._calculator.stack])}]"  # noqa: E501
+            else:
+                retval = self._calculator.execute(token)
 
-        return self._calculator.execute(line)
+        return retval
 
     @property
     def keywords(self):

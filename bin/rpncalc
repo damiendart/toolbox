@@ -30,20 +30,26 @@ class RPNCalculator:
 
     def operation(self, code: str):
         def decorator(func):
-            spec = inspect.signature(func)
+            params = inspect.signature(func).parameters.values()
 
-            def op(*args):
-                arity = len(spec.parameters)
+            is_variadic = any(p.kind == p.VAR_POSITIONAL for p in params)
+            min_stack_length = sum(
+                1 for p in params if p.kind == p.POSITIONAL_OR_KEYWORD
+            )
 
-                if len(self._stack) < arity:
+            def op():
+                if len(self._stack) < min_stack_length:
                     raise IndexError(
-                        f"{code!a} requires {arity} item{'s'[:arity ^ 1]} on stack"  # noqa: E501
+                        f"{code!a} requires at least {min_stack_length} item{'s'[:min_stack_length ^ 1]} on stack"  # noqa: E501
                     )
 
-                arguments = [self._stack.pop() for _ in range(arity)]
-                result = func(*reversed(arguments))
+                if is_variadic:
+                    args = list(self._stack)
+                    self._stack.clear()
+                else:
+                    args = [self._stack.pop() for _ in range(min_stack_length)]
 
-                self._stack.extend(result)
+                self._stack.extend(func(*reversed(args)))
 
             self._operations[code] = op
 
@@ -137,6 +143,10 @@ def make_calculator() -> RPNCalculator:
     @calculator.operation("pi")
     def pi():
         return [decimal.Decimal(math.pi)]
+
+    @calculator.operation("sum")
+    def sum_all(x, y, *tail):
+        return [x + y + sum(tail)]
 
     @calculator.operation("swap")
     def swap(x, y):

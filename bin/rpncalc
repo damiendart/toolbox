@@ -45,11 +45,15 @@ class RPNCalculator:
 
                 if is_variadic:
                     args = list(self._stack)
-                    self._stack.clear()
                 else:
-                    args = [self._stack.pop() for _ in range(min_stack_length)]
+                    args = self._stack[-min_stack_length:]
 
-                self._stack.extend(func(*reversed(args)))
+                result = func(*reversed(args))
+
+                for _ in args:
+                    self._stack.pop()
+
+                self._stack.extend(result)
 
             self._operations[code] = op
 
@@ -213,7 +217,10 @@ if __name__ == "__main__":
         except decimal.DivisionByZero:
             print("ERROR: division by zero")
             continue
-        except Exception as e:
+        except decimal.InvalidOperation:
+            print("ERROR: invalid operation")
+            continue
+        except (IndexError, ValueError) as e:
             print("ERROR:", e)
             continue
 

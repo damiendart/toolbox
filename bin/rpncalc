@@ -48,7 +48,7 @@ class RPNCalculator:
                 else:
                     args = self._stack[-min_stack_length:]
 
-                result = func(*reversed(args))
+                result = func(*args)
 
                 for _ in args:
                     self._stack.pop()

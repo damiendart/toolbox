@@ -26,10 +26,12 @@ Python scripts.
 
 ## Related projects
 
+-   [imagetools][]: a few command-line tools for image-wranglin’.
 -   [nt][]: a note-taking helper application for the command line.
 -   [pathshorten][]: a implementation of Vim’s [`pathshorten`][]
     function that can be used in the command-line.
 
+  [imagetools]: <https://www.robotinaponcho.net/git/#imagetools>
   [nt]: <https://www.robotinaponcho.net/git/#nt>
   [pathshorten]: <https://www.robotinaponcho.net/git/#pathshorten>
   [`pathshorten`]: <https://vimhelp.org/builtin.txt.html#pathshorten%28%29>

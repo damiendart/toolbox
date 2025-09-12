@@ -12,6 +12,7 @@ Inspired by <https://johnlekberg.com/blog/2020-05-22-cli-rpn.html>.
 import argparse
 import atexit
 import decimal
+import doctest
 import inspect
 import math
 import os
@@ -86,6 +87,16 @@ class RPNCalculator:
 
 
 class RPNInterpreter:
+    """
+    >>> interpreter = RPNInterpreter(make_calculator())
+    >>> interpreter.execute('6 3 /')
+    Decimal('2')
+    >>> interpreter.execute('drop stack')
+    '[]'
+    >>> interpreter.execute('1 2 3 4 5 6 sum')
+    Decimal('21')
+    """
+
     def __init__(self, calculator):
         self._calculator = calculator
 
@@ -184,6 +195,8 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
 
 
 if __name__ == "__main__":
+    doctest.testmod(raise_on_error=True)
+
     arguments = parse_arguments(sys.argv[1:])
     calculator = make_calculator()
     has_input = True

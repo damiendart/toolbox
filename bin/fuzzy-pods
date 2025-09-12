@@ -46,6 +46,9 @@ FZF COMMANDS:
   CTRL-Y
     Copy the selected pod name to the clipboard.
 
+  CTRL-ALT-Y
+    Copy the selected namespace and pod name to the clipboard.
+
   F1
     Display this help text and exit.
 HELP
@@ -138,7 +141,7 @@ FZF_OUTPUT=$(\
     --bind="ctrl-r:reload:$FZF_DEFAULT_COMMAND" \
     --bind='ctrl-z:ignore,esc:ignore' \
     --border \
-    --expect='ctrl-d,ctrl-l,ctrl-y,f1' \
+    --expect='ctrl-d,ctrl-l,ctrl-y,ctrl-alt-y,f1' \
     --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Refresh ╱ CTRL+Y: Copy pod name ╱ ENTER: Shell' \
     --header-lines=1 \
     --info='inline-right' \
@@ -184,6 +187,11 @@ case $SELECTED_ACTION in
   ctrl-y)
     printf "%s" "$SELECTED_POD" | xsel -i --clipboard
     echo "[✔] Copied \"$SELECTED_POD\" to the clipboard!"
+    ;;
+  ctrl-alt-y)
+    OUTPUT=$(printf "%s %s" "$SELECTED_NAMESPACE" "$SELECTED_POD")
+    printf "%s" "$OUTPUT" | xsel -i --clipboard
+    echo "[✔] Copied \"$OUTPUT\" to the clipboard!"
     ;;
   *)
     exec kubectl exec -it --namespace="$SELECTED_NAMESPACE" "$SELECTED_POD" -- bash

@@ -55,6 +55,7 @@ def format_markdown(
                         # <https://pandoc.org/MANUAL.html#pandocs-markdown>.
                         "markdown",
                         "+definition_lists",
+                        "+four_space_rule",
                         "+pipe_tables",
                         "-bracketed_spans",
                         "-raw_attribute",

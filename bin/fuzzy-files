@@ -127,7 +127,7 @@ rg --files --hidden --glob="!.git/" | fzf \
   --info='inline-right' \
   --layout=reverse \
   --multi \
-  --preview='cat {} 2>/dev/null' \
+  --preview='(file -bL --mime {} | grep -q "^text") && cat {} 2>/dev/null || echo "\"{r}\" is a binary file."' \
   --preview-window='+{2}/3,<80(down)' \
   --prompt="$(pathshorten)/" \
   --query="$INITIAL_QUERY" \

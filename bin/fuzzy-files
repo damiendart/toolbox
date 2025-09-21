@@ -50,6 +50,9 @@ ACTIONS:
 
   CTRL-X
     Vim mode only. Opens selected matches using ":split".
+
+  CTRL-Y
+    Vim mode only. Yanks the selected matches to Vim's "" register.
 HELP
 }
 

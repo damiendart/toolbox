@@ -186,6 +186,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
+        "--run-doctests",
+        action="store_true",
+        dest="run_doctests",
+        help="run doctests and exit",
+    )
+    parser.add_argument(
         "input",
         help="input to be executed, replaces standard input",
         nargs="*",
@@ -195,9 +201,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    doctest.testmod(raise_on_error=True)
-
     arguments = parse_arguments(sys.argv[1:])
+
+    if arguments.run_doctests:
+        failure_count, _ = doctest.testmod(exclude_empty=True, verbose=True)
+        raise SystemExit(1 if failure_count > 0 else 0)
+
     calculator = make_calculator()
     has_input = True
     interpreter = RPNInterpreter(calculator)

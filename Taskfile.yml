@@ -17,6 +17,7 @@ tasks:
       - task: 'start'
       - task: 'dependencies'
       - task: 'lint'
+      - task: 'test'
     desc: 'Run all CI-related tasks'
 
   dependencies:
@@ -92,3 +93,8 @@ tasks:
     cmds:
       - 'python3 -m venv .venv'
     desc: 'Create a Python virtual environment for development and testing'
+
+  test:
+    cmds:
+      - '.venv/bin/python bin/rpncalc --run-doctests'
+    desc: 'Test Python doctests'

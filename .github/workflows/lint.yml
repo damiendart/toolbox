@@ -16,10 +16,10 @@ jobs:
     runs-on: 'ubuntu-24.04'
     steps:
       - name: 'Check out repository'
-        uses: 'actions/checkout@v3'
+        uses: 'actions/checkout@v5'
 
       - name: 'Set up Python environment'
-        uses: 'actions/setup-python@v4'
+        uses: 'actions/setup-python@v6'
         with:
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
@@ -30,13 +30,13 @@ jobs:
       # for checking ".zshrc" and ".zprofile".
       - name: 'Install ShellCheck'
         run: |
-          wget -qO- https://github.com/koalaman/shellcheck/releases/download/v0.9.0/shellcheck-v0.9.0.linux.x86_64.tar.xz | tar -xJf -
-          sudo cp shellcheck-v0.9.0/shellcheck /usr/local/bin
+          wget -qO- https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz | tar -xJf -
+          sudo cp shellcheck-v0.11.0/shellcheck /usr/local/bin
 
       - name: 'Install Task'
         run: 'curl -sL https://taskfile.dev/install.sh | sh'
 
-      - name: 'Install project dependencies and run all linting-related tasks'
+      - name: 'Install project dependencies and run all linting and testing tasks'
         run: |
           ./bin/task start
           source .venv/bin/activate

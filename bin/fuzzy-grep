@@ -50,7 +50,7 @@ HELP
 
 # The "sleep" command acts as a debouncer, reducing the number of
 # ripgrep processes running while typing a query.
-RG_BASE='test -n {q} && (sleep %s; rg --color=always --column --hidden --line-number --smart-case %s -- {q}) || true'
+RG_BASE='test -n {q} && (sleep %s; rg --no-messages --color=always --column --hidden --line-number --smart-case %s -- {q}) || true'
 
 VIM_MODE=0
 

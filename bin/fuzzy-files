@@ -120,7 +120,7 @@ fi
 #
 # Dash is a little bit faster at executing shell commands; see
 # <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
-rg --files --hidden --glob="!.git/" | fzf \
+rg --files --glob="!.git/" --hidden --no-messages | fzf \
   --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
   --bind='ctrl-z:ignore,esc:ignore' \
   --bind='backward-eof:abort' \

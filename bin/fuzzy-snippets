@@ -128,9 +128,9 @@ for DIRECTORY in $SNIPPET_PATH; do
   fi
 
   if [ "$SNIPPET_FILES" ]; then
-    SNIPPET_FILES="$SNIPPET_FILES\n$(rg --files --sort=path "$DIRECTORY" || printf "")"
+    SNIPPET_FILES="$SNIPPET_FILES\n$(rg --files --no-messages --sort=path "$DIRECTORY" || printf "")"
   else
-    SNIPPET_FILES="$(rg --files --sort=path "$DIRECTORY" || printf "")"
+    SNIPPET_FILES="$(rg --files --no-messages --sort=path "$DIRECTORY" || printf "")"
   fi
 done
 

@@ -111,8 +111,8 @@ function! s:FuzzyFiles(abandon, ...) abort
   call s:Fuzzy('fuzzy-files --vim -- ' . shellescape(l:query), funcref('Handler', [a:abandon]))
 endfunction
 
-function! s:FuzzyGrep(...) abort
-  function! Handler(input) closure
+function! s:FuzzyGrep(abandon, ...) abort
+  function! Handler(abandon, input) closure
     if len(a:input) < 1
       return
     endif
@@ -120,7 +120,7 @@ function! s:FuzzyGrep(...) abort
     call setqflist(map(a:input, 's:ToQuickfix(v:val)'))
     copen 15
     try
-      cc
+      execute (a:abandon ? 'cc!' : 'cc')
     catch /E325/
       " Rerun the "cc" command after handling swap file shenanigans to
       " ensure the cursor is in the correct position.
@@ -131,7 +131,7 @@ function! s:FuzzyGrep(...) abort
   let l:arguments = copy(a:000)
   let l:query = len(l:arguments) > 0 ? join(l:arguments, ' ') : ''
 
-  call s:Fuzzy('fuzzy-grep --vim -- ' . shellescape(l:query), funcref('Handler'))
+  call s:Fuzzy('fuzzy-grep --vim -- ' . shellescape(l:query), funcref('Handler', [a:abandon]))
 endfunction
 
 function! s:FuzzyGrepSelection(visualmode)
@@ -219,7 +219,7 @@ autocmd FileType fuzzyfinder let b:laststatus = &laststatus
   \| autocmd WinLeave <buffer> close!
 
 command! -nargs=* -complete=dir -bang FF call s:FuzzyFiles(<bang>0, <f-args>)
-command! -nargs=* FG call s:FuzzyGrep(<f-args>)
+command! -nargs=* -bang FG call s:FuzzyGrep(<bang>0, <f-args>)
 command! -nargs=* FS call s:FuzzySnippets(<f-args>)
 
 nnoremap <silent> <leader>fg :<C-U>call <SID>FuzzyGrepSelection('n')<CR>

@@ -29,26 +29,12 @@ start is with "$TOOLBOX_ROOT/.vimrc".
 FUZZY-FINDERS                                                    *toolbox-fuzzy*
 
                                                                       *:FF* *:FF!*
-:FF[!] {query}		Opens `fuzzy-files`, using {query} as the initial query
-			if provided.
-
-			The bang modifier works in a similar fashion to when
-			using it with the |:edit| command, it forces the editing
-			of files regardless of whether there are changes in
-			the current buffer.
-
-			See `fuzzy-files --help` for more information.
+:FF[!] {query}		Opens `fuzzy-files`, using {query} as the initial query,
+			if provided. See |:edit!| for [!].
 
                                                                       *:FG* *:FG!*
 :FG[!] {query}		Opens `fuzzy-grep`, using {query} as the initial query
-			if provided.
-
-			The bang modifier works in a similar fashion to when
-			using it with the |:edit| command, it forces the editing
-			of files regardless of whether there are changes in
-			the current buffer.
-
-			See `fuzzy-grep --help` for more information.
+			if provided. See |:cc| for [!].
 
                                                        *<Leader>fa* *v_<Leader>fa*
 <Leader>fg		Calls |:FG| using the word under the cursor or any
@@ -57,9 +43,7 @@ FUZZY-FINDERS                                                    *toolbox-fuzzy*
 
                                                                            *:FS*
 :FS {query}		Opens `fuzzy-snippets`, using {query} as the initial
-			query if provided.
-
-			See `fuzzy-snippets --help` for more information.
+			query, if provided.
 
 
 ==============================================================================
@@ -71,17 +55,16 @@ When editing and reading Markdown files in `$NOTES_ROOT`:
 	friends works even when the current directory is not `$NOTES_ROOT`
 	and/or the file extension has been omitted.
 -	The user-defined completion functionality (see |compl-function|) is used
-	for completing `#hashtags`. See `nt tags --help` for more information.
+	for completing `#hashtags` using the `nt tags` command.
 
 
 ==============================================================================
 MISCELLANEOUS                                                     *toolbox-misc*
 
                                                                             *:F*
-:F			Prints the current file name (similar to how |:file|
-			does it), whether EditorConfig rules have been applied
-			to the buffer, and the current Git repository branch
-			(if applicable).
+:F			Prints the current file name (like |:file|), whether
+			EditorConfig rules have been applied to the buffer,
+			and the current Git repository branch (if applicable).
 
                                                                          *<C-K>*
 <C-K>			In Normal mode, toggles coloured columns. The

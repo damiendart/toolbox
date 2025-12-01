@@ -24,16 +24,7 @@ function! CompleteTags(findStart, base) abort
     return l:start
   endif
 
-  let l:results = []
-  let l:tags = split(system('nt tags'))
-
-  for l:tag in l:tags
-      if l:tag =~ '^' . a:base
-          call add(l:results, l:tag)
-      endif
-  endfor
-
-  return results
+  return split(system('nt tags -f ' . a:base))
 endfun
 
 let b:loaded = 1

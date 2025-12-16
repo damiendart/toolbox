@@ -11,8 +11,10 @@ function! PrintAdditionalFileInformation() abort
     call add(items, '[editorconfig]')
   endif
 
-  if strlen(system('git -C ' . shellescape(expand('%:p:h')) .  ' rev-parse --show-toplevel 2>/dev/null')) > 1
-    call add(items, '[git:' . trim(system('git -C ' . shellescape(expand('%:p:h')) .  ' rev-parse --abbrev-ref HEAD')) . ']')
+  silent let l:git_branch = trim(system('git -C ' . shellescape(expand('%:p:h')) .  ' rev-parse --abbrev-ref HEAD'))
+
+  if strlen(l:git_branch) > 1
+    call add(items, '[git:' . l:git_branch . ']')
   endif
 
   echom join(l:items, '')

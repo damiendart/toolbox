@@ -31,7 +31,7 @@ endif
 
 function! s:Base64DecodeSelection(visualmode) abort
   function! s:decode(input) abort
-    let l:output = system('base64 --decode --ignore-garbage --wrap=0', a:input)
+    silent let l:output = system('base64 --decode --ignore-garbage --wrap=0', a:input)
 
     if v:shell_error
       throw 'Invalid Base64 input'
@@ -84,7 +84,7 @@ endfunction
 
 function! s:Base64EncodeSelection(visualmode)
   function! s:encode(input) abort
-    let l:output = system('base64 --wrap=0', a:input)
+    silent let l:output = system('base64 --wrap=0', a:input)
 
     if v:shell_error
       throw 'Invalid input'

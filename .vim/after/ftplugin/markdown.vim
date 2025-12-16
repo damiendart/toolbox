@@ -24,7 +24,7 @@ function! CompleteTags(findStart, base) abort
     return l:start
   endif
 
-  return split(system('nt tags -f ' . a:base))
+  silent return split(system('nt tags -f ' . a:base))
 endfun
 
 let b:loaded = 1

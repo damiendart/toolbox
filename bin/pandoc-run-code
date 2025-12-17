@@ -89,23 +89,32 @@ def process_code_block(x: typing.Dict) -> typing.Dict:
         attributes,
     )
 
-    if not len(run_attribute) == 2 or run_attribute[1] not in TOOLS:
+    if not len(run_attribute) == 2:
+        return x
+
+    include_tool_errors = run_attribute[1].endswith("!")
+    tool_name = run_attribute[1].rstrip("!")
+
+    if tool_name not in TOOLS:
         return x
 
     try:
         output = subprocess.check_output(
-            TOOLS[run_attribute[1]],
+            TOOLS[tool_name],
             input=x["c"][1],
             stderr=subprocess.STDOUT,
             text=True,
         )
     except subprocess.CalledProcessError as e:
-        fatal_error(
-            'tool "{}" returned a non-zero status\n{}'.format(
-                " ".join(TOOLS[run_attribute[1]]),
-                textwrap.indent(e.output.strip(), "   "),
-            ),
-        )
+        if include_tool_errors:
+            output = e.output.strip()
+        else:
+            fatal_error(
+                'tool "{}" returned a non-zero status\n{}'.format(
+                    " ".join(TOOLS[run_attribute[1]]),
+                    textwrap.indent(e.output.strip(), "   "),
+                ),
+            )
 
     # The "verbatim" class is used as a bodge to stop Pandoc from
     # converting attribute-less fenced code blocks into indented code

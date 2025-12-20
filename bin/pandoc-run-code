@@ -3,6 +3,19 @@
 A Pandoc JSON filter for processing/running the contents of code blocks.
 
 Inspired by <https://johnlekberg.com/blog/2020-11-27-cli-pandoc.html>.
+
+This filter will process any code blocks with a "run" attribute where
+the value is a tool name (see the TOOLS variable) followed optionally by
+one or more single-character modifiers:
+
+    ``` {run=python*}
+    print("Hello!")
+    ```
+
+Modifiers tweak how the code block is processed:
+
+  ! - Ignore the tool's return status.
+  * - Wrap the output in a "RawBlock" instead of a "CodeBlock".
 """
 
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
@@ -13,6 +26,7 @@ import argparse
 import functools
 import json
 import os
+import re
 import subprocess
 import sys
 import textwrap
@@ -92,8 +106,16 @@ def process_code_block(x: typing.Dict) -> typing.Dict:
     if not len(run_attribute) == 2:
         return x
 
-    include_tool_errors = run_attribute[1].endswith("!")
-    tool_name = run_attribute[1].rstrip("!")
+    modifiers = re.search("[!*]+$", run_attribute[1])
+
+    if modifiers:
+        ignore_return_status = "!" in modifiers.group(0)
+        use_raw_block = "*" in modifiers.group(0)
+        tool_name = run_attribute[1][: -len(modifiers.group(0))]
+    else:
+        ignore_return_status = False
+        use_raw_block = False
+        tool_name = run_attribute[1]
 
     if tool_name not in TOOLS:
         return x
@@ -106,7 +128,7 @@ def process_code_block(x: typing.Dict) -> typing.Dict:
             text=True,
         )
     except subprocess.CalledProcessError as e:
-        if include_tool_errors:
+        if ignore_return_status:
             output = e.output.strip()
         else:
             fatal_error(
@@ -116,14 +138,20 @@ def process_code_block(x: typing.Dict) -> typing.Dict:
                 ),
             )
 
-    # The "verbatim" class is used as a bodge to stop Pandoc from
-    # converting attribute-less fenced code blocks into indented code
-    # blocks, and will be removed by "markdown-tidy". To find out more,
-    # search for "verbatim" in "$TOOLBOX_ROOT/bin/markdown-tidy".
-    return {
-        "t": "CodeBlock",
-        "c": [["", ["verbatim"], []], output.strip()],
-    }
+    if use_raw_block:
+        return {
+            "t": "RawBlock",
+            "c": ["markdown", output.strip()],
+        }
+    else:
+        # The "verbatim" class is used as a bodge to stop Pandoc from
+        # converting attribute-less fenced code blocks into indented code
+        # blocks, and will be removed by "markdown-tidy". To find out more,
+        # search for "verbatim" in "$TOOLBOX_ROOT/bin/markdown-tidy".
+        return {
+            "t": "CodeBlock",
+            "c": [["", ["verbatim"], []], output.strip()],
+        }
 
 
 def process_block(block: typing.List[typing.Dict]):

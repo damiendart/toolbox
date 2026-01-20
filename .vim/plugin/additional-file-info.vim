@@ -13,7 +13,7 @@ function! PrintAdditionalFileInformation() abort
 
   silent let l:git_branch = trim(system('git -C ' . shellescape(expand('%:p:h')) .  ' rev-parse --abbrev-ref HEAD'))
 
-  if strlen(l:git_branch) > 1
+  if v:shell_error == 0
     call add(items, '[git:' . l:git_branch . ']')
   endif
 

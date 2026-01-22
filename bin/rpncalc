@@ -18,6 +18,7 @@ import math
 import os
 import readline
 import typing
+import secrets
 import sys
 
 
@@ -105,7 +106,7 @@ class RPNInterpreter:
         retval = None
 
         for token in line.split():
-            if token == "exit":
+            if token == "exit" or token == "quit":
                 raise SystemExit(0)
             elif token == "stack":
                 retval = f"[{', '.join([str(i) for i in self._calculator.stack])}]"  # noqa: E501
@@ -116,7 +117,7 @@ class RPNInterpreter:
 
     @property
     def keywords(self):
-        return self._calculator.keywords + ("exit", "stack")
+        return self._calculator.keywords + ("exit", "quit", "stack")
 
 
 def make_calculator() -> RPNCalculator:
@@ -159,9 +160,13 @@ def make_calculator() -> RPNCalculator:
     def pi():
         return [decimal.Decimal(math.pi)]
 
+    @calculator.operation("pick-random")
+    def pick_random(*stack):
+        return [secrets.choice(stack)]
+
     @calculator.operation("sum")
-    def sum_all(x, y, *tail):
-        return [x + y + sum(tail)]
+    def sum_all(*stack):
+        return [sum(stack)]
 
     @calculator.operation("swap")
     def swap(x, y):

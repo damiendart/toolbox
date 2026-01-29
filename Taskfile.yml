@@ -68,13 +68,14 @@ tasks:
         bin/pandoc-run-code
         bin/po
         bin/rpncalc
+        bin/search
         bin/timeshit
         install
     desc: 'Lint Python scripts with Flake8'
 
   lint:python:mypy:
     cmds:
-      - '.venv/bin/mypy --scripts-are-modules bin/git-hometime bin/rpncalc'
+      - '.venv/bin/mypy --scripts-are-modules bin/git-hometime bin/rpncalc bin/search'
     desc: 'Type check Python scripts with mypy'
 
   lint:shell:

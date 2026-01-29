@@ -1,0 +1,260 @@
+#!/usr/bin/env python3
+"""
+A script that turns search-engine-style queries into ripgrep commands.
+"""
+
+# This file was written by Damien Dart, <damiendart@pobox.com>. This is
+# free and unencumbered software released into the public domain. For
+# more information, please refer to the accompanying "UNLICENCE" file.
+
+import argparse
+import dataclasses
+import doctest
+import os
+import re
+import shutil
+import shlex
+import sys
+import typing
+
+
+@dataclasses.dataclass
+class Filter:
+    key: str
+    value: str
+
+
+class ParseError(Exception):
+    def __init__(self, message, offset):
+        self.message = message
+        self.offset = offset
+
+
+class QueryParser:
+    """
+    >>> parser = QueryParser()
+    >>> parser.parse("hello")
+    'hello'
+    >>> parser.parse("hello world")
+    ('hello', 'world')
+    >>> parser.parse("(hello world)")
+    ('hello', 'world')
+    >>> parser.parse("\\"hello world\\"")
+    'hello world'
+    >>> parser.parse("foo:bar hello world")
+    (Filter(key='foo', value='bar'), 'hello', 'world')
+    >>> parser.parse("foo:bar 'hello world'")
+    (Filter(key='foo', value='bar'), 'hello world')
+    >>> parser.parse("foo: bar hello world")
+    (Filter(key='foo', value='bar'), 'hello', 'world')
+    >>> parser.parse("foo:(bar baz) hello world")
+    (Filter(key='foo', value=('bar', 'baz')), 'hello', 'world')
+    >>> parser.parse("hello world foo:bar:baz")
+    ('hello', 'world', Filter(key='foo', value=Filter(key='bar', value='baz')))
+    >>> parser.parse('hello "world')
+    Traceback (most recent call last):
+    ...
+    ParseError: ('quoted string not terminated', 6)
+    >>> parser.parse('hello (world')
+    Traceback (most recent call last):
+    ...
+    ParseError: ('expression not terminated', 6)
+    """
+
+    def parse(self, query: str):
+        return self._parse_node(StringScanner(query))
+
+    def _parse_atom(self, scanner):
+        start = scanner.offset
+        quote_start = scanner.scan(r"['\"/]")
+
+        if quote_start:
+            atom = scanner.scan(r"[^{}]*".format(quote_start))
+
+            if not scanner.skip(r"{}".format(quote_start)):
+                raise ParseError("quoted string not terminated", start)
+
+            return atom
+        else:
+            atom = scanner.scan(r"[^\s\(\):]+")
+
+            if atom is None:
+                raise ParseError("expected atom", scanner.offset)
+
+        return atom
+
+    def _parse_filter(self, scanner):
+        scanner.skip(r"\s+")
+
+        key = self._parse_value(scanner)
+
+        if isinstance(key, tuple):
+            return key
+
+        if scanner.skip(r":"):
+            return Filter(key, self._parse_filter(scanner))
+        else:
+            return key
+
+    def _parse_node(self, scanner):
+        left = self._parse_filter(scanner)
+
+        if not scanner.skip(r"\s+") or scanner.end_of_string():
+            return left
+        else:
+            right = self._parse_node(scanner)
+
+            if isinstance(right, tuple):
+                return left, *right
+            else:
+                return left, right
+
+    def _parse_value(self, scanner):
+        start = scanner.offset
+
+        if scanner.skip(r"\("):
+            node = self._parse_node(scanner)
+
+            if not scanner.skip(r"\)"):
+                raise ParseError("expression not terminated", start)
+
+            return node
+        else:
+            return self._parse_atom(scanner)
+
+
+class StringScanner:
+    def __init__(self, string: str):
+        self._offset = 0
+        self._string = string
+
+    def end_of_string(self) -> bool:
+        return self._offset == len(self._string)
+
+    @property
+    def offset(self) -> int:
+        return self._offset
+
+    def scan(self, pattern: str):
+        regex = re.compile(pattern, re.MULTILINE | re.DOTALL)
+        match = regex.match(self._string, self._offset)
+
+        if match is not None:
+            self._offset = match.end()
+            return match.group(0)
+
+        return None
+
+    def skip(self, pattern: str) -> bool:
+        regex = re.compile(pattern)
+        match = regex.match(self._string, self._offset)
+
+        if match is not None:
+            self._offset = match.end()
+            return True
+
+        return False
+
+
+def fatal_error(message: str) -> None:
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def to_rg_command(parsed):
+    base = [
+        shutil.which("rg"),
+        "--color=always",
+        "--column",
+        "--line-number",
+        "--smart-case",
+    ]
+    queries = []
+
+    if isinstance(parsed, str):
+        queries.append(parsed)
+    elif isinstance(parsed, Filter):
+        if parsed.key == "hidden":
+            base.append("--hidden")
+            base.append("--no-ignore")
+        elif parsed.key == "glob":
+            base.append("--glob")
+            base.append(parsed.value)
+    else:
+        for filter in [o for o in parsed if isinstance(o, Filter)]:
+            if filter.key == "hidden":
+                base.append("--hidden")
+                base.append("--no-ignore")
+            elif filter.key == "glob":
+                base.append("--glob")
+                base.append(filter.value)
+
+        for term in [o for o in parsed if isinstance(o, str)]:
+            queries.append(term)
+
+    command = list(dict.fromkeys(base))
+
+    for query in queries:
+        command.append("--regexp")
+        command.append(query)
+
+    return command
+
+
+def main(arguments: argparse.Namespace) -> None:
+    query = " ".join(arguments.query)
+
+    try:
+        parsed = QueryParser().parse(query)
+    except ParseError as e:
+        fatal_error("{}: {}".format(e.offset + 1, e.message))
+
+    command = to_rg_command(parsed)
+
+    if arguments.dump_command:
+        print(shlex.join(command))
+    else:
+        os.execvp(command[0], command[0:])
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--dump-command",
+        action="store_true",
+        dest="dump_command",
+        help="parse query and return the ripgrep command",
+    )
+    parser.add_argument(
+        "--run-doctests",
+        action="store_true",
+        dest="run_doctests",
+        help="run doctests and exit",
+    )
+    parser.add_argument(
+        "query",
+        help="search query",
+        nargs="*",
+    )
+
+    return parser.parse_args(arguments)
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+
+    if arguments.run_doctests:
+        failure_count, _ = doctest.testmod(exclude_empty=True, verbose=True)
+        raise SystemExit(1 if failure_count > 0 else 0)
+
+    if not shutil.which("rg"):
+        fatal_error("ripgrep is required")
+
+    main(arguments)

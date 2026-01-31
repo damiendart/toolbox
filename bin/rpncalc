@@ -75,7 +75,7 @@ class RPNCalculator:
                 number = decimal.Decimal(token)
                 self._stack.append(number)
             except decimal.InvalidOperation:
-                raise ValueError(f"unrecognised command: {token}")
+                raise ValueError(f"unrecognised operation: {token}")
 
         try:
             return self._stack[-1]

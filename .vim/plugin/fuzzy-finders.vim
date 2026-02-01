@@ -152,7 +152,15 @@ function! s:FuzzyGrepSelection(visualmode)
     " Prevent special characters expansion (see "cmdline-special" in
     " Vim's documentation) as it's more of an annoyance when using
     " a selection as the initial query.
-    execute ":FG" fnameescape(join(getreg('"', 1, 1), ""))
+    let l:query = fnameescape(join(getreg('"', 1, 1), ""))
+
+    if count(l:query, "'") >= count(l:query, '"')
+      let l:query = '"' . escape(l:query, '"') . '"'
+    else
+      let l:query = "'" . escape(l:query, "'") . "'"
+    endif
+
+    execute ":FG" l:query
   finally
     if type(l:register) == type({})
       call setreg('"', l:register)

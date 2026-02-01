@@ -12,7 +12,10 @@ help() {
   cat << HELP
 A fuzzy ripgrep launcher.
 
-Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY]
+Usage: $(basename "$0") [FLAGS] [INITIAL-QUERY...]
+
+The "search" wrapper script is used to process queries into ripgrep
+commands; run "search --help" for more details.
 
 If the GNU version of getopt is available it will be used to preprocess
 command-line arguments, enabling support for grouped short options and
@@ -41,23 +44,19 @@ ACTIONS:
 
   CTRL-D
     Deselects all matches.
-
-  CTRL-E
-    Toggles between respecting ignore files (e.g. ".gitignore") in the
-    current working directory (the default) or searching every file.
 HELP
 }
 
 # The "sleep" command acts as a debouncer, reducing the number of
-# ripgrep processes running while typing a query.
-RG_BASE='test -n {q} && (sleep %s; rg --no-messages --color=always --column --hidden --line-number --smart-case %s -- {q}) || true'
+# "search" processes running while typing a query.
+SEARCH_BASE='test -n {q} && (sleep %s; search -- {q}) || true'
 
 VIM_MODE=0
 
 # Using the GNU version of getopt to parse command-line arguments adds
 # support for grouped short options and other niceties.
 if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
-  if ! ARGS=$(getopt -l fzf-transform-input:,fzf-transform-prompt,help,vim -n "$(basename "$0")" -o h -- "$@"); then
+  if ! ARGS=$(getopt -l help,vim -n "$(basename "$0")" -o h -- "$@"); then
     printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
     exit 2
   fi
@@ -69,9 +68,10 @@ if ! type 'fzf' 1>/dev/null 2>&1 || \
   ! type 'mktemp' 1>/dev/null 2>&1 || \
   ! type 'pathshorten' 1>/dev/null 2>&1 || \
   ! type 'rg' 1>/dev/null 2>&1 || \
+  ! type 'search' 1>/dev/null 2>&1 || \
   ! type 'vim' 1>/dev/null 2>&1;
 then
-  printf 'ERROR: "%s" requires fzf, mktemp, pathshorten, rg, and vim\n' "$(basename "$0")" >&2
+  printf 'ERROR: "%s" requires fzf, mktemp, pathshorten, rg, search, and vim\n' "$(basename "$0")" >&2
   exit 2
 fi
 
@@ -81,30 +81,6 @@ while :; do
   case $1 in
     -h|-\?|--help)
       help
-      exit
-      ;;
-    --fzf-transform-input)
-      case "$FZF_PROMPT" in
-        \[*)
-          # shellcheck disable=SC2059
-          printf "reload:$RG_BASE" "$2" "--no-ignore"
-          ;;
-        *)
-          # shellcheck disable=SC2059
-          printf "reload:$RG_BASE" "$2" ""
-          ;;
-      esac
-      exit
-      ;;
-    --fzf-transform-prompt)
-      case "$FZF_PROMPT" in
-        \[*)
-          echo "change-prompt(($(pathshorten)) )+transform($0 --fzf-transform-input 0)"
-          ;;
-        *)
-          echo "change-prompt([$(pathshorten)] )+transform($0 --fzf-transform-input 0)"
-          ;;
-      esac
       exit
       ;;
     --vim)
@@ -145,11 +121,10 @@ FZF_OUTPUT=$(\
   fzf \
     --ansi \
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
-    --bind="ctrl-e:transform($0 --fzf-transform-prompt)" \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
-    --bind="change:transform($0 --fzf-transform-input 0.2)" \
-    --bind="start:reload:$(printf "$RG_BASE" "0" "")" \
+    --bind="change:reload:$(printf "$SEARCH_BASE" "0.1")" \
+    --bind="start:reload:$(printf "$SEARCH_BASE" "0")" \
     --border \
     --disabled \
     --delimiter=':' \

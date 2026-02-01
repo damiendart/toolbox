@@ -98,4 +98,5 @@ tasks:
   test:
     cmds:
       - '.venv/bin/python bin/rpncalc --run-doctests'
+      - '.venv/bin/python bin/search --run-doctests'
     desc: 'Test Python doctests'

@@ -173,6 +173,7 @@ def to_rg_command(parsed):
         "--line-number",
         "--smart-case",
     ]
+    globs = []
     queries = []
 
     if isinstance(parsed, str):
@@ -182,21 +183,23 @@ def to_rg_command(parsed):
             base.append("--hidden")
             base.append("--no-ignore")
         elif parsed.key == "glob":
-            base.append("--glob")
-            base.append(parsed.value)
+            globs.append(parsed.value)
     else:
         for filter in [o for o in parsed if isinstance(o, Filter)]:
             if filter.key == "hidden":
                 base.append("--hidden")
                 base.append("--no-ignore")
             elif filter.key == "glob":
-                base.append("--glob")
-                base.append(filter.value)
+                globs.append(filter.value)
 
         for term in [o for o in parsed if isinstance(o, str)]:
             queries.append(term)
 
     command = list(dict.fromkeys(base))
+
+    for glob in globs:
+        command.append("--glob")
+        command.append(glob)
 
     for query in queries:
         command.append("--regexp")

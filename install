@@ -10,6 +10,7 @@ more information, please refer to the accompanying "UNLICENCE" file.
 import hashlib
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -36,13 +37,13 @@ PATHS_TO_INSTALL = [
     ".vimrc",
 ]
 
-notice = """
+NOTICE = """
 If any shell-related dotfiles have changed, you may need to log out and
 log back in, or "source" any new dotfiles so that they take effect in
 the current interactive shell session.
 """.rstrip()
 
-vim_tags = [
+VIM_TAGS = [
     ".vim/doc/tags",
     ".vim/pack/plugins/opt/editorconfig-fork/doc/tags",
 ]
@@ -50,6 +51,7 @@ vim_tags = [
 
 if __name__ == "__main__":
     errors = False
+    vim_installed = shutil.which("vim")
 
     for path in PATHS_TO_INSTALL:
         destination = pathlib.Path(pathlib.Path.home(), path)
@@ -72,7 +74,12 @@ if __name__ == "__main__":
                 os.symlink(source, destination)
                 print('[✔] Created link to "{}"'.format(source))
 
-    for tag in vim_tags:
+    if not vim_installed:
+        print('[✘] Cannot generate "tags" files as Vim is not installed')
+        print(NOTICE)
+        sys.exit(1)
+
+    for tag in VIM_TAGS if vim_installed else []:
         tag_checksum = None
         tag_file = pathlib.Path(pathlib.Path.home(), tag)
 
@@ -101,7 +108,7 @@ if __name__ == "__main__":
 
             errors = True
 
-    print(notice)
+    print(NOTICE)
 
     if errors:
         sys.exit(1)

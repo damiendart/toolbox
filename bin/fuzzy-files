@@ -131,7 +131,7 @@ rg --files --glob="!.git/" --hidden --no-messages | fzf \
   --layout=reverse \
   --multi \
   --preview='(file -bL --mime {} | grep -q "^text") && cat {} 2>/dev/null || echo "\"{r}\" is a binary file."' \
-  --preview-window='+{2}/3,<80(down)' \
+  --preview-window='wrap-word,+{2}/3,<80(down)' \
   --prompt="$(pathshorten)/" \
   --query="$INITIAL_QUERY" \
   --scheme='path' \

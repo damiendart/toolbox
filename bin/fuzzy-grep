@@ -132,8 +132,8 @@ FZF_OUTPUT=$(\
     --info='inline-right' \
     --layout=reverse \
     --multi \
-    --preview='/usr/bin/dash -c "(nl -ba {1} | grep --color=always -E \"$(printf "|^\s*%s\s.*" {2})\") 2>/dev/null"' \
-    --preview-window='+{2}/3,<80(down)' \
+    --preview='/usr/bin/dash -c "(nl -ba --number-format=ln {1} | grep --color=always -E \"$(printf "|^\s*%s\s.*" {2})\") 2>/dev/null"' \
+    --preview-window='wrap-word,+{2}/3,<80(down)' \
     --prompt="($(pathshorten)) " \
     --query="$INITIAL_QUERY" \
     --with-shell='/usr/bin/dash -c' \

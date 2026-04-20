@@ -48,6 +48,7 @@ PROMPT_COMMAND='shellrc__prompt_command'
 # information, see <https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html#backspace-key-doesn-t-work-in-python-repl>.
 export TERMINFO_DIRS="/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
 
+export PIP_REQUIRE_VIRTUALENV='true'
 export VIRTUAL_ENV_DISABLE_PROMPT='1'
 
 # Improve the viewing of some non-text input in "less" with "lesspipe".

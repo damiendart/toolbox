@@ -27,6 +27,7 @@ import collections
 import dataclasses
 import datetime
 import itertools
+import json
 import os
 import re
 import sys
@@ -143,26 +144,42 @@ def main(arguments: argparse.Namespace) -> None:
         if len(entry.description) > longest_task_name_length:
             longest_task_name_length = len(entry.description)
 
-    for description, duration in tasks.items():
+    if arguments.json:
+        output = {
+            "items": [],
+            "total_hours": total.total_seconds() / 3600,
+        }
+
+        for description, duration in tasks.items():
+            output["items"].append(
+                {
+                    "description": description,
+                    "duration_hours": duration.total_seconds() / 3600,
+                },
+            )
+
+        print(json.dumps(output, indent=2))
+    else:
+        for description, duration in tasks.items():
+            print(
+                f"%-{longest_task_name_length}s   %2sh %2sm%s"
+                % (
+                    description,
+                    duration.seconds // 3600,
+                    (duration.seconds // 60) % 60,
+                    " (ONGOING)" if description == ongoing_task else "",
+                ),
+            )
+
+        print()
         print(
-            f"%-{longest_task_name_length}s   %2sh %2sm%s"
+            f"%-{longest_task_name_length}s   %2sh %2sm"
             % (
-                description,
-                duration.seconds // 3600,
-                (duration.seconds // 60) % 60,
-                " (ONGOING)" if description == ongoing_task else "",
+                "Total so far" if ongoing_task is not None else "Total",
+                total.seconds // 3600,
+                (total.seconds // 60) % 60,
             ),
         )
-
-    print()
-    print(
-        f"%-{longest_task_name_length}s   %2sh %2sm"
-        % (
-            "Total so far" if ongoing_task is not None else "Total",
-            total.seconds // 3600,
-            (total.seconds // 60) % 60,
-        ),
-    )
 
 
 def normalise_time(time_string: str) -> str:
@@ -176,6 +193,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "-j",
+        "--json",
+        action="store_true",
+        help="output summary as JSON",
     )
     parser.add_argument(
         "infile",

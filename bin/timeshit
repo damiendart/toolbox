@@ -159,27 +159,29 @@ def main(arguments: argparse.Namespace) -> None:
             )
 
         print(json.dumps(output, indent=2))
-    else:
-        for description, duration in tasks.items():
-            print(
-                f"%-{longest_task_name_length}s   %2sh %2sm%s"
-                % (
-                    description,
-                    duration.seconds // 3600,
-                    (duration.seconds // 60) % 60,
-                    " (ONGOING)" if description == ongoing_task else "",
-                ),
-            )
 
-        print()
+        return
+
+    for description, duration in tasks.items():
         print(
-            f"%-{longest_task_name_length}s   %2sh %2sm"
+            f"%-{longest_task_name_length}s   %2sh %2sm%s"
             % (
-                "Total so far" if ongoing_task is not None else "Total",
-                total.seconds // 3600,
-                (total.seconds // 60) % 60,
+                description,
+                duration.seconds // 3600,
+                (duration.seconds // 60) % 60,
+                " (ONGOING)" if description == ongoing_task else "",
             ),
         )
+
+    print()
+    print(
+        f"%-{longest_task_name_length}s   %2sh %2sm"
+        % (
+            "Total so far" if ongoing_task is not None else "Total",
+            total.seconds // 3600,
+            (total.seconds // 60) % 60,
+        ),
+    )
 
 
 def normalise_time(time_string: str) -> str:

@@ -7,15 +7,20 @@ scope. A timesheet file represents a day of tasks, and entries are lines
 starting with a timestamp followed by whitespace and a description, eg:
 
 09:00 Morning routine and meeting
-09:30 A task that lasts an hour
-10:30-12:00 Another task with an optional end time
-13:00: Another task # Everything after the "#" is ignored.
-1400-1700: It's another task!
+09:30 An hour-long task # Everything after the "#" is ignored.
+10:30-12:00 Another task # with an optional end time
+Lunch for an hour, and this line will be ignored.
+13:00: Another task
+1400-1700: It's another task! TRELLO-0123abcd
 
 Entries must be in chronological order. If an entry does not include an
 end time the start time of the following task is used, unless it is the
-last entry in which case it is considered an ongoing task. Lines that do
-not start with a timestamp are ignored.
+last entry in which case it is considered an ongoing task.
+
+Lines that do not start with a timestamp are ignored.
+
+For the JSON-formatted summary, there is basic support for parsing
+Trello card IDs prefixed with "TRELLO-" from task descriptions.
 """
 
 # This file was written by Damien Dart, <damiendart@pobox.com>. This is
@@ -155,6 +160,7 @@ def main(arguments: argparse.Namespace) -> None:
                 {
                     "description": description,
                     "duration_hours": duration.total_seconds() / 3600,
+                    "trello_cards": re.findall(r"TRELLO-(\w+)", description),
                 },
             )
 

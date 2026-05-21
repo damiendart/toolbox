@@ -175,6 +175,7 @@ def to_rg_command(parsed):
     ]
     globs = []
     queries = []
+    use_regex = False
 
     if isinstance(parsed, str):
         queries.append(parsed)
@@ -184,6 +185,8 @@ def to_rg_command(parsed):
             base.append("--no-ignore")
         elif parsed.key == "glob":
             globs.append(parsed.value)
+        elif parsed.key == "re" or parsed.key == "regex":
+            use_regex = True
     else:
         for filter in [o for o in parsed if isinstance(o, Filter)]:
             if filter.key == "hidden":
@@ -191,9 +194,14 @@ def to_rg_command(parsed):
                 base.append("--no-ignore")
             elif filter.key == "glob":
                 globs.append(filter.value)
+            elif filter.key == "re" or filter.key == "regex":
+                use_regex = True
 
         for term in [o for o in parsed if isinstance(o, str)]:
             queries.append(term)
+
+    if not use_regex:
+        base.append("--fixed-strings")
 
     command = list(dict.fromkeys(base))
 

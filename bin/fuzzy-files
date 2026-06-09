@@ -42,6 +42,11 @@ ACTIONS:
   CTRL-D
     Deselects all matches.
 
+  CTRL-E
+    Toggles between respecting ignore files (e.g. ".gitignore") in the
+    current working directory when listing files (the default) or
+    listing every file.
+
   CTRL-T
     Vim mode only. Opens selected matches using ":tabe".
 
@@ -56,12 +61,14 @@ ACTIONS:
 HELP
 }
 
+RG_BASE='rg --files --hidden --ignore --no-messages --smart-case %s'
+
 VIM_MODE=0
 
 # Using the GNU version of getopt to parse command-line arguments adds
 # support for grouped short options and other niceties.
 if test "$(getopt --test >/dev/null 2>&1 && echo "$?" || echo "$?")" -eq 4; then
-  if ! ARGS=$(getopt -l help,vim -n "$(basename "$0")" -o h -- "$@"); then
+  if ! ARGS=$(getopt -l fzf-transform-prompt,help,vim -n "$(basename "$0")" -o h -- "$@"); then
     printf 'See "%s --help" for available options\n' "$(basename "$0")" >&2
     exit 2
   fi
@@ -83,6 +90,19 @@ while :; do
   case $1 in
     -h|-\?|--help)
       help
+      exit
+      ;;
+    --fzf-transform-prompt)
+      case "$FZF_PROMPT" in
+        \**)
+          # shellcheck disable=SC2059
+          echo "change-prompt($(pathshorten)/)+reload($(printf "$RG_BASE" '--glob="!.git/" --ignore'))"
+          ;;
+        *)
+          # shellcheck disable=SC2059
+          echo "change-prompt(*$(pathshorten)/)+reload($(printf "$RG_BASE" "--no-ignore"))"
+          ;;
+      esac
       exit
       ;;
     --vim)
@@ -120,10 +140,15 @@ fi
 #
 # Dash is a little bit faster at executing shell commands; see
 # <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
-rg --files --glob="!.git/" --hidden --no-messages | fzf \
-  --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
-  --bind='ctrl-z:ignore,esc:ignore' \
+
+# shellcheck disable=SC2059
+fzf \
+  --ansi \
   --bind='backward-eof:abort' \
+  --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
+  --bind="ctrl-e:transform($0 --fzf-transform-prompt)" \
+  --bind='ctrl-z:ignore,esc:ignore' \
+  --bind="start:reload:$(printf "$RG_BASE" '--glob="!.git/" --ignore')" \
   --border \
   ${FZF_EXPECT:+--expect="$FZF_EXPECT"} \
   --height="$FZF_HEIGHT" \

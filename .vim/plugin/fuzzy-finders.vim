@@ -149,10 +149,7 @@ function! s:FuzzyGrepSelection(visualmode)
       call setreg('"', expand('<cword>'))
     endif
 
-    " Prevent special characters expansion (see "cmdline-special" in
-    " Vim's documentation) as it's more of an annoyance when using
-    " a selection as the initial query.
-    let l:query = fnameescape(join(getreg('"', 1, 1), ""))
+    let l:query = join(getreg('"', 1, 1), "")
 
     if count(l:query, "'") >= count(l:query, '"')
       let l:query = '"' . escape(l:query, '"') . '"'

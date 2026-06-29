@@ -59,10 +59,24 @@ class QueryParser:
     Traceback (most recent call last):
     ...
     ParseError: ('expression not terminated', 6)
+    >>> parser.parse('"hello"world')
+    Traceback (most recent call last):
+    ...
+    ParseError: ('expected whitespace', 7)
+    >>> parser.parse('hello(world')
+    Traceback (most recent call last):
+    ...
+    ParseError: ('expected whitespace', 5)
     """
 
     def parse(self, query: str):
-        return self._parse_node(StringScanner(query))
+        scanner = StringScanner(query)
+        result = self._parse_node(scanner)
+
+        if not scanner.end_of_string():
+            raise ParseError("expected whitespace", scanner.offset)
+
+        return result
 
     def _parse_atom(self, scanner):
         start = scanner.offset

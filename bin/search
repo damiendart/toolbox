@@ -59,8 +59,6 @@ class QueryParser:
     (Filter(key='foo', value='bar'), 'hello', 'world')
     >>> parser.parse("foo:(bar baz) hello world")
     (Filter(key='foo', value=('bar', 'baz')), 'hello', 'world')
-    >>> parser.parse("hello world foo:bar:baz")
-    ('hello', 'world', Filter(key='foo', value=Filter(key='bar', value='baz')))
     >>> parser.parse('hello "world')
     Traceback (most recent call last):
     ...
@@ -77,6 +75,10 @@ class QueryParser:
     Traceback (most recent call last):
     ...
     ParseError: ('expected whitespace', 5)
+    >>> parser.parse("foo:bar:baz")
+    Traceback (most recent call last):
+    ...
+    ParseError: ('nested filters are not permitted', 7)
     """
 
     def parse(self, query: str):
@@ -84,7 +86,13 @@ class QueryParser:
         result = self._parse_node(scanner)
 
         if not scanner.end_of_string():
-            raise ParseError("expected whitespace", scanner.offset)
+            if scanner.check(r":"):
+                raise ParseError(
+                    "nested filters are not permitted",
+                    scanner.offset,
+                )
+            else:
+                raise ParseError("expected whitespace", scanner.offset)
 
         return result if isinstance(result, tuple) else (result,)
 
@@ -114,7 +122,7 @@ class QueryParser:
             return key
 
         if scanner.skip(r":"):
-            return Filter(key, self._parse_filter(scanner))
+            return Filter(key, self._parse_value(scanner))
         else:
             return key
 
@@ -132,6 +140,8 @@ class QueryParser:
                 return left, right
 
     def _parse_value(self, scanner):
+        scanner.skip(r"\s+")
+
         start = scanner.offset
 
         if scanner.skip(r"\("):
@@ -149,6 +159,15 @@ class StringScanner:
     def __init__(self, string: str):
         self._offset = 0
         self._string = string
+
+    def check(self, pattern: str):
+        regex = re.compile(pattern, re.MULTILINE | re.DOTALL)
+        match = regex.match(self._string, self._offset)
+
+        if match is not None:
+            return match.group(0)
+
+        return None
 
     def end_of_string(self) -> bool:
         return self._offset == len(self._string)

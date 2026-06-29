@@ -39,8 +39,20 @@ class QueryParser:
     ('hello', 'world')
     >>> parser.parse("(hello world)")
     ('hello', 'world')
-    >>> parser.parse("\\"hello world\\"")
+    >>> parser.parse('"hello world"')
     'hello world'
+    >>> parser.parse('hello\\\\ world')
+    'hello world'
+    >>> parser.parse('"\\\\"hello world\\\\""')
+    '"hello world"'
+    >>> parser.parse('"hello \\\\"world"')
+    'hello "world'
+    >>> parser.parse('"hello\\\\\\\\world"')
+    'hello\\\\world'
+    >>> parser.parse("'foo\\\\:bar'")
+    'foo:bar'
+    >>> parser.parse('foo\\:bar')
+    'foo:bar'
     >>> parser.parse("foo:bar hello world")
     (Filter(key='foo', value='bar'), 'hello', 'world')
     >>> parser.parse("foo:bar 'hello world'")
@@ -83,19 +95,17 @@ class QueryParser:
         quote_start = scanner.scan(r"['\"/]")
 
         if quote_start:
-            atom = scanner.scan(r"[^{}]*".format(quote_start))
+            atom = scanner.scan(r"(\\.|[^\{}])+".format(quote_start))
 
             if not scanner.skip(r"{}".format(quote_start)):
                 raise ParseError("quoted string not terminated", start)
-
-            return atom
         else:
-            atom = scanner.scan(r"[^\s\(\):]+")
+            atom = scanner.scan(r"(\\.|[^\s\(\):])+")
 
             if atom is None:
                 raise ParseError("expected atom", scanner.offset)
 
-        return atom
+        return re.sub(r"(?:\\(\\)|\\(.))", r"\1\2", atom)
 
     def _parse_filter(self, scanner):
         scanner.skip(r"\s+")

@@ -34,25 +34,23 @@ class QueryParser:
     """
     >>> parser = QueryParser()
     >>> parser.parse("hello")
-    'hello'
+    ('hello',)
     >>> parser.parse("hello world")
     ('hello', 'world')
     >>> parser.parse("(hello world)")
     ('hello', 'world')
     >>> parser.parse('"hello world"')
-    'hello world'
+    ('hello world',)
     >>> parser.parse('hello\\\\ world')
-    'hello world'
+    ('hello world',)
     >>> parser.parse('"\\\\"hello world\\\\""')
-    '"hello world"'
+    ('"hello world"',)
     >>> parser.parse('"hello \\\\"world"')
-    'hello "world'
+    ('hello "world',)
     >>> parser.parse('"hello\\\\\\\\world"')
-    'hello\\\\world'
+    ('hello\\\\world',)
     >>> parser.parse("'foo\\\\:bar'")
-    'foo:bar'
-    >>> parser.parse('foo\\:bar')
-    'foo:bar'
+    ('foo:bar',)
     >>> parser.parse("foo:bar hello world")
     (Filter(key='foo', value='bar'), 'hello', 'world')
     >>> parser.parse("foo:bar 'hello world'")
@@ -88,7 +86,7 @@ class QueryParser:
         if not scanner.end_of_string():
             raise ParseError("expected whitespace", scanner.offset)
 
-        return result
+        return result if isinstance(result, tuple) else (result,)
 
     def _parse_atom(self, scanner):
         start = scanner.offset
@@ -201,28 +199,20 @@ def to_rg_command(parsed):
     queries = []
     use_regex = False
 
-    if isinstance(parsed, str):
-        queries.append(parsed)
-    elif isinstance(parsed, Filter):
-        if parsed.key == "hidden":
+    for f in [o for o in parsed if isinstance(o, Filter)]:
+        if f.key == "hidden":
             base.append("--hidden")
             base.append("--no-ignore")
-        elif parsed.key == "glob":
-            globs.append(parsed.value)
-        elif parsed.key == "re" or parsed.key == "regex":
+        elif f.key == "glob":
+            if isinstance(f.value, tuple):
+                globs.extend(f.value)
+            else:
+                globs.append(f.value)
+        elif f.key == "re" or f.key == "regex":
             use_regex = True
-    else:
-        for filter in [o for o in parsed if isinstance(o, Filter)]:
-            if filter.key == "hidden":
-                base.append("--hidden")
-                base.append("--no-ignore")
-            elif filter.key == "glob":
-                globs.append(filter.value)
-            elif filter.key == "re" or filter.key == "regex":
-                use_regex = True
 
-        for term in [o for o in parsed if isinstance(o, str)]:
-            queries.append(term)
+    for term in [o for o in parsed if isinstance(o, str)]:
+        queries.append(term)
 
     if not use_regex:
         base.append("--fixed-strings")

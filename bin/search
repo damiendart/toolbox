@@ -62,11 +62,11 @@ class QueryParser:
     >>> parser.parse('hello "world')
     Traceback (most recent call last):
     ...
-    ParseError: ('quoted string not terminated', 6)
+    ParseError: ('missing closing quotation mark', 6)
     >>> parser.parse('hello (world')
     Traceback (most recent call last):
     ...
-    ParseError: ('expression not terminated', 6)
+    ParseError: ('missing closing parenthesis', 6)
     >>> parser.parse('"hello"world')
     Traceback (most recent call last):
     ...
@@ -104,12 +104,12 @@ class QueryParser:
             atom = scanner.scan(r"(\\.|[^\{}])+".format(quote_start))
 
             if not scanner.skip(r"{}".format(quote_start)):
-                raise ParseError("quoted string not terminated", start)
+                raise ParseError("missing closing quotation mark", start)
         else:
             atom = scanner.scan(r"(\\.|[^\s\(\):])+")
 
             if atom is None:
-                raise ParseError("expected atom", scanner.offset)
+                raise ParseError("expected string", scanner.offset)
 
         return re.sub(r"(?:\\(\\)|\\(.))", r"\1\2", atom)
 
@@ -148,7 +148,7 @@ class QueryParser:
             node = self._parse_node(scanner)
 
             if not scanner.skip(r"\)"):
-                raise ParseError("expression not terminated", start)
+                raise ParseError("missing closing parenthesis", start)
 
             return node
         else:

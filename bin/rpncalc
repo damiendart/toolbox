@@ -138,6 +138,7 @@ def make_calculator() -> RPNCalculator:
 
     @calculator.operation("*")
     @calculator.operation("mul")
+    @calculator.operation("x")
     def multiply(x, y):
         return [x * y]
 

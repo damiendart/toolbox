@@ -21,7 +21,7 @@ import textwrap
 import typing
 
 
-def fatal_error(message: str) -> None:
+def fatal_error(message: str) -> typing.NoReturn:
     print(
         "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
         file=sys.stderr,

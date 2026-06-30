@@ -40,14 +40,15 @@ class RPNCalculator:
             )
 
             def op():
-                if len(self._stack) < min_stack_length:
-                    raise IndexError(
-                        f"{code!a} requires at least {min_stack_length} item{'s'[:min_stack_length ^ 1]} on stack"  # noqa: E501
-                    )
+                args = []
 
                 if is_variadic:
                     args = list(self._stack)
-                else:
+                elif len(self._stack) < min_stack_length:
+                    raise IndexError(
+                        f"{code!a} requires at least {min_stack_length} item{'s'[:min_stack_length ^ 1]} on stack"  # noqa: E501
+                    )
+                elif min_stack_length > 0:
                     args = self._stack[-min_stack_length:]
 
                 result = func(*args)
@@ -96,6 +97,8 @@ class RPNInterpreter:
     '[]'
     >>> interpreter.execute('1 2 3 4 5 6 sum')
     Decimal('21')
+    >>> interpreter.execute('pi pi /')
+    Decimal('1')
     """
 
     def __init__(self, calculator):

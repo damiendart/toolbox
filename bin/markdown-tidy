@@ -137,7 +137,9 @@ def main(arguments: argparse.Namespace) -> None:
 
             infile.close()
 
-            outfile = open(
+            md = format_markdown(input, wrap_text, remove_private_notes) + "\n"
+
+            with open(
                 os.path.join(
                     arguments.outdir,
                     # Black gets a little confused here and keeps
@@ -150,12 +152,9 @@ def main(arguments: argparse.Namespace) -> None:
                     # fmt: on
                 ),
                 "w",
-            )
+            ) as outfile:
+                outfile.write(md)
 
-            outfile.write(
-                format_markdown(input, wrap_text, remove_private_notes) + "\n",
-            )
-            outfile.close()
             print('[✔] Written "{}"'.format(os.path.abspath(outfile.name)))
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -171,12 +170,11 @@ def main(arguments: argparse.Namespace) -> None:
 
             infile.close()
 
-            outfile = open(infile.name, "w")
+            md = format_markdown(input, wrap_text, remove_private_notes) + "\n"
 
-            outfile.write(
-                format_markdown(input, wrap_text, remove_private_notes) + "\n",
-            )
-            outfile.close()
+            with open(infile.name, "w") as outfile:
+                outfile.write(md)
+
             print('[✔] Tidied up "{}"'.format(os.path.abspath(outfile.name)))
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -190,12 +188,13 @@ def main(arguments: argparse.Namespace) -> None:
             input = input + "\n\n" + infile.read().strip()
             infile.close()
 
+        md = format_markdown(input, wrap_text, remove_private_notes) + "\n"
+
         if isinstance(arguments.outfile, pathlib.Path):
             arguments.outfile = arguments.outfile.open(mode="w")
 
-        arguments.outfile.write(
-            format_markdown(input, wrap_text, remove_private_notes) + "\n",
-        )
+        arguments.outfile.write(md)
+        arguments.outfile.close()
 
 
 def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:

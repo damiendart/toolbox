@@ -112,7 +112,7 @@ def format_markdown(
         flags=re.MULTILINE,
     )
 
-    return markdown.strip()
+    return markdown.strip() + "\n"
 
 
 def main(arguments: argparse.Namespace) -> None:
@@ -137,7 +137,7 @@ def main(arguments: argparse.Namespace) -> None:
 
             infile.close()
 
-            md = format_markdown(input, wrap_text, remove_private_notes) + "\n"
+            md = format_markdown(input, wrap_text, remove_private_notes)
 
             with open(
                 os.path.join(
@@ -170,7 +170,7 @@ def main(arguments: argparse.Namespace) -> None:
 
             infile.close()
 
-            md = format_markdown(input, wrap_text, remove_private_notes) + "\n"
+            md = format_markdown(input, wrap_text, remove_private_notes)
 
             with open(infile.name, "w") as outfile:
                 outfile.write(md)
@@ -188,7 +188,7 @@ def main(arguments: argparse.Namespace) -> None:
             input = input + "\n\n" + infile.read().strip()
             infile.close()
 
-        md = format_markdown(input, wrap_text, remove_private_notes) + "\n"
+        md = format_markdown(input, wrap_text, remove_private_notes)
 
         if isinstance(arguments.outfile, pathlib.Path):
             arguments.outfile = arguments.outfile.open(mode="w")

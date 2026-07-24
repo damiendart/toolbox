@@ -49,6 +49,7 @@ def main(arguments: argparse.Namespace, config: typing.List) -> None:
         urllib.parse.urlencode(
             {
                 "message": " ".join(arguments.message),
+                "html": 1 if arguments.use_html else 0,
                 "title": arguments.title,
                 "token": config["application_key"],
                 "user": config["user_key"],
@@ -70,10 +71,11 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "message",
-        help="notification body (standard input is used if omitted)",
-        nargs="*",
-        type=str,
+        "--html",
+        action="store_true",
+        default=False,
+        dest="use_html",
+        help="enable HTML formatting for notification body",
     )
     parser.add_argument(
         "--title",
@@ -81,6 +83,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         nargs="?",
         type=str,
         default="Wild notification appeared!",
+    )
+    parser.add_argument(
+        "message",
+        help="notification body (standard input is used if omitted)",
+        nargs="*",
+        type=str,
     )
 
     return parser.parse_args(arguments)

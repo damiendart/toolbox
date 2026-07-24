@@ -71,7 +71,7 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "message",
-        help="notification body",
+        help="notification body (standard input is used if omitted)",
         nargs="*",
         type=str,
     )

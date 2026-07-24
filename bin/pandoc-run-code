@@ -51,8 +51,16 @@ def fatal_error(message: str) -> typing.NoReturn:
 
 
 def main(arguments: argparse.Namespace) -> None:
+    if arguments.infile is None or arguments.infile == "-":
+        infile = sys.stdin
+    else:
+        try:
+            infile = open(arguments.infile)
+        except OSError as e:
+            fatal_error(e)
+
     try:
-        data = json.load(arguments.infile)
+        data = json.load(infile)
     except json.decoder.JSONDecodeError as e:
         fatal_error("unable to decode JSON: " + str(e))
 
@@ -82,8 +90,6 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         "--infile",
         help="input Pandoc JSON document to be processed",
         nargs="?",
-        type=argparse.FileType("r"),
-        default=sys.stdin,
     )
 
     return parser.parse_args(arguments)

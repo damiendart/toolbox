@@ -67,13 +67,18 @@ def fatal_error(message: str) -> typing.NoReturn:
 
 
 def main(arguments: argparse.Namespace) -> None:
+    if arguments.infile == "-":
+        infile = sys.stdin
+    else:
+        infile = open(arguments.infile)
+
     entries = []
     longest_task_name_length = 0
     ongoing_task = None
     tasks = collections.defaultdict(datetime.timedelta)
     total = datetime.timedelta()
 
-    for i, line in enumerate(arguments.infile):
+    for i, line in enumerate(infile):
         if not re.match(parsable_line, line):
             continue
 
@@ -112,7 +117,7 @@ def main(arguments: argparse.Namespace) -> None:
                 )
             )
 
-    arguments.infile.close()
+    infile.close()
 
     a, b = itertools.tee(entries)
     next(b, None)
@@ -211,7 +216,6 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     parser.add_argument(
         "infile",
         help="timesheet file to parse and summarise",
-        type=argparse.FileType("r"),
     )
 
     return parser.parse_args(arguments)
@@ -224,7 +228,9 @@ if __name__ == "__main__":
         main(arguments)
     except TimesheetParseError as e:
         print(
-            "%s:%s: %s" % (arguments.infile.name, e.line_number, e.message),
+            "%s:%s: %s" % (arguments.infile, e.line_number, e.message),
             file=sys.stderr,
         )
         fatal_error("invalid timesheet")
+    except OSError as e:
+        fatal_error(e)

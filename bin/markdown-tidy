@@ -116,8 +116,18 @@ def format_markdown(
 
 
 def main(arguments: argparse.Namespace) -> None:
+    infiles = []
     remove_private_notes = not arguments.keep_private_notes
     wrap_text = not arguments.no_wrap
+
+    for infile in arguments.infiles:
+        if infile == "-":
+            infiles.append(sys.stdin)
+        else:
+            try:
+                infiles.append(open(infile))
+            except OSError as e:
+                fatal_error(e)
 
     if arguments.outdir:
         os.makedirs(arguments.outdir, 0o700, True)
@@ -149,11 +159,11 @@ def main(arguments: argparse.Namespace) -> None:
             print('[✔] Written "{}"'.format(os.path.abspath(outfile.name)))
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            for infile in arguments.infiles:
+            for infile in infiles:
                 executor.submit(process_file, infile)
 
     elif arguments.in_place:
-        if sys.stdin in arguments.infiles:
+        if sys.stdin in infiles:
             fatal_error("in-place editing cannot be used with standard input")
 
         def process_file(infile):
@@ -170,13 +180,13 @@ def main(arguments: argparse.Namespace) -> None:
             print('[✔] Tidied up "{}"'.format(os.path.abspath(outfile.name)))
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            for infile in arguments.infiles:
+            for infile in infiles:
                 executor.submit(process_file, infile)
 
     else:
         input = ""
 
-        for infile in arguments.infiles:
+        for infile in infiles:
             input = input + "\n\n" + infile.read().strip()
             infile.close()
 
@@ -197,8 +207,7 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         "infiles",
         help="input Markdown files to be processed",
         nargs="*",
-        type=argparse.FileType("r"),
-        default=[sys.stdin],
+        default=["-"],
     )
     parser.add_argument(
         "--no-wrap",

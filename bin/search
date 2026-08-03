@@ -206,15 +206,16 @@ def fatal_error(message: str) -> typing.NoReturn:
     raise SystemExit(1)
 
 
-def to_rg_command(parsed):
+def main(arguments: argparse.Namespace, rg_path: str) -> None:
     base = [
-        shutil.which("rg"),
+        rg_path,
         "--color=always",
         "--column",
         "--line-number",
         "--smart-case",
     ]
     globs = []
+    parsed = QueryParser().parse(" ".join(arguments.query))
     queries = []
     use_regex = False
 
@@ -245,19 +246,6 @@ def to_rg_command(parsed):
     for query in queries:
         command.append("--regexp")
         command.append(query)
-
-    return command
-
-
-def main(arguments: argparse.Namespace) -> None:
-    query = " ".join(arguments.query)
-
-    try:
-        parsed = QueryParser().parse(query)
-    except ParseError as e:
-        fatal_error("{}: {}".format(e.offset + 1, e.message))
-
-    command = to_rg_command(parsed)
 
     if arguments.dump_command:
         print(shlex.join(command))
@@ -293,12 +281,17 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
 
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
+    rg_path = shutil.which("rg")
 
     if arguments.run_doctests:
         failure_count, _ = doctest.testmod(exclude_empty=True, verbose=True)
+
         raise SystemExit(1 if failure_count > 0 else 0)
 
-    if not shutil.which("rg"):
+    if rg_path is None:
         fatal_error("ripgrep is required")
 
-    main(arguments)
+    try:
+        main(arguments, rg_path)
+    except ParseError as e:
+        fatal_error("{}: {}".format(e.offset + 1, e.message))

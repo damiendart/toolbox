@@ -155,7 +155,7 @@ fzf \
   --info='inline-right' \
   --layout=reverse \
   --multi \
-  --preview='(file -bL --mime {} | grep -q "^text") && cat {} 2>/dev/null || echo "\"{r}\" is a binary file."' \
+  --preview='(file -bL --mime {} | grep -qv "binary\$") && cat {} 2>/dev/null || echo "\"{r}\" is a binary file."' \
   --preview-window='wrap-word,+{2}/3,<80(down)' \
   --prompt="$(pathshorten)/" \
   --query="$INITIAL_QUERY" \

@@ -47,9 +47,9 @@ ACTIONS:
 HELP
 }
 
-# The "sleep" command acts as a debouncer, reducing the number of
+# The "sleep" commands acts as a debouncer, reducing the number of
 # "search" processes running while typing a query.
-SEARCH_BASE='test -n {q} && (sleep %s; search -- {q}) || true'
+BIND_BASE='%s:reload(test -n {q} && (sleep %s; search -- {q}) || true)+bg-transform-border-label(test -n {q} && (sleep %s; search --dump-command -- {q} 2>&1 1>/dev/null) || true)'
 
 VIM_MODE=0
 
@@ -123,9 +123,10 @@ FZF_OUTPUT=$(\
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
-    --bind="change:reload:$(printf "$SEARCH_BASE" "0.1")" \
-    --bind="start:reload:$(printf "$SEARCH_BASE" "0")" \
+    --bind="$(printf "$BIND_BASE" "change" "0.1" "0.1")" \
+    --bind="$(printf "$BIND_BASE" "start" "0" "0.1")" \
     --border \
+    --border-label-pos=0:bottom \
     --disabled \
     --delimiter=':' \
     --height="$FZF_HEIGHT" \

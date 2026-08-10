@@ -19,7 +19,7 @@ last entry in which case it is considered an ongoing task.
 
 Lines that do not start with a timestamp are ignored.
 
-For the JSON-formatted summary, there is basic support for parsing
+For the JSON-formatted summary, there is basic support for extracting
 Trello card IDs prefixed with "TRELLO-" from task descriptions.
 """
 
@@ -40,6 +40,7 @@ import typing
 
 
 parsable_line = re.compile(r"^\d\d:?\d\d(-\d\d:?\d\d)?:?\s+")
+trello_ids = re.compile(r"\s*TRELLO-(\w+)\s*")
 
 
 @dataclasses.dataclass
@@ -163,9 +164,13 @@ def main(arguments: argparse.Namespace) -> None:
         for description, duration in tasks.items():
             output["items"].append(
                 {
-                    "description": description,
+                    "description": re.sub(
+                        trello_ids,
+                        " ",
+                        description,
+                    ).strip(),
                     "duration_hours": duration.total_seconds() / 3600,
-                    "trello_cards": re.findall(r"TRELLO-(\w+)", description),
+                    "trello_cards": re.findall(trello_ids, description),
                 },
             )
 

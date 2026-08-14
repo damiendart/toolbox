@@ -79,6 +79,10 @@ class QueryParser:
     Traceback (most recent call last):
     ...
     ParseError: ('nested filters are not permitted', 7)
+    >>> parser.parse("foo '':bar")
+    Traceback (most recent call last):
+    ...
+    ParseError: ('invalid filter', 4)
     """
 
     def parse(self, query: str):
@@ -105,6 +109,9 @@ class QueryParser:
 
             if not scanner.skip(r"{}".format(quote_start)):
                 raise ParseError("missing closing quotation mark", start)
+
+            if atom is None:
+                return ""
         else:
             atom = scanner.scan(r"(\\.|[^\s\(\):])+")
 
@@ -116,12 +123,16 @@ class QueryParser:
     def _parse_filter(self, scanner):
         scanner.skip(r"\s+")
 
+        start = scanner.offset
         key = self._parse_value(scanner)
 
         if isinstance(key, tuple):
             return key
 
         if scanner.skip(r":"):
+            if key == "":
+                raise ParseError("invalid filter", start)
+
             return Filter(key, self._parse_value(scanner))
         else:
             return key
@@ -231,7 +242,7 @@ def main(arguments: argparse.Namespace, rg_path: str) -> None:
         elif f.key == "re" or f.key == "regex":
             use_regex = True
 
-    for term in [o for o in parsed if isinstance(o, str)]:
+    for term in [o for o in parsed if isinstance(o, str) and o != ""]:
         queries.append(term)
 
     if not use_regex:

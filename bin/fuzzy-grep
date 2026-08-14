@@ -47,10 +47,6 @@ ACTIONS:
 HELP
 }
 
-# The "sleep" commands acts as a debouncer, reducing the number of
-# "search" processes running while typing a query.
-BIND_BASE='%s:reload(test -n {q} && (sleep %s; search -- {q}) || true)+bg-transform-border-label(test -n {q} && (sleep %s; search --dump-command -- {q} 2>&1 1>/dev/null) || true)'
-
 VIM_MODE=0
 
 # Using the GNU version of getopt to parse command-line arguments adds
@@ -109,13 +105,15 @@ if [ "$VIM_MODE" = 1 ]; then
   FZF_HEIGHT='100%'
 fi
 
-# CTRL+Z process suspension is suppressed as it doesn't work properly
-# (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
-# ignored as spamming it to abort fzf occasionally adds garbage "[A"
-# entries to the Bash command history.
-#
-# Dash is a little bit faster at executing shell commands; see
-# <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
+# - CTRL+Z process suspension is suppressed as it doesn't work properly
+#   (see <https://github.com/junegunn/fzf/issues/2289>). Escape is also
+#   ignored as spamming it to abort fzf occasionally adds garbage "[A"
+#   entries to the Bash command history.
+# - The "sleep" command acts as a debouncer, reducing the number of
+#   "search" processes running while typing a query.
+# - Dash is a little bit faster at executing shell commands; see
+#   <https://github.com/junegunn/fzf/issues/4367#issuecomment-2831703942>.
+
 FZF_OUTPUT=$(\
   # shellcheck disable=SC2016,SC2059
   fzf \
@@ -123,8 +121,9 @@ FZF_OUTPUT=$(\
     --bind='ctrl-a:select-all,ctrl-d:deselect-all' \
     --bind='ctrl-z:ignore,esc:ignore' \
     --bind='backward-eof:abort' \
-    --bind="$(printf "$BIND_BASE" "change" "0.1" "0.1")" \
-    --bind="$(printf "$BIND_BASE" "start" "0" "0.1")" \
+    --bind='change:reload(test -n {q} && (sleep 0.1; search -- {q}) || true)' \
+    --bind='start:reload(test -n {q} && search -- {q} || true)' \
+    --bind='result:bg-transform-border-label(test -n {q} && (search --dump-command -- {q} 2>&1 1>/dev/null) || true)' \
     --border \
     --border-label-pos=0:bottom \
     --disabled \

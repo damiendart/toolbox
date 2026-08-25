@@ -143,8 +143,9 @@ FZF_OUTPUT=$(\
   echo "$INITIAL_INPUT" | fzf \
     --bind="ctrl-r:reload:$FZF_DEFAULT_COMMAND" \
     --bind='ctrl-z:ignore,esc:ignore' \
-    --bind="every(5):reload:$FZF_DEFAULT_COMMAND" \
+    --bind="every(5):reload($FZF_DEFAULT_COMMAND)+transform-border-label(echo -n 'Last refreshed at '; date)" \
     --border \
+    --border-label-pos=-3:bottom \
     --expect='ctrl-d,ctrl-l,ctrl-t,ctrl-y,ctrl-alt-y,del,f1' \
     --header='CTRL+D: Describe ╱ CTRL+L: Logs ╱ CTRL+R: Refresh ╱ DEL: Delete ╱ CTRL+Y: Copy pod name ╱ ENTER: Shell' \
     --header-lines=1 \

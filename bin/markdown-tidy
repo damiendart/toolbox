@@ -30,7 +30,11 @@ def fatal_error(message: str) -> typing.NoReturn:
     raise SystemExit(1)
 
 
-def format_markdown(markdown: str, wrap_text: bool) -> str:
+def format_markdown(
+    markdown: str,
+    wrap_text: bool,
+    shift_heading_level_by: int,
+) -> str:
     try:
         markdown = subprocess.check_output(
             [
@@ -56,6 +60,7 @@ def format_markdown(markdown: str, wrap_text: bool) -> str:
                 "--reference-links",
                 "--reference-location=section",
                 "--columns=72" if wrap_text else "--wrap=none",
+                "--shift-heading-level-by={}".format(shift_heading_level_by),
                 "--tab-stop=4",
                 "--filter=pandoc-run-code",
             ],
@@ -107,6 +112,7 @@ def format_markdown(markdown: str, wrap_text: bool) -> str:
 def main(arguments: argparse.Namespace) -> None:
     infiles = []
     remove_private_notes = not arguments.keep_private_notes
+    shift_heading_level_by = arguments.shift_heading_level_by
     wrap_text = not arguments.no_wrap
 
     for infile in arguments.infiles:
@@ -127,7 +133,7 @@ def main(arguments: argparse.Namespace) -> None:
             infile.close()
 
             md = process_private_notes(input, remove_private_notes)
-            md = format_markdown(md, wrap_text)
+            md = format_markdown(md, wrap_text, shift_heading_level_by)
 
             with open(
                 os.path.join(
@@ -161,7 +167,7 @@ def main(arguments: argparse.Namespace) -> None:
             infile.close()
 
             md = process_private_notes(input, remove_private_notes)
-            md = format_markdown(md, wrap_text)
+            md = format_markdown(md, wrap_text, shift_heading_level_by)
 
             with open(infile.name, "w") as outfile:
                 outfile.write(md)
@@ -182,7 +188,7 @@ def main(arguments: argparse.Namespace) -> None:
             )
             infile.close()
 
-        md = format_markdown(input, wrap_text)
+        md = format_markdown(input, wrap_text, shift_heading_level_by)
 
         if isinstance(arguments.outfile, pathlib.Path):
             arguments.outfile = arguments.outfile.open(mode="w")
@@ -213,6 +219,13 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         action="store_true",
         dest="keep_private_notes",
         help='keep content after the first "- - -" from each Markdown file',
+    )
+    parser.add_argument(
+        "--shift-heading-level-by",
+        default=0,
+        dest="shift_heading_level_by",
+        help="shift heading levels by a positive or negative integer",
+        type=int,
     )
 
     group = parser.add_mutually_exclusive_group()

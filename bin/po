@@ -2,12 +2,15 @@
 """
 A simple notification sender, using Pushover.
 
-A configuration file at "$HOME/.config/toolbox/po.ini" is required to
-provide Pushover API tokens:
+A configuration file is required to provide Pushover API tokens:
 
     [pushover]
     application_key=APPLICATION_KEY_GOES_HERE
     user_key=USER_KEY_GOES_HERE
+
+By default, the configuration file is expected to be readable at
+"$HOME/.config/toolbox/po.ini", but this can be overriden with the
+"--config-file" command-line argument.
 
 If you forget to include "po" after a command, suspend the running
 command with CTRL-Z and resume it with "fg; po", adjusting the "po"
@@ -27,9 +30,6 @@ import random
 import sys
 import typing
 import urllib.parse
-
-
-CONFIG_DEFAULT = "{}/.config/toolbox/po.ini".format(pathlib.Path.home())
 
 
 def fatal_error(message: str) -> typing.NoReturn:
@@ -69,6 +69,12 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--config",
+        default="{}/.config/toolbox/po.ini".format(pathlib.Path.home()),
+        dest="config_file",
+        help="override configuration file path",
     )
     parser.add_argument(
         "--html",
@@ -118,7 +124,7 @@ def parse_config(config_file: str):
 
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
-    config = parse_config(CONFIG_DEFAULT)
+    config = parse_config(arguments.config_file)
 
     if not arguments.message:
         if not sys.stdin.isatty():

@@ -30,18 +30,7 @@ def fatal_error(message: str) -> typing.NoReturn:
     raise SystemExit(1)
 
 
-def format_markdown(
-    markdown: str,
-    wrap_text: bool,
-    remove_private_notes: bool,
-) -> str:
-    # The "- - -" thematic break is used for separating private notes to
-    # prevent conflicts with front matter delimiters.
-    if remove_private_notes:
-        markdown = re.split(r"^- - -", markdown, flags=re.MULTILINE)[0].strip()
-    else:
-        markdown = re.sub(r"^- - -", "", markdown, flags=re.MULTILINE)
-
+def format_markdown(markdown: str, wrap_text: bool) -> str:
     try:
         markdown = subprocess.check_output(
             [
@@ -137,7 +126,8 @@ def main(arguments: argparse.Namespace) -> None:
 
             infile.close()
 
-            md = format_markdown(input, wrap_text, remove_private_notes)
+            md = process_private_notes(input, remove_private_notes)
+            md = format_markdown(md, wrap_text)
 
             with open(
                 os.path.join(
@@ -170,7 +160,8 @@ def main(arguments: argparse.Namespace) -> None:
 
             infile.close()
 
-            md = format_markdown(input, wrap_text, remove_private_notes)
+            md = process_private_notes(input, remove_private_notes)
+            md = format_markdown(md, wrap_text)
 
             with open(infile.name, "w") as outfile:
                 outfile.write(md)
@@ -185,10 +176,13 @@ def main(arguments: argparse.Namespace) -> None:
         input = ""
 
         for infile in infiles:
-            input = input + "\n\n" + infile.read().strip()
+            input += "\n\n" + process_private_notes(
+                infile.read(),
+                remove_private_notes,
+            )
             infile.close()
 
-        md = format_markdown(input, wrap_text, remove_private_notes)
+        md = format_markdown(input, wrap_text)
 
         if isinstance(arguments.outfile, pathlib.Path):
             arguments.outfile = arguments.outfile.open(mode="w")
@@ -218,7 +212,7 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         "--keep-private-notes",
         action="store_true",
         dest="keep_private_notes",
-        help='keep content after the first "- - -"',
+        help='keep content after the first "- - -" from each Markdown file',
     )
 
     group = parser.add_mutually_exclusive_group()
@@ -244,6 +238,15 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     )
 
     return parser.parse_args(arguments)
+
+
+def process_private_notes(markdown: str, remove_notes: bool) -> str:
+    # The "- - -" thematic break is used for separating private notes to
+    # prevent conflicts with front matter delimiters.
+    if remove_notes:
+        return re.split(r"^- - -", markdown, flags=re.MULTILINE)[0].strip()
+
+    return re.sub(r"^- - -", "", markdown, flags=re.MULTILINE)
 
 
 if __name__ == "__main__":

@@ -69,9 +69,9 @@ def main(args: argparse.Namespace) -> None:
 
         for future in concurrent.futures.as_completed(futures):
             if future.result():
-                warnings, errors = future.result()
+                errors, warnings = future.result()
 
-                if errors:
+                if len(errors) > 0:
                     errors_found = True
 
                 for warning in warnings:

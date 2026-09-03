@@ -23,6 +23,7 @@ import typing
 
 def check_repository(
     repository: str,
+    treat_warnings_as_issues: bool,
 ) -> typing.Tuple[typing.List[str], typing.List[str]]:
     repository = os.path.abspath(repository)
 
@@ -33,7 +34,10 @@ def check_repository(
         issues.append('[✘] "{}": {}'.format(repository, s))
 
     def add_warning(s: str):
-        warnings.append('[-] "{}": {}'.format(repository, s))
+        if treat_warnings_as_issues:
+            add_issue(s)
+        else:
+            warnings.append('[-] "{}": {}'.format(repository, s))
 
     if not os.path.exists(os.path.join(repository, ".git")):
         add_warning("Not a Git repository")
@@ -70,7 +74,10 @@ def main(args: argparse.Namespace) -> None:
     issues_found = False
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as e:
-        futures = {e.submit(check_repository, d) for d in args.repositories}
+        futures = {
+            e.submit(check_repository, d, args.treat_warnings_as_issues)
+            for d in args.repositories
+        }
 
         for future in concurrent.futures.as_completed(futures):
             if future.result():
@@ -91,6 +98,13 @@ def main(args: argparse.Namespace) -> None:
 
 def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument(
+        "--treat-warnings-as-issues",
+        action="store_true",
+        dest="treat_warnings_as_issues",
+        help="treat warnings as issues",
+    )
 
     parser.add_argument(
         "repositories",

@@ -97,7 +97,10 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
 
     parser.add_argument(
         "--treat-warnings-as-issues",

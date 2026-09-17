@@ -2,10 +2,13 @@
 """
 Exports raster images to a variety of formats and sizes.
 
-Requires the "export-images-deps" Docker container (see
-"$TOOLBOX_ROOT/misc/export-images-deps/Dockerfile"). The script uses a
-Docker container for its third-party dependencies mainly because
-installing a fully-featured version of ImageMagick is a faff.
+Requires the "export-images-deps" Docker container:
+
+  $ docker build -t export-images-deps "$TOOLBOX_ROOT/misc/export-images-deps"
+
+The script uses a Docker container for its third-party dependencies
+mainly because building and installing a fully-featured version of
+ImageMagick is a faff.
 """
 
 # Copyright (C) Damien Dart, <damiendart@pobox.com>.

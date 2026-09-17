@@ -50,6 +50,7 @@ tasks:
         .venv/bin/black
         --check
         --diff
+        bin/export-images
         bin/git-hometime
         bin/markdown-tidy
         bin/pandoc-run-code
@@ -63,6 +64,7 @@ tasks:
     cmds:
       - >-
         .venv/bin/flake8
+        bin/export-images
         bin/git-hometime
         bin/markdown-tidy
         bin/pandoc-run-code

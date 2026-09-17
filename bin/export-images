@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""
+Exports raster images to a variety of formats and sizes.
+
+Requires the "export-images-deps" Docker container (see
+"$TOOLBOX_ROOT/misc/export-images-deps/Dockerfile"). The script uses a
+Docker container for its third-party dependencies mainly because
+installing a fully-featured version of ImageMagick is a faff.
+"""
+
+# Copyright (C) Damien Dart, <damiendart@pobox.com>.
+# This file is distributed under the MIT licence. For more information,
+# please refer to the accompanying "LICENCE" file.
+
+import argparse
+import concurrent.futures
+import dataclasses
+import os
+import pathlib
+import subprocess
+import sys
+import typing
+
+
+@dataclasses.dataclass
+class Job:
+    path_input: pathlib.Path
+    path_output: pathlib.Path
+    width: int
+
+
+def fatal_error(message: str) -> None:
+    print(
+        "{}: error: {}".format(os.path.basename(sys.argv[0]), message),
+        file=sys.stderr,
+    )
+
+    raise SystemExit(1)
+
+
+def main(arguments: argparse.Namespace) -> None:
+    jobs = []
+    outdir = ""
+
+    if arguments.outdir:
+        os.makedirs(arguments.outdir, 0o700, True)
+        outdir = arguments.outdir
+
+    for infile in arguments.infiles:
+        path = pathlib.Path(infile.name)
+
+        for width in arguments.widths:
+            if not str.isdigit(width):
+                fatal_error("{} is not a positive integer width".format(width))
+
+            for extension in [".avif", ".jpg", ".png", ".webp"]:
+                output_path = "{}-{}{}".format(path.stem, width, extension)
+                jobs.append(
+                    Job(
+                        path,
+                        pathlib.Path(os.path.join(outdir, output_path)),
+                        width,
+                    )
+                )
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {executor.submit(process_job, job): job for job in jobs}
+
+        for future in concurrent.futures.as_completed(futures):
+            print('[✔] Created "{}"'.format(future.result()))
+
+
+def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--outdir",
+        help="create output files in OUTDIR",
+        nargs="?",
+        type=pathlib.Path,
+    )
+    parser.add_argument(
+        "widths",
+        help="a comma-separated list of positive integer widths to export",
+        type=lambda widths: [w for w in widths.split(",")],
+    )
+    parser.add_argument(
+        "infiles",
+        help="input image files to be processed",
+        nargs="+",
+        type=argparse.FileType("rb"),
+    )
+
+    return parser.parse_args(arguments)
+
+
+def process_job(job: Job):
+    command_base = ["docker", "run", "-i", "--rm", "export-images-deps"]
+    input_data = job.path_input.read_bytes()
+
+    if job.path_output.suffix == ".png":
+        output_data = subprocess.check_output(
+            [
+                *command_base,
+                "sh",
+                "-c",
+                (
+                    "magick - "
+                    "-define png:compression-filter=5 "
+                    "-define png:compression-level=9 "
+                    "-define png:compression-strategy=1 "
+                    "-define png:exclude-chunk=all "
+                    "-filter LanczosSharp "
+                    "-interlace none "
+                    "-strip "
+                    "-thumbnail {} "
+                    "png:- | oxipng --fast -o max --strip all -"
+                ).format(job.width),
+            ],
+            input=input_data,
+            stderr=subprocess.STDOUT,
+        )
+    elif job.path_output.suffix == ".avif":
+        output_data = subprocess.check_output(
+            [
+                *command_base,
+                "sh",
+                "-c",
+                (
+                    "magick - "
+                    "-filter LanczosSharp "
+                    "-strip "
+                    "-thumbnail {} "
+                    "png:- | cavif --color=rgb --speed=3 -"
+                ).format(job.width),
+            ],
+            input=input_data,
+            stderr=subprocess.STDOUT,
+        )
+    elif job.path_output.suffix == ".webp":
+        output_data = subprocess.check_output(
+            [
+                *command_base,
+                "magick",
+                "-",
+                "-define",
+                "webp:lossless=true",
+                "-define",
+                "webp:method=6",
+                "-filter",
+                "LanczosSharp",
+                "-quality",
+                "30",
+                "-strip",
+                "-thumbnail",
+                str(job.width),
+                "webp:-",
+            ],
+            input=input_data,
+            stderr=subprocess.STDOUT,
+        )
+    else:
+        output_data = subprocess.check_output(
+            [
+                *command_base,
+                "magick",
+                "-",
+                "-filter",
+                "LanczosSharp",
+                "-strip",
+                "-thumbnail",
+                str(job.width),
+                "jpg:-",
+            ],
+            input=input_data,
+            stderr=subprocess.STDOUT,
+        )
+
+    job.path_output.write_bytes(output_data)
+
+    return job.path_output
+
+
+if __name__ == "__main__":
+    arguments = parse_arguments(sys.argv[1:])
+
+    try:
+        subprocess.check_output(
+            ["docker", "image", "inspect", "export-images-deps"],
+            stderr=subprocess.STDOUT,
+        )
+    except subprocess.CalledProcessError:
+        fatal_error('"export-images-deps" container image is required')
+
+    main(arguments)

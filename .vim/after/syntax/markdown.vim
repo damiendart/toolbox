@@ -35,8 +35,10 @@ if exists('b:enable_tags_highlighting')
   " "$HOME/.vim/after/ftplugin/markdown.vim" and
   " <https://github.com/damiendart/nt>.
 
-  syntax match markdownHashtag ~\%(^\|\s\|["'(]\)\@<=#[0-9/:_-]*\a\%(\w\|[/:_-]\)*\ze\%(\_s\|["')]\)~
-  syntax match markdownHashtag ~\%(^\|\s\|["'(]\)\@<=#[0-9/:_-]*\a\%(\w\|[/:_-]\)\{-}\ze:\+\%(\_s\|["')]\)~
+  syntax match markdownHashtag ~\%(^\|\s\|["'(]\)\@<=#[0-9/:_-]*\a\%(\w\|[/:_-]\)*\ze\%(\_s\|["')]\)~ containedin=@markdownYamlTop
+  syntax match markdownHashtag ~\%(^\|\s\|["'(]\)\@<=#[0-9/:_-]*\a\%(\w\|[/:_-]\)*\ze\%(\_s\|["')]\)~ contained containedin=yamlFlowString
+  syntax match markdownHashtag ~\%(^\|\s\|["'(]\)\@<=#[0-9/:_-]*\a\%(\w\|[/:_-]\)\{-}\ze:\+\%(\_s\|["')]\)~ containedin=@markdownYamlTop
+  syntax match markdownHashtag ~\%(^\|\s\|["'(]\)\@<=#[0-9/:_-]*\a\%(\w\|[/:_-]\)\{-}\ze:\+\%(\_s\|["')]\)~ contained containedin=yamlFlowString
 
   highlight link markdownHashtag Statement
 endif

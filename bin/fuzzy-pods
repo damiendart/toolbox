@@ -43,14 +43,14 @@ FZF COMMANDS:
   CTRL-R
     Refresh the list of pods.
 
-  CTRL-T
-    Delete the selected pod.
-
   CTRL-Y
     Copy the selected pod name to the clipboard.
 
   CTRL-ALT-Y
     Copy the selected namespace and pod name to the clipboard.
+
+  DEL
+    Delete the selected pod.
 
   F1
     Display this help text and exit.

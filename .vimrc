@@ -52,12 +52,13 @@ if executable('rg')
   set grepprg=rg\ --vimgrep\ --smart-case\ --hidden
 endif
 
-" Fixes some Vim-in-tmux colour-related funkiness caused by the
-" "background" option being incorrectly set. For more information, see
-" <https://github.com/vim/vim/issues/7867#issuecomment-781794423> and
-" <https://unix.stackexchange.com/q/348771>.
+" Fix Vim-in-tmux funkiness where the "background" option is set
+" incorrectly. Older versions of tmux may require the longer value for
+" "t_RB". See <https://github.com/vim/vim/issues/7867> and
+" <https://github.com/tmux/tmux/issues/3964> for more information.
 if exists('$TMUX') && !exists('$VIM_TERMINAL')
-  let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
+  let &t_RB = "\e]11;?\007\e\\"
+  " let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
 endif
 
 if has('autocmd')

@@ -2,15 +2,19 @@
 """
 A simple notification sender, using Pushover.
 
-A configuration file is required to provide Pushover API tokens:
+Pushover API tokens can be provided by either a configuration file or
+environment variables. By default, "po" will expect a configuration
+file to be readable at "$HOME/.config/toolbox/po.ini":
 
     [pushover]
     application_key=APPLICATION_KEY_GOES_HERE
     user_key=USER_KEY_GOES_HERE
 
-By default, the configuration file is expected to be readable at
-"$HOME/.config/toolbox/po.ini", but this can be overriden with the
-"--config-file" command-line argument.
+The configuration file location can be overriden with the
+"--config-file" command-line argument. If the "--env" command-line
+argument is provided, API tokens will be sourced from the
+"PO_PUSHOVER_APPLICATION_KEY" and "PO_PUSHOVER_USER_KEY" environment
+variables instead.
 
 If you forget to include "po" after a command, suspend the running
 command with CTRL-Z and resume it with "fg; po", adjusting the "po"
@@ -77,6 +81,13 @@ def parse_arguments(arguments: typing.List[str]) -> argparse.Namespace:
         help="override configuration file path",
     )
     parser.add_argument(
+        "--env",
+        action="store_true",
+        default=False,
+        dest="use_envvars",
+        help="source API tokens from environment variables",
+    )
+    parser.add_argument(
         "--html",
         action="store_true",
         default=False,
@@ -124,7 +135,17 @@ def parse_config(config_file: str):
 
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
-    config = parse_config(arguments.config_file)
+
+    if arguments.use_envvars:
+        try:
+            config = {
+                "application_key": os.environ["PO_PUSHOVER_APPLICATION_KEY"],
+                "user_key": os.environ["PO_PUSHOVER_USER_KEY"],
+            }
+        except KeyError as e:
+            fatal_error('"%s" environment variable is not set' % (e.args[0]))
+    else:
+        config = parse_config(arguments.config_file)
 
     if not arguments.message:
         if not sys.stdin.isatty():

@@ -68,7 +68,7 @@ class RPNCalculator:
     def keywords(self):
         return tuple(self._operations.keys())
 
-    def execute(self, token: str) -> typing.Optional[decimal.Decimal]:
+    def execute(self, token: str):
         if token in self._operations:
             self._operations[token]()
         else:
@@ -77,11 +77,6 @@ class RPNCalculator:
                 self._stack.append(number)
             except decimal.InvalidOperation:
                 raise ValueError(f"unrecognised operation: {token}")
-
-        try:
-            return self._stack[-1]
-        except IndexError:
-            return None
 
     @property
     def stack(self):
@@ -92,13 +87,13 @@ class RPNInterpreter:
     """
     >>> interpreter = RPNInterpreter(make_calculator())
     >>> interpreter.execute('6 3 /')
-    Decimal('2')
-    >>> interpreter.execute('drop stack')
+    '[2]'
+    >>> interpreter.execute('drop')
     '[]'
     >>> interpreter.execute('1 2 3 4 5 6 sum')
-    Decimal('21')
+    '[21]'
     >>> interpreter.execute('pi pi /')
-    Decimal('1')
+    '[21, 1]'
     """
 
     def __init__(self, calculator):
@@ -106,21 +101,18 @@ class RPNInterpreter:
 
     def execute(self, line) -> typing.Union[decimal.Decimal, None, str]:
         line = line.lower().strip()
-        retval = None
 
         for token in line.split():
             if token == "exit" or token == "quit":
                 raise SystemExit(0)
-            elif token == "stack":
-                retval = f"[{', '.join([str(i) for i in self._calculator.stack])}]"  # noqa: E501
             else:
-                retval = self._calculator.execute(token)
+                self._calculator.execute(token)
 
-        return retval
+        return f"[{', '.join([str(i) for i in self._calculator.stack])}]"
 
     @property
     def keywords(self):
-        return self._calculator.keywords + ("exit", "quit", "stack")
+        return self._calculator.keywords + ("exit", "quit")
 
 
 def make_calculator() -> RPNCalculator:
